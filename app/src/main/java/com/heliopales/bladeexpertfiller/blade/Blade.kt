@@ -1,27 +1,23 @@
-package com.heliopales.bladeexpertfiller.intervention
+package com.heliopales.bladeexpertfiller.blade
 
 import android.os.Parcel
 import android.os.Parcelable
-import com.heliopales.bladeexpertfiller.blade.Blade
+import com.heliopales.bladeexpertfiller.intervention.Intervention
 
-data class Intervention(val id: Int, val turbineName: String?, val turbineSerial: String?) : Parcelable {
-
-    var expired: Boolean = false
+data class Blade (val id:Int, val position:String?, val serial: String?) : Parcelable{
 
     constructor(parcel: Parcel) : this(
         parcel.readInt(),
         parcel.readString(),
         parcel.readString()
     ) {
-        expired = parcel.readByte() != 0.toByte()
     }
-
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
 
-        other as Intervention
+        other as Blade
 
         if (id != other.id) return false
 
@@ -34,24 +30,22 @@ data class Intervention(val id: Int, val turbineName: String?, val turbineSerial
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
         parcel.writeInt(id)
-        parcel.writeString(turbineName)
-        parcel.writeString(turbineSerial)
-        parcel.writeByte(if (expired) 1 else 0)
+        parcel.writeString(position)
+        parcel.writeString(serial)
     }
 
     override fun describeContents(): Int {
         return 0
     }
 
-    companion object CREATOR : Parcelable.Creator<Intervention> {
-        override fun createFromParcel(parcel: Parcel): Intervention {
-            return Intervention(parcel)
+    companion object CREATOR : Parcelable.Creator<Blade> {
+        override fun createFromParcel(parcel: Parcel): Blade {
+            return Blade(parcel)
         }
 
-        override fun newArray(size: Int): Array<Intervention?> {
+        override fun newArray(size: Int): Array<Blade?> {
             return arrayOfNulls(size)
         }
     }
-
 
 }

@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".intervention.InterventionDetailsActivity">
+
+    <TextView
+        android:id="@+id/turbineName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="25sp"
+        app:layout_constraintBottom_toTopOf="@id/turbineSerialLabel"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_chainStyle="spread"
+        tools:text="Turbine name E12"
+        android:textColor="@color/bulma_dark"/>
+
+    <TextView
+        android:id="@+id/turbineSerialLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Numéro de série : "
+        app:layout_constraintBottom_toTopOf="@id/bladeButtonLayout"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toLeftOf="@id/turbineSerialNumber"
+        app:layout_constraintTop_toBottomOf="@id/turbineName"
+        android:textColor="@color/bulma_dark"
+        android:textSize="15sp"/>
+
+    <TextView
+        android:id="@+id/turbineSerialNumber"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="@id/turbineSerialLabel"
+        app:layout_constraintLeft_toRightOf="@id/turbineSerialLabel"
+        app:layout_constraintRight_toLeftOf="@id/editTurbineNumber"
+        app:layout_constraintTop_toTopOf="@id/turbineSerialLabel"
+        tools:text="#123456"
+        android:textSize="15sp"
+        android:padding="16dp"
+        android:textColor="@color/bulma_dark"
+        android:background="@color/bulma_light"
+        android:textStyle="bold"/>
+
+    <ImageButton
+        android:id="@+id/editTurbineNumber"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:backgroundTint="@color/bulma_success_light"
+        android:src="@drawable/ic_baseline_edit_24"
+        android:padding="16dp"
+        app:layout_constraintBottom_toBottomOf="@id/turbineSerialLabel"
+        app:layout_constraintLeft_toRightOf="@id/turbineSerialNumber"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="@id/turbineSerialLabel"
+        app:tint="@color/bulma_success_dark" />
+
+    <LinearLayout
+        android:id="@+id/bladeButtonLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center"
+
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/turbineSerialLabel" >
+
+
+
+
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

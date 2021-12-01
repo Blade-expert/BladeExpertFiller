@@ -1,18 +1,25 @@
 package com.heliopales.bladeexpertfiller.intervention
 
+import android.content.Context
+import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.TextView
 import androidx.cardview.widget.CardView
+import androidx.core.content.ContextCompat
+import androidx.core.content.res.TypedArrayUtils
 import androidx.recyclerview.widget.RecyclerView
 import com.heliopales.bladeexpertfiller.R
 
-class InterventionAdapter(private val interventions: List<Intervention>, private val interventionListener: InterventionItemListener) :
+class InterventionAdapter(
+    private val interventions: List<Intervention>,
+    private val interventionListener: InterventionItemListener
+) :
     RecyclerView.Adapter<InterventionAdapter.ViewHolder>(), View.OnClickListener {
 
-    interface InterventionItemListener{
+    interface InterventionItemListener {
         fun onInterventionSelected(intervention: Intervention)
         fun onInterventionUploadClick(intervention: Intervention)
     }
@@ -20,6 +27,7 @@ class InterventionAdapter(private val interventions: List<Intervention>, private
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val cardView = itemView.findViewById<CardView>(R.id.card_view)!!
         val turbineNameView = itemView.findViewById<TextView>(R.id.turbine_name)!!
+        val helperView = itemView.findViewById<TextView>(R.id.helper)!!
         val uploadButton = itemView.findViewById<ImageButton>(R.id.upload_button)!!
     }
 
@@ -35,6 +43,28 @@ class InterventionAdapter(private val interventions: List<Intervention>, private
             turbineNameView.text = itv.turbineName
             cardView.tag = itv
             cardView.setOnClickListener(this@InterventionAdapter)
+            if (itv.expired) {
+                cardView.setCardBackgroundColor(
+                    ContextCompat.getColor(
+                        cardView.context,
+                        R.color.bulma_danger_light
+                    )
+                )
+                helperView.visibility = View.VISIBLE
+                helperView.text = "L'intervention n'est plus en 'EN GOING'"
+                helperView.setTextColor(ContextCompat.getColor(
+                    cardView.context,
+                    R.color.bulma_danger_dark
+                ))
+            }else{
+                cardView.setCardBackgroundColor(
+                    ContextCompat.getColor(
+                        cardView.context,
+                        R.color.cardview_light_background
+                    )
+                )
+                helperView.visibility = View.GONE
+            }
             uploadButton.tag = itv
             uploadButton.setOnClickListener(this@InterventionAdapter)
         }
@@ -43,10 +73,16 @@ class InterventionAdapter(private val interventions: List<Intervention>, private
     override fun getItemCount(): Int = interventions.size
 
     override fun onClick(view: View) {
-        when(view.id){
-            R.id.upload_button -> {interventionListener.onInterventionUploadClick(view.tag as Intervention)}
-            R.id.card_view -> {interventionListener.onInterventionSelected(view.tag as Intervention)}
+        when (view.id) {
+            R.id.upload_button -> {
+                interventionListener.onInterventionUploadClick(view.tag as Intervention)
+            }
+            R.id.card_view -> {
+                interventionListener.onInterventionSelected(view.tag as Intervention)
+            }
         }
     }
+
+
 
 }
