@@ -1,10 +1,13 @@
 package com.heliopales.bladeexpertfiller.intervention
 
+import android.app.Activity
 import android.content.Intent
 import android.graphics.Canvas
 import android.os.Bundle
 import android.view.Menu
-import android.view.MenuItem
+import android.widget.Switch
+import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.recyclerview.widget.ItemTouchHelper
@@ -34,7 +37,6 @@ class InterventionListActivity : AppCompatActivity(), InterventionAdapter.Interv
     private lateinit var refreshLayout: SwipeRefreshLayout
     private lateinit var adapter: InterventionAdapter
 
-    private lateinit var deletedIntervention: Intervention
 
     private var deleteAllowed = false;
 
@@ -43,7 +45,7 @@ class InterventionListActivity : AppCompatActivity(), InterventionAdapter.Interv
         setContentView(R.layout.activity_intervention_list)
 
         var toolbar = findViewById<Toolbar>(R.id.toolbar)
-       setSupportActionBar(toolbar)
+        setSupportActionBar(toolbar)
 
         database = App.database
 
@@ -77,8 +79,7 @@ class InterventionListActivity : AppCompatActivity(), InterventionAdapter.Interv
 
         override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
             val position = viewHolder.absoluteAdapterPosition
-            deletedIntervention = interventions[position]
-            deleteIntervention(deletedIntervention, position);
+            preDeleteIntervention(interventions[position], position);
         }
 
         override fun getSwipeDirs(
@@ -86,7 +87,7 @@ class InterventionListActivity : AppCompatActivity(), InterventionAdapter.Interv
             viewHolder: RecyclerView.ViewHolder
         ): Int {
             val position = viewHolder.absoluteAdapterPosition
-            if (!interventions[position].expired && false) return 0
+            if (!interventions[position].expired && !deleteAllowed) return 0
             return super.getSwipeDirs(recyclerView, viewHolder)
         }
 
@@ -116,14 +117,13 @@ class InterventionListActivity : AppCompatActivity(), InterventionAdapter.Interv
         }
     }
 
-    private fun deleteIntervention(deletedIntervention: Intervention, position: Int) {
+    private fun preDeleteIntervention(deletedIntervention: Intervention, position: Int) {
         interventions.remove(deletedIntervention)
-
         adapter.notifyItemRemoved(position)
         Snackbar.make(
             recyclerView,
             "${deletedIntervention.turbineName} supprimé",
-            Snackbar.LENGTH_LONG
+            Snackbar.LENGTH_SHORT
         )
             .setAction("Annuler") {
                 interventions.add(position, deletedIntervention)
@@ -131,14 +131,20 @@ class InterventionListActivity : AppCompatActivity(), InterventionAdapter.Interv
             }
             .addCallback(object : Snackbar.Callback() {
                 override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
-                    if (event == Snackbar.Callback.DISMISS_EVENT_TIMEOUT) {
-                        database.deleteIntervention(deletedIntervention)
-                        database.deleteBladesOfIntervention(deletedIntervention)
+                    if (event == Snackbar.Callback.DISMISS_EVENT_TIMEOUT ||
+                        event == Snackbar.Callback.DISMISS_EVENT_CONSECUTIVE
+                    ) {
+                        effectivelyDeleteIntervention(deletedIntervention)
                     }
                     super.onDismissed(transientBottomBar, event)
                 }
             })
             .show()
+    }
+
+    private fun effectivelyDeleteIntervention(deletedIntervention: Intervention) {
+        database.deleteIntervention(deletedIntervention)
+        database.deleteBladesOfIntervention(deletedIntervention)
     }
 
 
@@ -168,9 +174,8 @@ class InterventionListActivity : AppCompatActivity(), InterventionAdapter.Interv
                             }
                         }
                     }
-                    interventions.removeAll(newInterventions)
-                    interventions.forEach { it.expired = true }
-                    interventions.addAll(newInterventions)
+                    interventions.forEach { if (!newInterventions.contains(it)) it.expired = true }
+                    newInterventions.forEach { if (!interventions.contains(it)) interventions.add(it) }
                     interventions.forEach { database.insertNonExistingIntervention(it) }
                     interventions.sortBy { it.turbineName }
                     adapter.notifyDataSetChanged()
@@ -185,36 +190,55 @@ class InterventionListActivity : AppCompatActivity(), InterventionAdapter.Interv
             })
     }
 
-
     override fun onInterventionSelected(intervention: Intervention) {
         val intent = Intent(this, InterventionDetailsActivity::class.java)
         intent.putExtra(InterventionDetailsActivity.EXTRA_INTERVENTION, intervention)
-        startActivity(intent)
+        interventionDetailsLauncher.launch(intent)
     }
+
+    private var interventionDetailsLauncher =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == Activity.RESULT_OK) {
+                val data: Intent? = result.data
+                val itvResult =
+                    data?.getParcelableExtra<Intervention>(InterventionDetailsActivity.EXTRA_INTERVENTION)
+                interventions.forEach {
+                    if (it.equals(itvResult)) {
+                        it.turbineSerial = itvResult?.turbineSerial
+                        it.state = itvResult.state
+                    }
+                }
+                adapter.notifyDataSetChanged()
+            }
+        }
 
     override fun onInterventionUploadClick(intervention: Intervention) {
         toast("${intervention.turbineName} upload selected")
     }
 
-    override fun onPrepareOptionsMenu(menu: Menu?): Boolean {
-        menu?.findItem(R.id.toogler_delete_ongoing_intervention)?.isChecked = deleteAllowed;
-        return true
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when(item.itemId){
-            R.id.toogler_delete_ongoing_intervention -> {
-                deleteAllowed = !item.isChecked
-                item.isChecked = deleteAllowed
-                return true
-            }
-            else -> false
-        }
-        return false
-    }
-
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.activity_intervention_list, menu)
+        val menuItem = menu?.findItem(R.id.toogler_delete_ongoing_intervention)
+        menuItem?.setActionView(R.layout.menu_switch)
+
+        val switch = menuItem?.actionView?.findViewById<Switch>(R.id.switch_show_protected)
+        switch?.isChecked = deleteAllowed
+        switch?.setOnCheckedChangeListener { buttonView, isChecked ->
+            deleteAllowed = isChecked
+            if (isChecked) {
+                toast(
+                    "La suppression de n'importe quelle intervention est maintenant permise",
+                    Toast.LENGTH_LONG
+                )
+            } else {
+                toast(
+                    "La suppression est restreinte aux interventions qui ne sont plus 'ONGOING'",
+                    Toast.LENGTH_LONG
+                )
+            }
+        }
+
+
         return true;
     }
 

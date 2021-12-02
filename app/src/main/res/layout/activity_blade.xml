@@ -4,32 +4,32 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".intervention.InterventionDetailsActivity">
+    tools:context=".blade.BladeActivity">
 
     <TextView
-        android:id="@+id/turbineName"
+        android:id="@+id/blade_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAlignment="center"
         android:textColor="@color/bulma_dark"
         android:textSize="30sp"
-        app:layout_constraintBottom_toTopOf="@id/turbine_serial_layout"
+        app:layout_constraintBottom_toTopOf="@id/blade_serial_layout"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:text="Chemin des Haguenets E12" />
+        tools:text="PALE A" app:layout_constraintVertical_chainStyle="spread"/>
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/turbine_serial_layout"
+        android:id="@+id/blade_serial_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_constraintBottom_toTopOf="@id/bladeButtonLayout"
-        app:layout_constraintTop_toBottomOf="@id/turbineName"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent">
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/blade_buttons_layout"
+        app:layout_constraintTop_toBottomOf="@id/blade_name">
 
         <TextView
-            android:id="@+id/turbineSerialLabel"
+            android:id="@+id/blade_serial_label"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Numéro de série : "
@@ -37,69 +37,111 @@
             android:textSize="17sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toLeftOf="@id/turbineSerialNumber"
+            app:layout_constraintRight_toLeftOf="@id/blade_serial_number"
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
-            android:id="@+id/turbineSerialNumber"
+            android:id="@+id/blade_serial_number"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@color/bulma_light"
             android:maxWidth="140dp"
-            android:maxLines="1"
             android:ellipsize="start"
+            android:maxLines="1"
             android:padding="16dp"
             android:textColor="@color/bulma_dark"
             android:textSize="20sp"
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintLeft_toRightOf="@id/turbineSerialLabel"
-            app:layout_constraintRight_toLeftOf="@id/editTurbineSerialNumber"
+            app:layout_constraintLeft_toRightOf="@id/blade_serial_label"
+            app:layout_constraintRight_toLeftOf="@id/edit_blade_serial"
             app:layout_constraintTop_toTopOf="parent"
             tools:text="#12345611299" />
 
         <ImageButton
-            android:id="@+id/editTurbineSerialNumber"
+            android:id="@+id/edit_blade_serial"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:backgroundTint="@color/bulma_success_light"
             android:padding="17dp"
             android:src="@drawable/ic_baseline_edit_24"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintLeft_toRightOf="@id/turbineSerialNumber"
-            app:layout_constraintRight_toLeftOf="@id/take_turbine_serial_picture"
+            app:layout_constraintLeft_toRightOf="@id/blade_serial_number"
+            app:layout_constraintRight_toLeftOf="@id/take_blade_serial_picture"
             app:layout_constraintTop_toTopOf="parent"
             app:tint="@color/bulma_success_dark" />
 
         <ImageButton
-            android:id="@+id/take_turbine_serial_picture"
+            android:id="@+id/take_blade_serial_picture"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:backgroundTint="@color/bulma_light"
             android:padding="17dp"
             android:src="@drawable/ic_round_camera_alt_24"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintLeft_toRightOf="@id/editTurbineSerialNumber"
+            app:layout_constraintLeft_toRightOf="@id/edit_blade_serial"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:tint="@color/bulma_dark" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-
-    <LinearLayout
-        android:id="@+id/bladeButtonLayout"
-        android:layout_width="match_parent"
+    <GridLayout
+        android:id="@+id/blade_buttons_layout"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:gravity="center"
-        android:orientation="vertical"
-
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:rowCount="2"
+        android:columnCount="2"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/turbine_serial_layout">
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/blade_serial_layout">
 
+        <Button
+            android:id="@+id/see_indoor_damages_button"
+            android:layout_width="170dp"
+            android:layout_height="150dp"
+            android:text="Défauts Intérieurs"
+            android:textColor="@color/bulma_light"
+            android:backgroundTint="@color/bulma_link"
+            android:textSize="20sp"
+            android:layout_margin="10dp"
+            />
 
-    </LinearLayout>
+        <Button
+            android:id="@+id/see_outdoor_damages_button"
+            android:layout_width="170dp"
+            android:layout_height="150dp"
+            android:text="Défauts Extérieurs"
+            android:textColor="@color/bulma_light"
+            android:backgroundTint="@color/bulma_link"
+            android:textSize="20sp"
+            android:layout_margin="10dp"
+            />
+
+        <Button
+            android:id="@+id/see_drainhole_button"
+            android:layout_width="170dp"
+            android:layout_height="150dp"
+            android:text="DRAINS"
+            android:textColor="@color/bulma_light"
+            android:backgroundTint="@color/bulma_link"
+            android:textSize="20sp"
+            android:layout_margin="10dp"
+            />
+
+        <Button
+            android:id="@+id/see_lightning_button"
+            android:layout_width="170dp"
+            android:layout_height="150dp"
+            android:text="LPS"
+            android:textColor="@color/bulma_light"
+            android:backgroundTint="@color/bulma_link"
+            android:textSize="20sp"
+            android:layout_margin="10dp"
+            />
+
+    </GridLayout>
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -11,6 +11,9 @@ import androidx.cardview.widget.CardView
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.TypedArrayUtils
 import androidx.recyclerview.widget.RecyclerView
+import com.heliopales.bladeexpertfiller.EXPORTATION_STATE_EMPTY
+import com.heliopales.bladeexpertfiller.EXPORTATION_STATE_EXPORTED
+import com.heliopales.bladeexpertfiller.EXPORTATION_STATE_NOT_EXPORTED
 import com.heliopales.bladeexpertfiller.R
 
 class InterventionAdapter(
@@ -56,14 +59,50 @@ class InterventionAdapter(
                     cardView.context,
                     R.color.bulma_danger_dark
                 ))
-            }else{
-                cardView.setCardBackgroundColor(
-                    ContextCompat.getColor(
-                        cardView.context,
-                        R.color.cardview_light_background
-                    )
-                )
-                helperView.visibility = View.GONE
+                uploadButton.visibility = View.GONE
+            }else {
+                when(itv.state){
+                    EXPORTATION_STATE_EXPORTED -> {
+                        cardView.setCardBackgroundColor(
+                            ContextCompat.getColor(
+                                cardView.context,
+                                R.color.bulma_success_light
+                            )
+                        )
+                        helperView.visibility = View.VISIBLE
+                        helperView.text = "Les données ont été exportées"
+                        helperView.setTextColor(ContextCompat.getColor(
+                            cardView.context,
+                            R.color.bulma_success_dark
+                        ))
+                        uploadButton.visibility = View.GONE
+                    }
+                    EXPORTATION_STATE_NOT_EXPORTED -> {
+                        cardView.setCardBackgroundColor(
+                            ContextCompat.getColor(
+                                cardView.context,
+                                R.color.bulma_warning_light
+                            )
+                        )
+                        helperView.visibility = View.VISIBLE
+                        helperView.text = "Les données ne sont pas toutes exportées"
+                        helperView.setTextColor(ContextCompat.getColor(
+                            cardView.context,
+                            R.color.bulma_warning_dark
+                        ))
+                        uploadButton.visibility = View.VISIBLE
+                    }
+                    else -> {
+                        cardView.setCardBackgroundColor(
+                            ContextCompat.getColor(
+                                cardView.context,
+                                R.color.cardview_light_background
+                            )
+                        )
+                        helperView.visibility = View.GONE
+                        uploadButton.visibility = View.GONE
+                    }
+                }
             }
             uploadButton.tag = itv
             uploadButton.setOnClickListener(this@InterventionAdapter)

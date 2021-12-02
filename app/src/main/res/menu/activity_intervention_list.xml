@@ -6,8 +6,7 @@
     <item
         android:id="@+id/toogler_delete_ongoing_intervention"
         android:title="Suppression"
-        app:showAsAction="never"
-        android:checkable="true"
+        app:showAsAction="always"
         app:actionLayout="@layout/menu_switch"/>
 
 </menu>

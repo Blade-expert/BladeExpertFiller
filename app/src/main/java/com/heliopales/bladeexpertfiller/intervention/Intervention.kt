@@ -2,16 +2,17 @@ package com.heliopales.bladeexpertfiller.intervention
 
 import android.os.Parcel
 import android.os.Parcelable
-import com.heliopales.bladeexpertfiller.blade.Blade
+import com.heliopales.bladeexpertfiller.EXPORTATION_STATE_EMPTY
 
-data class Intervention(val id: Int, val turbineName: String?, val turbineSerial: String?) : Parcelable {
+data class Intervention(val id: Int, val turbineName: String?, var turbineSerial: String?, var state: Int = EXPORTATION_STATE_EMPTY) : Parcelable {
 
     var expired: Boolean = false
 
     constructor(parcel: Parcel) : this(
         parcel.readInt(),
         parcel.readString(),
-        parcel.readString()
+        parcel.readString(),
+        parcel.readInt()
     ) {
         expired = parcel.readByte() != 0.toByte()
     }
@@ -36,6 +37,7 @@ data class Intervention(val id: Int, val turbineName: String?, val turbineSerial
         parcel.writeInt(id)
         parcel.writeString(turbineName)
         parcel.writeString(turbineSerial)
+        parcel.writeInt(state)
         parcel.writeByte(if (expired) 1 else 0)
     }
 
@@ -55,3 +57,4 @@ data class Intervention(val id: Int, val turbineName: String?, val turbineSerial
 
 
 }
+

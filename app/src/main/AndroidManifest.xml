@@ -3,6 +3,8 @@
     package="com.heliopales.bladeexpertfiller">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <application
         android:name=".App"
@@ -13,11 +15,16 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.BladeExpertFiller">
         <activity
-            android:name=".intervention.InterventionDetailsActivity"
+            android:name=".blade.BladeActivity"
             android:exported="false" />
         <activity
+            android:name=".intervention.InterventionDetailsActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+        <activity
             android:name=".intervention.InterventionListActivity"
-            android:exported="true">
+            android:exported="true"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
