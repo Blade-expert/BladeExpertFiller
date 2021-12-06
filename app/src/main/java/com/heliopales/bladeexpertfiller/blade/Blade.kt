@@ -7,7 +7,6 @@ import com.heliopales.bladeexpertfiller.intervention.Intervention
 
 data class Blade (val id:Int, val position:String?, var serial: String?, var state: Int = EXPORTATION_STATE_EMPTY) : Parcelable{
 
-
     constructor(parcel: Parcel) : this(
         parcel.readInt(),
         parcel.readString(),

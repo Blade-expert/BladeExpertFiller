@@ -2,6 +2,7 @@ package com.heliopales.bladeexpertfiller.intervention
 
 import android.app.Activity
 import android.content.Intent
+import android.graphics.Camera
 import android.os.Bundle
 import android.os.Environment
 import android.util.Log
@@ -18,6 +19,7 @@ import com.heliopales.bladeexpertfiller.EXPORTATION_STATE_NOT_EXPORTED
 import com.heliopales.bladeexpertfiller.R
 import com.heliopales.bladeexpertfiller.blade.Blade
 import com.heliopales.bladeexpertfiller.blade.BladeActivity
+import com.heliopales.bladeexpertfiller.camera.CameraActivity
 import com.heliopales.bladeexpertfiller.utils.dpToPx
 import com.heliopales.bladeexpertfiller.utils.spToPx
 import com.heliopales.bladeexpertfiller.utils.toast
@@ -135,16 +137,13 @@ class InterventionDetailsActivity : AppCompatActivity(), View.OnClickListener {
     }
 
     private fun takeTurbineSerialPicture() {
-        Log.i(TAG, "takeTurbineSerialPicture()")
+        val intent = Intent(this, CameraActivity::class.java)
+        var path = App.getOutputDirectory()
 
+        path+="/${intervention.id}/turbinePicture"
+        intent.putExtra(CameraActivity.EXTRA_OUTPUT_PATH, path)
+        startActivity(intent)
     }
-
-    var pictureLauncher =
-        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-            if (result.resultCode == Activity.RESULT_OK) {
-
-            }
-        }
 
     private fun showChangeTurbineSerialDialog() {
         val dialog = ChangeTurbineSerialDialogFragment(intervention.turbineSerial)
@@ -176,5 +175,11 @@ class InterventionDetailsActivity : AppCompatActivity(), View.OnClickListener {
         intent.putExtra(EXTRA_INTERVENTION, intervention)
         setResult(Activity.RESULT_OK, intent)
         super.onBackPressed()
+    }
+
+    override fun onRestart() {
+        Log.d(TAG, "onRestart()")
+        super.onRestart()
+
     }
 }

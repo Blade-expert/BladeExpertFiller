@@ -3,13 +3,25 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
-        <entry key="..\:/Users/Colin/AndroidStudioProjects/BladeExpertFiller/app/src/main/res/layout/activity_intervention_list.xml" value="0.16145833333333334" />
+        <entry key="..\:/Users/Colin/AndroidStudioProjects/BladeExpertFiller/app/src/main/res/drawable/ic_baseline_camera_24.xml" value="0.23020833333333332" />
+        <entry key="..\:/Users/Colin/AndroidStudioProjects/BladeExpertFiller/app/src/main/res/drawable/ic_baseline_check_box_outline_blank_24.xml" value="0.23020833333333332" />
+        <entry key="..\:/Users/Colin/AndroidStudioProjects/BladeExpertFiller/app/src/main/res/drawable/ic_baseline_cloud_upload_24.xml" value="0.23020833333333332" />
+        <entry key="..\:/Users/Colin/AndroidStudioProjects/BladeExpertFiller/app/src/main/res/drawable/ic_baseline_delete_24.xml" value="0.3880208333333333" />
+        <entry key="..\:/Users/Colin/AndroidStudioProjects/BladeExpertFiller/app/src/main/res/drawable/ic_baseline_edit_24.xml" value="0.3880208333333333" />
+        <entry key="..\:/Users/Colin/AndroidStudioProjects/BladeExpertFiller/app/src/main/res/drawable/ic_baseline_photo_24.xml" value="0.23020833333333332" />
+        <entry key="..\:/Users/Colin/AndroidStudioProjects/BladeExpertFiller/app/src/main/res/drawable/ic_launcher_background.xml" value="0.3880208333333333" />
+        <entry key="..\:/Users/Colin/AndroidStudioProjects/BladeExpertFiller/app/src/main/res/drawable/ic_outline_circle_24.xml" value="0.23020833333333332" />
+        <entry key="..\:/Users/Colin/AndroidStudioProjects/BladeExpertFiller/app/src/main/res/layout-land/activity_camera.xml" value="0.296875" />
+        <entry key="..\:/Users/Colin/AndroidStudioProjects/BladeExpertFiller/app/src/main/res/layout/activity_blade.xml" value="0.10277777777777777" />
+        <entry key="..\:/Users/Colin/AndroidStudioProjects/BladeExpertFiller/app/src/main/res/layout/activity_camera.xml" value="0.2140625" />
+        <entry key="..\:/Users/Colin/AndroidStudioProjects/BladeExpertFiller/app/src/main/res/layout/activity_gallery.xml" value="0.2140625" />
+        <entry key="..\:/Users/Colin/AndroidStudioProjects/BladeExpertFiller/app/src/main/res/layout/activity_intervention_details.xml" value="0.371875" />
+        <entry key="..\:/Users/Colin/AndroidStudioProjects/BladeExpertFiller/app/src/main/res/layout/activity_intervention_list.xml" value="0.371875" />
         <entry key="..\:/Users/Colin/AndroidStudioProjects/BladeExpertFiller/app/src/main/res/layout/activity_main.xml" value="0.25" />
-        <entry key="..\:/Users/Colin/AndroidStudioProjects/BladeExpertFiller/app/src/main/res/layout/item_intervention.xml" value="0.5" />
-        <entry key="..\:/Users/Colin/StudioProjects/BladeExpertFiller/app/src/main/res/layout/activity_blade.xml" value="0.33" />
-        <entry key="..\:/Users/Colin/StudioProjects/BladeExpertFiller/app/src/main/res/layout/activity_intervention_details.xml" value="0.36666666666666664" />
-        <entry key="..\:/Users/Colin/StudioProjects/BladeExpertFiller/app/src/main/res/layout/menu_switch.xml" value="0.36666666666666664" />
-        <entry key="..\:/Users/Colin/StudioProjects/BladeExpertFiller/app/src/main/res/menu/activity_intervention_list.xml" value="0.36666666666666664" />
+        <entry key="..\:/Users/Colin/AndroidStudioProjects/BladeExpertFiller/app/src/main/res/layout/fragment_intervention_list.xml" value="0.2140625" />
+        <entry key="..\:/Users/Colin/AndroidStudioProjects/BladeExpertFiller/app/src/main/res/layout/item_intervention.xml" value="0.371875" />
+        <entry key="..\:/Users/Colin/AndroidStudioProjects/BladeExpertFiller/app/src/main/res/layout/menu_switch.xml" value="0.2140625" />
+        <entry key="..\:/Users/Colin/AndroidStudioProjects/BladeExpertFiller/app/src/main/res/menu/activity_intervention_list.xml" value="0.2140625" />
       </map>
     </option>
   </component>

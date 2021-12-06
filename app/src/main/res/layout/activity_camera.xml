@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/bulma_dark"
+    tools:context=".camera.CameraActivity">
+
+    <androidx.camera.view.PreviewView
+        android:id="@+id/camera_preview"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        app:layout_constraintDimensionRatio="4:3"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/text_view"
+        android:layout_width="120dp"
+        android:layout_height="wrap_content"
+        android:breakStrategy="simple"
+        android:text="PAYSAGE SEULEMENT"
+        android:textAlignment="center"
+        android:textColor="@color/bulma_white"
+        android:textSize="18sp"
+        app:layout_constraintBottom_toTopOf="@id/camera_capture_button"
+        app:layout_constraintLeft_toRightOf="@id/camera_preview"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageButton
+        android:id="@+id/camera_capture_button"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:background="@drawable/ic_baseline_camera_24"
+        android:scaleType="fitCenter"
+        app:layout_constraintBottom_toTopOf="@id/see_photos_button"
+        app:layout_constraintLeft_toRightOf="@id/camera_preview"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/text_view" />
+
+
+    <ImageButton
+        android:id="@+id/see_photos_button"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:background="@drawable/ic_outline_circle_24"
+        android:padding="8dp"
+        android:scaleType="fitCenter"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toRightOf="@id/camera_preview"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/camera_capture_button" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

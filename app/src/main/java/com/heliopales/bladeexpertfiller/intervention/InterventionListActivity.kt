@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Intent
 import android.graphics.Canvas
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
 import android.widget.Switch
 import android.widget.Toast
@@ -29,7 +30,7 @@ import retrofit2.Response
 
 class InterventionListActivity : AppCompatActivity(), InterventionAdapter.InterventionItemListener {
 
-    val TAG = "InterventionListActivity"
+    val TAG = InterventionListActivity::class.java.simpleName
 
     private lateinit var database: Database
     private lateinit var interventions: MutableList<Intervention>
@@ -41,6 +42,7 @@ class InterventionListActivity : AppCompatActivity(), InterventionAdapter.Interv
     private var deleteAllowed = false;
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        Log.i(TAG,"onCreate()")
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_intervention_list)
 
@@ -54,7 +56,6 @@ class InterventionListActivity : AppCompatActivity(), InterventionAdapter.Interv
 
         interventions = mutableListOf()
 
-        interventions.sortBy { it.turbineName }
         adapter = InterventionAdapter(interventions, this)
         recyclerView.adapter = adapter
 
@@ -217,6 +218,7 @@ class InterventionListActivity : AppCompatActivity(), InterventionAdapter.Interv
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        Log.i(TAG,"onCreateOptionsMenu()")
         menuInflater.inflate(R.menu.activity_intervention_list, menu)
         val menuItem = menu?.findItem(R.id.toogler_delete_ongoing_intervention)
         menuItem?.setActionView(R.layout.menu_switch)
@@ -237,9 +239,9 @@ class InterventionListActivity : AppCompatActivity(), InterventionAdapter.Interv
                 )
             }
         }
-
-
         return true;
     }
+
+
 
 }
