@@ -86,8 +86,6 @@ class CameraActivity : AppCompatActivity() {
 
     private fun setGalleryThumbnail(uri: Uri) {
         // Run the operations in the view's thread
-
-
         see_photos_button.let { seePhotosButton ->
             seePhotosButton.post {
                 seePhotosButton.visibility = View.VISIBLE
@@ -97,6 +95,15 @@ class CameraActivity : AppCompatActivity() {
                     .apply(RequestOptions.circleCropTransform())
                     .into(seePhotosButton)
             }
+        }
+    }
+
+    override fun onRestart() {
+        super.onRestart()
+        if( outputDirectory.listFiles { file ->
+                arrayOf("JPG").contains(file.extension.uppercase(Locale.ROOT))
+            }?.size == 0 ){
+            see_photos_button.visibility = View.INVISIBLE
         }
     }
 
@@ -199,7 +206,6 @@ class CameraActivity : AppCompatActivity() {
             else -> super.onKeyDown(keyCode, event)
         }
     }
-
 
     override fun onDestroy() {
         super.onDestroy()

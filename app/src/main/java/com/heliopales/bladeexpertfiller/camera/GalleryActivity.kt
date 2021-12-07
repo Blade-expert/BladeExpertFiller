@@ -2,24 +2,21 @@ package com.heliopales.bladeexpertfiller.camera
 
 import android.content.Context
 import android.media.MediaScannerConnection
-import android.os.Build
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentManager
-import androidx.fragment.app.FragmentStatePagerAdapter
+import android.view.ViewGroup
+import android.widget.ImageView
+import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
 import androidx.viewpager.widget.PagerAdapter
-import androidx.viewpager.widget.ViewPager
+import com.bumptech.glide.Glide
+import com.bumptech.glide.request.RequestOptions
 import com.heliopales.bladeexpertfiller.R
+import kotlinx.android.synthetic.main.activity_gallery.*
+import kotlinx.android.synthetic.main.item_image_view.*
 import java.io.File
 import java.util.*
-import android.view.ViewGroup
-
-import android.view.LayoutInflater
-import androidx.appcompat.app.AlertDialog
-import androidx.camera.core.SurfaceRequest
-import kotlinx.android.synthetic.main.activity_gallery.*
 
 
 class GalleryActivity : AppCompatActivity() {
@@ -35,18 +32,22 @@ class GalleryActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_gallery)
 
-        rootDirectory = File(intent.getStringExtra(CameraActivity.EXTRA_OUTPUT_PATH).toString())
+
+        rootDirectory = File(intent.getStringExtra(EXTRA_DIRECTORY_PATH).toString())
         rootDirectory.mkdirs()
 
         // Walk through all files in the root directory
         // We reverse the order of the list to present the last photos first
         mediaList = rootDirectory.listFiles { file ->
             arrayOf("JPG").contains(file.extension.uppercase(Locale.ROOT))
-        }?.sortedDescending()?.toMutableList() ?: mutableListOf()
+        }?.sorted()?.toMutableList() ?: mutableListOf()
+
+
+        println("====Il y a ${mediaList.size} fichiers")
 
         photo_view_pager?.apply {
             offscreenPageLimit = 2
-            adapter = CustomPagerAdapter(context)
+            adapter =  ViewPagerAdapter(this@GalleryActivity, mediaList)
         }
 
         delete_photo_button.setOnClickListener {
@@ -60,9 +61,9 @@ class GalleryActivity : AppCompatActivity() {
                         // Delete current photo
                         mediaFile.delete()
 
-                        // Send relevant broadcast to notify other apps of deletion
+                        /*// Send relevant broadcast to notify other apps of deletion
                         MediaScannerConnection.scanFile(
-                            applicationContext, arrayOf(mediaFile.absolutePath), null, null)
+                            applicationContext, arrayOf(mediaFile.absolutePath), null, null)*/
 
                         // Notify our view pager
                         mediaList.removeAt(photo_view_pager.currentItem)
@@ -83,15 +84,28 @@ class GalleryActivity : AppCompatActivity() {
 
 
     /** Adapter class used to present a fragment containing one photo or video as a page */
-    inner class CustomPagerAdapter(val mContext: Context) : PagerAdapter() {
-        override fun instantiateItem(collection: ViewGroup, position: Int): Any {
-            val media: File = mediaList.get(position)
+    inner class CustomPagerAdapter(private val mContext: Context) : PagerAdapter() {
+        override fun instantiateItem(container: ViewGroup, position: Int): Any {
+            val media: File = mediaList[position]
+           /* val imageView = ImageView(mContext)
+            Glide.with(imageView)
+                .load(media.toURI())
+                .apply(RequestOptions.fitCenterTransform())
+                .into(imageView)*/
+
             val inflater = LayoutInflater.from(mContext)
-            val layout =
-                inflater.inflate(position, collection, false) as ViewGroup
-            collection.addView(layout)
-            return layout;
+            val layout = inflater.inflate(R.layout.item_image_view, container, false)
+            val imageView = layout.findViewById<ImageView>(R.id.image_view_gallery)
+            Glide.with(imageView)
+                .load(media.toURI())
+                .apply(RequestOptions.fitCenterTransform())
+                .into(imageView)
+            container.addView(layout)
+            return layout
+
         }
+
+
 
         override fun destroyItem(container: ViewGroup, position: Int, `object`: Any) {
             container.removeViewAt(position)
@@ -102,11 +116,11 @@ class GalleryActivity : AppCompatActivity() {
         }
 
         override fun isViewFromObject(view: View, `object`: Any): Boolean {
-            return view == `object`
+            return view==`object`;
         }
 
         override fun getPageTitle(position: Int): CharSequence? {
-            return mediaList.get(position).name
+            return mediaList[position].name
         }
 
     }
