@@ -10,7 +10,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.io.File
 
-private const val BASE_URL = "http://192.168.1.181/bladeexpert/"
+private const val BASE_URL = "https://www.bladeexpert-recette.herokuapp.com/bladeexpert/"
 
 
 class App: Application() {

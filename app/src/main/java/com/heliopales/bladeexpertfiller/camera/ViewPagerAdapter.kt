@@ -24,11 +24,16 @@ class ViewPagerAdapter(val context: Context, val mediaList: MutableList<File>) :
        return view==`object`
     }
 
-    override fun destroyItem(container: ViewGroup, position: Int, `object`: Any) {
-        container.removeViewAt(position)
+    override fun destroyItem(container: ViewGroup, position: Int, view: Any) {
+        container.removeView(view as ImageView)
     }
 
-   /* override fun getItemPosition(`object`: Any): Int {
+    override fun getPageTitle(position: Int): CharSequence? {
+        return mediaList[position].name
+    }
+
+    override fun getItemPosition(`object`: Any): Int {
         return POSITION_NONE
-    }*/
+    }
+
 }
