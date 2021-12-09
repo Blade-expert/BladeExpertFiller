@@ -2,9 +2,17 @@ package com.heliopales.bladeexpertfiller.intervention
 
 import android.os.Parcel
 import android.os.Parcelable
+import androidx.room.Entity
+import androidx.room.PrimaryKey
 import com.heliopales.bladeexpertfiller.EXPORTATION_STATE_EMPTY
 
-data class Intervention(val id: Int, val turbineName: String?, var turbineSerial: String?, var state: Int = EXPORTATION_STATE_EMPTY) : Parcelable {
+@Entity
+data class Intervention(
+    @PrimaryKey val id: Int,
+    val turbineName: String?,
+    var turbineSerial: String?,
+    var state: Int = EXPORTATION_STATE_EMPTY
+) : Parcelable {
 
     var expired: Boolean = false
 

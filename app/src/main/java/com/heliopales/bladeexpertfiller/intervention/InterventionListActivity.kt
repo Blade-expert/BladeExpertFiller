@@ -17,11 +17,9 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.google.android.material.snackbar.Snackbar
 import com.heliopales.bladeexpertfiller.App
-import com.heliopales.bladeexpertfiller.Database
+import com.heliopales.bladeexpertfiller.AppDatabase
 import com.heliopales.bladeexpertfiller.R
-import com.heliopales.bladeexpertfiller.bladeexpert.InterventionWrapper
-import com.heliopales.bladeexpertfiller.bladeexpert.mapBladeExpertBlade
-import com.heliopales.bladeexpertfiller.bladeexpert.mapBladeExpertIntervention
+import com.heliopales.bladeexpertfiller.bladeexpert.*
 import com.heliopales.bladeexpertfiller.utils.toast
 import it.xabaras.android.recyclerview.swipedecorator.RecyclerViewSwipeDecorator
 import retrofit2.Call
@@ -32,7 +30,7 @@ class InterventionListActivity : AppCompatActivity(), InterventionAdapter.Interv
 
     val TAG = InterventionListActivity::class.java.simpleName
 
-    private lateinit var database: Database
+    private lateinit var database: AppDatabase
     private lateinit var interventions: MutableList<Intervention>
     private lateinit var recyclerView: RecyclerView
     private lateinit var refreshLayout: SwipeRefreshLayout
@@ -42,7 +40,7 @@ class InterventionListActivity : AppCompatActivity(), InterventionAdapter.Interv
     private var deleteAllowed = false;
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        Log.i(TAG,"onCreate()")
+        Log.i(TAG, "onCreate()")
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_intervention_list)
 
@@ -66,7 +64,7 @@ class InterventionListActivity : AppCompatActivity(), InterventionAdapter.Interv
         refreshLayout.setOnRefreshListener { updateInterventionList() }
 
         updateInterventionList()
-
+        updateSeverities()
     }
 
     val simpleCallBack = object : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
@@ -144,17 +142,17 @@ class InterventionListActivity : AppCompatActivity(), InterventionAdapter.Interv
     }
 
     private fun effectivelyDeleteIntervention(deletedIntervention: Intervention) {
-        database.deleteIntervention(deletedIntervention)
-        database.deleteBladesOfIntervention(deletedIntervention)
+        database.bladeDao().deleteBladesOfInterventionId(deletedIntervention.id)
+        database.interventionDao().deleteIntervention(deletedIntervention)
     }
-
 
     private fun updateInterventionList() {
         if (!refreshLayout.isRefreshing) {
             refreshLayout.isRefreshing = true
         }
         interventions.clear()
-        interventions.addAll(database.getAllInterventions().sortedBy { it.turbineName })
+        interventions.addAll(
+            database.interventionDao().getAllInterventions().sortedBy { it.turbineName })
 
         App.bladeExpertService.getInterventions()
             .enqueue(object : retrofit2.Callback<Array<InterventionWrapper>> {
@@ -167,26 +165,49 @@ class InterventionListActivity : AppCompatActivity(), InterventionAdapter.Interv
                     response?.body().let {
                         newInterventions.addAll(it?.map { itv -> mapBladeExpertIntervention(itv) } as MutableList)
                         it.forEach { itvw ->
-                            itvw.blades.forEach { bw ->
-                                database.insertNonExistingBlade(
-                                    mapBladeExpertBlade(bw),
-                                    itvw.id
-                                )
-                            }
+                            database.bladeDao().insertNonExistingBlades(
+                                itvw.blades.map { bw -> mapBladeExpertBlade(bw) }
+                            )
                         }
                     }
-                    interventions.forEach { if (!newInterventions.contains(it)) it.expired = true }
+                    interventions.forEach { it.expired = !newInterventions.contains(it) }
                     newInterventions.forEach { if (!interventions.contains(it)) interventions.add(it) }
-                    interventions.forEach { database.insertNonExistingIntervention(it) }
+                    interventions.forEach {
+                        database.interventionDao().insertNonExistingIntervention(it)
+                    }
                     interventions.sortBy { it.turbineName }
                     adapter.notifyDataSetChanged()
-                    toast("La liste d'intervention est à jour")
+                    toast("La liste d'interventions est à jour")
                     refreshLayout.isRefreshing = false
                 }
-
                 override fun onFailure(call: Call<Array<InterventionWrapper>>, t: Throwable) {
                     toast("Impossible de mettre à jour les interventions")
                     refreshLayout.isRefreshing = false
+                }
+            })
+    }
+
+    private fun updateSeverities() {
+        App.bladeExpertService.getSeverities()
+            .enqueue(object : retrofit2.Callback<Array<SeverityWrapper>> {
+                override fun onResponse(
+                    call: Call<Array<SeverityWrapper>>,
+                    response: Response<Array<SeverityWrapper>>
+                ) {
+                    response?.body().let {
+                        it?.map { sevw -> mapBladeExpertSeverity(sevw) }
+                            ?.let { sev -> database.severityDao().insertAll(sev) }
+
+                        it?.map { sevw -> mapBladeExpertSeverity(sevw).id }?.let { sevIds ->
+                            database.severityDao().deleteWhereIdsNotIn(sevIds)}
+                    }
+
+                    database.severityDao().getAll()
+                        .forEach { Log.d(TAG, "Severity in database : $it") }
+                }
+
+                override fun onFailure(call: Call<Array<SeverityWrapper>>, t: Throwable) {
+                    Log.e(TAG, "Impossible to load severities", t)
                 }
             })
     }
@@ -218,7 +239,7 @@ class InterventionListActivity : AppCompatActivity(), InterventionAdapter.Interv
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        Log.i(TAG,"onCreateOptionsMenu()")
+        Log.i(TAG, "onCreateOptionsMenu()")
         menuInflater.inflate(R.menu.activity_intervention_list, menu)
         val menuItem = menu?.findItem(R.id.toogler_delete_ongoing_intervention)
         menuItem?.setActionView(R.layout.menu_switch)
@@ -241,7 +262,6 @@ class InterventionListActivity : AppCompatActivity(), InterventionAdapter.Interv
         }
         return true;
     }
-
 
 
 }

@@ -23,6 +23,11 @@
         <entry key="..\:/Users/Colin/AndroidStudioProjects/BladeExpertFiller/app/src/main/res/layout/item_intervention.xml" value="0.371875" />
         <entry key="..\:/Users/Colin/AndroidStudioProjects/BladeExpertFiller/app/src/main/res/layout/menu_switch.xml" value="0.2140625" />
         <entry key="..\:/Users/Colin/AndroidStudioProjects/BladeExpertFiller/app/src/main/res/menu/activity_intervention_list.xml" value="0.2140625" />
+        <entry key="..\:/Users/Colin/StudioProjects/BladeExpertFiller/app/src/main/res/drawable/ic_baseline_cloud_upload_24.xml" value="0.21041666666666667" />
+        <entry key="..\:/Users/Colin/StudioProjects/BladeExpertFiller/app/src/main/res/layout/activity_blade.xml" value="0.19427083333333334" />
+        <entry key="..\:/Users/Colin/StudioProjects/BladeExpertFiller/app/src/main/res/layout/activity_gallery.xml" value="0.20520833333333333" />
+        <entry key="..\:/Users/Colin/StudioProjects/BladeExpertFiller/app/src/main/res/layout/activity_intervention_details.xml" value="0.19427083333333334" />
+        <entry key="..\:/Users/Colin/StudioProjects/BladeExpertFiller/app/src/main/res/layout/fragment_severity.xml" value="0.33" />
       </map>
     </option>
   </component>

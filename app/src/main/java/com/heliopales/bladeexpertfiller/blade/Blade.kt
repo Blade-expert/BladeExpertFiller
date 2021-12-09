@@ -2,12 +2,22 @@ package com.heliopales.bladeexpertfiller.blade
 
 import android.os.Parcel
 import android.os.Parcelable
+import androidx.room.Entity
+import androidx.room.PrimaryKey
 import com.heliopales.bladeexpertfiller.EXPORTATION_STATE_EMPTY
 import com.heliopales.bladeexpertfiller.intervention.Intervention
 
-data class Blade (val id:Int, val position:String?, var serial: String?, var state: Int = EXPORTATION_STATE_EMPTY) : Parcelable{
+@Entity
+data class Blade (
+    @PrimaryKey val id:Int,
+    val interventionId: Int,
+    val position:String?,
+    var serial: String?,
+    var state: Int = EXPORTATION_STATE_EMPTY) : Parcelable{
+
 
     constructor(parcel: Parcel) : this(
+        parcel.readInt(),
         parcel.readInt(),
         parcel.readString(),
         parcel.readString(),
@@ -32,6 +42,7 @@ data class Blade (val id:Int, val position:String?, var serial: String?, var sta
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
         parcel.writeInt(id)
+        parcel.writeInt(interventionId)
         parcel.writeString(position)
         parcel.writeString(serial)
         parcel.writeInt(state)

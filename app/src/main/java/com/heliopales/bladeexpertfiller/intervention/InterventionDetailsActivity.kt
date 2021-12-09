@@ -2,19 +2,20 @@ package com.heliopales.bladeexpertfiller.intervention
 
 import android.app.Activity
 import android.content.Intent
-import android.graphics.Camera
 import android.os.Bundle
-import android.os.Environment
 import android.util.Log
 import android.view.View
 import android.view.ViewGroup
-import android.widget.*
+import android.widget.Button
+import android.widget.ImageButton
+import android.widget.LinearLayout
+import android.widget.TextView
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.setMargins
 import androidx.core.view.setPadding
 import com.heliopales.bladeexpertfiller.App
-import com.heliopales.bladeexpertfiller.Database
+import com.heliopales.bladeexpertfiller.AppDatabase
 import com.heliopales.bladeexpertfiller.EXPORTATION_STATE_NOT_EXPORTED
 import com.heliopales.bladeexpertfiller.R
 import com.heliopales.bladeexpertfiller.blade.Blade
@@ -23,9 +24,6 @@ import com.heliopales.bladeexpertfiller.camera.CameraActivity
 import com.heliopales.bladeexpertfiller.utils.dpToPx
 import com.heliopales.bladeexpertfiller.utils.spToPx
 import com.heliopales.bladeexpertfiller.utils.toast
-import java.io.File
-import java.text.SimpleDateFormat
-import java.util.*
 
 class InterventionDetailsActivity : AppCompatActivity(), View.OnClickListener {
 
@@ -36,7 +34,7 @@ class InterventionDetailsActivity : AppCompatActivity(), View.OnClickListener {
     lateinit var currentPhotoPath: String
 
     private lateinit var intervention: Intervention;
-    private lateinit var database: Database;
+    private lateinit var database: AppDatabase;
     private lateinit var turbineNameView: TextView;
     private lateinit var turbineSerialView: TextView;
     private lateinit var blades: MutableList<Blade>;
@@ -51,7 +49,7 @@ class InterventionDetailsActivity : AppCompatActivity(), View.OnClickListener {
         database = App.database;
 
         intervention = intent.getParcelableExtra<Intervention>(EXTRA_INTERVENTION)!!
-        blades = database.getBladesByInterventionId(intervention.id)
+        blades = database.bladeDao().getBladesByInterventionId(intervention.id)
             .sortedBy { bla -> bla.position } as MutableList<Blade>
 
         turbineNameView = findViewById(R.id.turbineName)
@@ -80,9 +78,9 @@ class InterventionDetailsActivity : AppCompatActivity(), View.OnClickListener {
                 val button = Button(this)
                 button.tag = bla
                 button.text =
-                    "${bla.position}" + if (bla.serial == null) "" else " - ${bla.serial}";
-                button.setPadding(dpToPx(24f))
-                button.textSize = spToPx(7f)
+                    "${bla.position}" + if (bla.serial == null) "" else " - ${bla.serial}"
+                button.setPadding(dpToPx(24f),dpToPx(32f),dpToPx(24f),dpToPx(32f))
+                button.textSize = spToPx(8f)
                 button.layoutParams = layoutParams
                 button.setBackgroundColor(getColor(R.color.bulma_link))
                 button.setTextColor(getColor(R.color.bulma_white))
@@ -124,7 +122,6 @@ class InterventionDetailsActivity : AppCompatActivity(), View.OnClickListener {
                         bla.state = blaResult?.state
                     }
                 }
-
             }
         }
 
@@ -138,10 +135,11 @@ class InterventionDetailsActivity : AppCompatActivity(), View.OnClickListener {
 
     private fun takeTurbineSerialPicture() {
         val intent = Intent(this, CameraActivity::class.java)
-        var path = App.getOutputDirectory()
 
-        path+="/${intervention.id}/turbinePicture"
+        var path = App.getOutputDirectory()
+        path+="/${intervention.id}_${intervention.turbineName?.replace(" ","-")}/turbinePictures"
         intent.putExtra(CameraActivity.EXTRA_OUTPUT_PATH, path)
+
         startActivity(intent)
     }
 
@@ -160,11 +158,11 @@ class InterventionDetailsActivity : AppCompatActivity(), View.OnClickListener {
     }
 
     private fun updateTurbineSerialNumber(serial: String) {
-        if (database.updateTurbineSerialNumber(intervention, serial)) {
+        intervention.turbineSerial = serial
+        intervention.state = EXPORTATION_STATE_NOT_EXPORTED
+
+        if (database.interventionDao().updateIntervention(intervention) == 1) {
             turbineSerialView.text = serial
-            intervention.turbineSerial = serial
-            intervention.state = EXPORTATION_STATE_NOT_EXPORTED
-            database.updateInterventionState(intervention)
         } else {
             toast("Impossible de mettre à jour ce numéro")
         }

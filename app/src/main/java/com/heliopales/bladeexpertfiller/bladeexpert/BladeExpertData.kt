@@ -12,6 +12,14 @@ data class InterventionWrapper(
 
 data class BladeWrapper(
     val id: Int,
+    val interventionId: Int,
     val position: String,
     @SerializedName("serialNumber") val serial: String
+)
+
+data class SeverityWrapper(
+    val id: Int,
+    val alias : String,
+    val color: String,
+    val fontColor: String
 )
