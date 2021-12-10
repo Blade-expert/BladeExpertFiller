@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".damages.DamageTypeFragment">
+
+    <TextView
+        android:id="@id/label_text_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Type de défaut"
+        android:textColor="@color/bulma_black"
+        android:textSize="30sp"
+        android:layout_marginVertical="20dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/category_layout"/>
+
+    <LinearLayout
+        android:id="@+id/category_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/label_text_view"
+        app:layout_constraintBottom_toTopOf="@id/type_layout"
+        android:orientation="horizontal"
+        android:layout_marginHorizontal="32dp"
+        >
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="20sp"
+            android:textColor="@color/bulma_black"
+            android:text="Catégorie : "/>
+
+        <Spinner
+            android:id="@+id/damage_type_category_spinner"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:spinnerMode="dialog"
+            tools:listitem="@android:layout/simple_list_item_activated_1" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/type_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/category_layout"
+        app:layout_constraintBottom_toTopOf="@id/button_na"
+        android:orientation="horizontal"
+        android:layout_marginHorizontal="32dp"
+        >
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="20sp"
+            android:textColor="@color/bulma_black"
+            android:text="Type : "/>
+
+        <Spinner
+            android:id="@+id/damage_type_spinner"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:spinnerMode="dialog"
+            tools:listitem="@android:layout/simple_list_item_1" />
+
+    </LinearLayout>
+
+
+
+
+
+    <Button
+        android:id="@+id/button_na"
+        android:layout_width="180dp"
+        android:layout_height="@dimen/button_height_indoor_position"
+        android:layout_margin="0dp"
+        android:background="@drawable/ic_square_24"
+        android:backgroundTint="@color/bulma_link_light"
+        android:foreground="@drawable/ic_baseline_crop_din_24"
+        android:foregroundTint="@color/bulma_link"
+        android:textSize="30sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/type_layout"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:text="N/A" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

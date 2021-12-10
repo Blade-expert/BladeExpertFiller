@@ -28,7 +28,7 @@ import com.heliopales.bladeexpertfiller.utils.toast
 class InterventionDetailsActivity : AppCompatActivity(), View.OnClickListener {
 
     companion object {
-        val EXTRA_INTERVENTION = "intervention"
+        const val EXTRA_INTERVENTION = "intervention"
     }
 
     lateinit var currentPhotoPath: String

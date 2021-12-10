@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".damages.IndoorProfileFragment">
+
+    <TextView
+        android:id="@id/label_text_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginVertical="20dp"
+        android:text="Position sur le profil"
+        android:textColor="@color/bulma_black"
+        android:textSize="30sp"
+        app:layout_constraintBottom_toTopOf="@id/grid_layout"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <GridLayout
+        android:id="@+id/grid_layout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:columnCount="3"
+        android:rowCount="4"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/label_text_view">
+
+        <Button
+            android:id="@+id/button_i1"
+            android:layout_width="@dimen/button_width_indoor_profile"
+            android:layout_height="@dimen/button_height_indoor_profile"
+            android:background="@drawable/ic_square_24"
+            android:backgroundTint="@color/bulma_link_light"
+            android:foregroundTint="@color/bulma_link"
+            android:tag="I1"
+            android:padding="20dp"
+            android:textSize="20sp"
+            tools:text="LE\nPANEL" />
+
+        <Button
+            android:id="@+id/button_i2"
+            android:layout_width="@dimen/button_width_indoor_profile"
+            android:layout_height="@dimen/button_height_indoor_profile"
+            android:background="@drawable/ic_square_24"
+            android:backgroundTint="@color/bulma_link_light"
+            android:foregroundTint="@color/bulma_link"
+            android:tag="I2"
+            android:padding="20dp"
+            android:textSize="20sp"
+            tools:text="SPAR\nCAP" />
+
+        <Button
+            android:id="@+id/button_i3"
+            android:layout_width="@dimen/button_width_indoor_profile"
+            android:layout_height="@dimen/button_height_indoor_profile"
+            android:background="@drawable/ic_square_24"
+            android:backgroundTint="@color/bulma_link_light"
+            android:foregroundTint="@color/bulma_link"
+            android:tag="I3"
+            android:padding="20dp"
+            android:textSize="20sp"
+            tools:text="TE\nPANEL" />
+
+        <Button
+            android:id="@+id/button_w1l"
+            android:layout_width="@dimen/button_width_indoor_profile"
+            android:layout_height="@dimen/button_height_indoor_profile"
+            android:background="@drawable/ic_square_24"
+            android:backgroundTint="@color/bulma_link_light"
+            android:foregroundTint="@color/bulma_link"
+            android:tag="W1L"
+            android:padding="20dp"
+            android:textSize="20sp"
+            tools:text="WEB 1\nLE" />
+
+        <Button
+            android:id="@+id/button_w1t"
+            android:layout_width="@dimen/button_width_indoor_profile"
+            android:layout_height="@dimen/button_height_indoor_profile"
+            android:background="@drawable/ic_square_24"
+            android:backgroundTint="@color/bulma_link_light"
+            android:foregroundTint="@color/bulma_link"
+            android:tag="W1T"
+            android:padding="20dp"
+            android:textSize="20sp"
+            tools:text="WEB 1\nTE" />
+
+
+        <Button
+            android:id="@+id/button_w2l"
+            android:layout_width="@dimen/button_width_indoor_profile"
+            android:layout_height="@dimen/button_height_indoor_profile"
+            android:background="@drawable/ic_square_24"
+            android:backgroundTint="@color/bulma_link_light"
+            android:foregroundTint="@color/bulma_link"
+            android:tag="W2L"
+            android:padding="20dp"
+            android:textSize="20sp"
+            tools:text="WEB 2\nLE" />
+
+        <Button
+            android:id="@+id/button_w2t"
+            android:layout_width="@dimen/button_width_indoor_profile"
+            android:layout_height="@dimen/button_height_indoor_profile"
+            android:background="@drawable/ic_square_24"
+            android:backgroundTint="@color/bulma_link_light"
+            android:foregroundTint="@color/bulma_link"
+            android:tag="W2T"
+            android:padding="20dp"
+            android:textSize="20sp"
+            tools:text="WEB 2\nTE" />
+
+        <Button
+            android:id="@+id/button_w3l"
+            android:layout_width="@dimen/button_width_indoor_profile"
+            android:layout_height="@dimen/button_height_indoor_profile"
+            android:background="@drawable/ic_square_24"
+            android:backgroundTint="@color/bulma_link_light"
+            android:foregroundTint="@color/bulma_link"
+            android:tag="W3L"
+            android:padding="20dp"
+            android:textSize="20sp"
+            tools:text="WEB 3\nLE" />
+
+        <Button
+            android:id="@+id/button_w3t"
+            android:layout_width="@dimen/button_width_indoor_profile"
+            android:layout_height="@dimen/button_height_indoor_profile"
+            android:background="@drawable/ic_square_24"
+            android:backgroundTint="@color/bulma_link_light"
+            android:foregroundTint="@color/bulma_link"
+            android:tag="W3T"
+            android:padding="20dp"
+            android:textSize="20sp"
+            tools:text="WEB 3\nTE" />
+
+        <Button
+            android:id="@+id/button_w4l"
+            android:layout_width="@dimen/button_width_indoor_profile"
+            android:layout_height="@dimen/button_height_indoor_profile"
+            android:background="@drawable/ic_square_24"
+            android:backgroundTint="@color/bulma_link_light"
+            android:foregroundTint="@color/bulma_link"
+            android:tag="W4L"
+            android:padding="20dp"
+            android:textSize="20sp"
+            tools:text="WEB 4\nLE" />
+
+        <Button
+            android:id="@+id/button_w4t"
+            android:layout_width="@dimen/button_width_indoor_profile"
+            android:layout_height="@dimen/button_height_indoor_profile"
+            android:background="@drawable/ic_square_24"
+            android:backgroundTint="@color/bulma_link_light"
+            android:foregroundTint="@color/bulma_link"
+            android:tag="W4T"
+            android:padding="20dp"
+            android:textSize="20sp"
+            tools:text="WEB 4\nTE" />
+
+        <Button
+            android:id="@+id/button_na"
+            android:layout_width="@dimen/button_width_indoor_profile"
+            android:layout_height="@dimen/button_height_indoor_profile"
+            android:background="@drawable/ic_square_24"
+            android:backgroundTint="@color/bulma_link_light"
+            android:foreground="@drawable/ic_baseline_crop_din_24"
+            android:foregroundTint="@color/bulma_link"
+            android:textSize="20sp"
+            tools:text="N/A\n" />
+
+    </GridLayout>
+
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
