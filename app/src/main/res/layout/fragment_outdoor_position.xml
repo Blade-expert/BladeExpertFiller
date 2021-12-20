@@ -42,7 +42,7 @@
             android:foregroundTint="@color/bulma_link"
             android:textSize="30sp"
             android:tag="OLE"
-            tools:text="LE" />
+            android:text="LE" />
 
         <Button
             android:id="@+id/button_te"
@@ -54,7 +54,7 @@
             android:foregroundTint="@color/bulma_link"
             android:textSize="30sp"
             android:tag="OTE"
-            tools:text="TE" />
+            android:text="TE" />
 
         <Button
             android:id="@+id/button_ps"
@@ -66,7 +66,7 @@
             android:foregroundTint="@color/bulma_link"
             android:textSize="30sp"
             android:tag="OPS"
-            tools:text="PS" />
+            android:text="PS" />
 
         <Button
             android:id="@+id/button_ss"
@@ -78,7 +78,7 @@
             android:foregroundTint="@color/bulma_link"
             android:textSize="30sp"
             android:tag="OSS"
-            tools:text="SS" />
+            android:text="SS" />
 
 
 
@@ -98,6 +98,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/grid_layout"
-        tools:text="N/A" />
+        android:text="N/A" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

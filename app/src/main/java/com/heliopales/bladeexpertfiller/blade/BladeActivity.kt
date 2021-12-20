@@ -3,19 +3,23 @@ package com.heliopales.bladeexpertfiller.blade
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import android.provider.SyncStateContract
+import android.util.Log
 import android.view.View
+import android.widget.Button
 import android.widget.ImageButton
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import com.heliopales.bladeexpertfiller.App
-import com.heliopales.bladeexpertfiller.AppDatabase
-import com.heliopales.bladeexpertfiller.EXPORTATION_STATE_NOT_EXPORTED
-import com.heliopales.bladeexpertfiller.R
+import com.heliopales.bladeexpertfiller.*
 import com.heliopales.bladeexpertfiller.camera.CameraActivity
+import com.heliopales.bladeexpertfiller.damages.DamageListActivity
+import com.heliopales.bladeexpertfiller.damages.INHERIT_TYPE_DAMAGE_IN
+import com.heliopales.bladeexpertfiller.damages.INHERIT_TYPE_DAMAGE_OUT
 import com.heliopales.bladeexpertfiller.intervention.Intervention
 
 
 class BladeActivity : AppCompatActivity(), View.OnClickListener {
+    val TAG = this.javaClass.simpleName
     companion object {
         val EXTRA_INTERVENTION = "intervention"
         val EXTRA_BLADE = "blade"
@@ -44,17 +48,38 @@ class BladeActivity : AppCompatActivity(), View.OnClickListener {
 
         findViewById<ImageButton>(R.id.edit_blade_serial).setOnClickListener(this)
         findViewById<ImageButton>(R.id.take_blade_serial_picture).setOnClickListener(this)
+        findViewById<Button>(R.id.see_indoor_damages_button).setOnClickListener(this)
+        findViewById<Button>(R.id.see_outdoor_damages_button).setOnClickListener(this)
     }
 
     override fun onClick(v: View?) {
         when (v?.id) {
             R.id.edit_blade_serial -> showChangeBladeSerialDialog()
             R.id.take_blade_serial_picture -> takeBladeSerialPicture()
+            R.id.see_indoor_damages_button -> startIndoorActivity()
+            R.id.see_outdoor_damages_button -> startOutdoorActivity()
         }
     }
 
+    private fun startIndoorActivity() {
+        Log.d(TAG,"startIndoorActivity()")
+        val intent = Intent(this, DamageListActivity::class.java)
+        intent.putExtra(DamageListActivity.EXTRA_INTERVENTION_ID, intervention.id)
+        intent.putExtra(DamageListActivity.EXTRA_BLADE_ID, blade.id)
+        intent.putExtra(DamageListActivity.EXTRA_DAMAGE_INOUT, INHERIT_TYPE_DAMAGE_IN)
+        startActivity(intent)
+    }
+
+    private fun startOutdoorActivity() {
+        val intent = Intent(this, DamageListActivity::class.java)
+        intent.putExtra(DamageListActivity.EXTRA_INTERVENTION_ID, intervention.id)
+        intent.putExtra(DamageListActivity.EXTRA_BLADE_ID, blade.id)
+        intent.putExtra(DamageListActivity.EXTRA_DAMAGE_INOUT, INHERIT_TYPE_DAMAGE_OUT)
+        startActivity(intent)
+    }
+
     override fun onBackPressed() {
-        intent = Intent()
+        val intent = Intent()
         intent.putExtra(BladeActivity.EXTRA_INTERVENTION, intervention)
         intent.putExtra(BladeActivity.EXTRA_BLADE, blade)
         setResult(Activity.RESULT_OK, intent)

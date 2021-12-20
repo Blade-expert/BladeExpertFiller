@@ -1,7 +1,5 @@
 package com.heliopales.bladeexpertfiller.intervention
 
-import android.content.Context
-import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,9 +7,7 @@ import android.widget.ImageButton
 import android.widget.TextView
 import androidx.cardview.widget.CardView
 import androidx.core.content.ContextCompat
-import androidx.core.content.res.TypedArrayUtils
 import androidx.recyclerview.widget.RecyclerView
-import com.heliopales.bladeexpertfiller.EXPORTATION_STATE_EMPTY
 import com.heliopales.bladeexpertfiller.EXPORTATION_STATE_EXPORTED
 import com.heliopales.bladeexpertfiller.EXPORTATION_STATE_NOT_EXPORTED
 import com.heliopales.bladeexpertfiller.R

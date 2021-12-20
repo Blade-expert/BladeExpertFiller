@@ -13,10 +13,10 @@ import retrofit2.converter.gson.GsonConverterFactory
 import java.io.File
 
 //RECETTE
-//private const val BASE_URL = "https://bladeexpert-recette.herokuapp.com/bladeexpert/"
+private const val BASE_URL = "https://bladeexpert-recette.herokuapp.com/bladeexpert/"
 
 //LOCAL
-private const val BASE_URL = "http://192.168.1.181/bladeexpert/"
+//private const val BASE_URL = "http://192.168.1.181/bladeexpert/"
 
 
 class App : Application() {

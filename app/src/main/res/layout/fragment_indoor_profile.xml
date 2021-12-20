@@ -40,7 +40,7 @@
             android:tag="I1"
             android:padding="20dp"
             android:textSize="20sp"
-            tools:text="LE\nPANEL" />
+            android:text="LE\nPANEL" />
 
         <Button
             android:id="@+id/button_i2"
@@ -52,7 +52,7 @@
             android:tag="I2"
             android:padding="20dp"
             android:textSize="20sp"
-            tools:text="SPAR\nCAP" />
+            android:text="SPAR\nCAP" />
 
         <Button
             android:id="@+id/button_i3"
@@ -64,7 +64,7 @@
             android:tag="I3"
             android:padding="20dp"
             android:textSize="20sp"
-            tools:text="TE\nPANEL" />
+            android:text="TE\nPANEL" />
 
         <Button
             android:id="@+id/button_w1l"
@@ -76,7 +76,7 @@
             android:tag="W1L"
             android:padding="20dp"
             android:textSize="20sp"
-            tools:text="WEB 1\nLE" />
+            android:text="WEB 1\nLE" />
 
         <Button
             android:id="@+id/button_w1t"
@@ -88,7 +88,7 @@
             android:tag="W1T"
             android:padding="20dp"
             android:textSize="20sp"
-            tools:text="WEB 1\nTE" />
+            android:text="WEB 1\nTE" />
 
 
         <Button
@@ -101,7 +101,7 @@
             android:tag="W2L"
             android:padding="20dp"
             android:textSize="20sp"
-            tools:text="WEB 2\nLE" />
+            android:text="WEB 2\nLE" />
 
         <Button
             android:id="@+id/button_w2t"
@@ -113,7 +113,7 @@
             android:tag="W2T"
             android:padding="20dp"
             android:textSize="20sp"
-            tools:text="WEB 2\nTE" />
+            android:text="WEB 2\nTE" />
 
         <Button
             android:id="@+id/button_w3l"
@@ -125,7 +125,7 @@
             android:tag="W3L"
             android:padding="20dp"
             android:textSize="20sp"
-            tools:text="WEB 3\nLE" />
+            android:text="WEB 3\nLE" />
 
         <Button
             android:id="@+id/button_w3t"
@@ -137,7 +137,7 @@
             android:tag="W3T"
             android:padding="20dp"
             android:textSize="20sp"
-            tools:text="WEB 3\nTE" />
+            android:text="WEB 3\nTE" />
 
         <Button
             android:id="@+id/button_w4l"
@@ -149,7 +149,7 @@
             android:tag="W4L"
             android:padding="20dp"
             android:textSize="20sp"
-            tools:text="WEB 4\nLE" />
+            android:text="WEB 4\nLE" />
 
         <Button
             android:id="@+id/button_w4t"
@@ -161,7 +161,7 @@
             android:tag="W4T"
             android:padding="20dp"
             android:textSize="20sp"
-            tools:text="WEB 4\nTE" />
+            android:text="WEB 4\nTE" />
 
         <Button
             android:id="@+id/button_na"
@@ -172,7 +172,7 @@
             android:foreground="@drawable/ic_baseline_crop_din_24"
             android:foregroundTint="@color/bulma_link"
             android:textSize="20sp"
-            tools:text="N/A\n" />
+            android:text="N/A\n" />
 
     </GridLayout>
 

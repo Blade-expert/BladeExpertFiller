@@ -1,10 +1,11 @@
-package com.heliopales.bladeexpertfiller.damages
+package com.heliopales.bladeexpertfiller.damages.editloop
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import com.heliopales.bladeexpertfiller.R
 
 // TODO: Rename parameter arguments, choose names that match
@@ -17,16 +18,29 @@ private const val ARG_PARAM2 = "param2"
  * Use the [IndoorPositionFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
-class IndoorPositionFragment : Fragment() {
+class IndoorPositionFragment : Fragment(), View.OnClickListener {
     // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
+
+    private val buttons = mutableListOf<Button>();
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
             param1 = it.getString(ARG_PARAM1)
             param2 = it.getString(ARG_PARAM2)
+        }
+    }
+
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        view.touchables.forEach {
+            if (it is Button) {
+                buttons.add(it)
+                it.setOnClickListener(this)
+            }
         }
     }
 
@@ -56,5 +70,15 @@ class IndoorPositionFragment : Fragment() {
                     putString(ARG_PARAM2, param2)
                 }
             }
+    }
+
+    override fun onClick(v: View?) {
+        buttons.forEach {
+            if (it == v) {
+                it.foreground = requireContext().getDrawable(R.drawable.ic_baseline_crop_din_24)
+            } else {
+                it.foreground = null
+            }
+        }
     }
 }
