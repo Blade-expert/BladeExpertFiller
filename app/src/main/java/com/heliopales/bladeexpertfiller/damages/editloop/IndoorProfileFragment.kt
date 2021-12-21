@@ -1,12 +1,15 @@
 package com.heliopales.bladeexpertfiller.damages.editloop
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import androidx.fragment.app.Fragment
+import com.heliopales.bladeexpertfiller.INDEX_DAMAGE_LOOP_TYPE
 import com.heliopales.bladeexpertfiller.R
+import com.heliopales.bladeexpertfiller.damages.DamageViewPagerActivity
+import com.heliopales.bladeexpertfiller.utils.closeKeyboard
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -79,5 +82,12 @@ class IndoorProfileFragment : Fragment(), View.OnClickListener {
                 it.foreground = null
             }
         }
+
+        (activity as DamageViewPagerActivity).pager.currentItem = INDEX_DAMAGE_LOOP_TYPE
+    }
+
+    override fun onResume() {
+        super.onResume()
+        activity?.closeKeyboard()
     }
 }

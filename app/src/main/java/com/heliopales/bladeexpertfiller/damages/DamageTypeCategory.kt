@@ -16,7 +16,15 @@ enum class DamageTypeCategory(val code:String, val alias:String) {
     OTHER( "ZZZ", "Other" );
 
     override fun toString(): String {
-        return  "${super.toString()} - $alias"
+        return  "$name ($alias)"
+    }
+
+    companion object{
+        fun getDamageTypeCategoryByCode(code: String?): DamageTypeCategory {
+            if(code == null) return OTHER
+            values().forEach { if(it.code == code) return it }
+            return OTHER
+        }
     }
 
 }

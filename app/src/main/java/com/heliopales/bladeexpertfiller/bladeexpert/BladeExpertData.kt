@@ -23,3 +23,10 @@ data class SeverityWrapper(
     val color: String,
     val fontColor: String
 )
+
+data class DamageTypeWrapper(
+    val id: Int,
+    @SerializedName("category") val categoryCode : String,
+    val name: String,
+    val inheritType: String
+)

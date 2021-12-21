@@ -64,7 +64,6 @@ class InterventionListActivity : AppCompatActivity(), InterventionAdapter.Interv
         refreshLayout.setOnRefreshListener { updateInterventionList() }
 
         updateInterventionList()
-        updateSeverities()
     }
 
     val simpleCallBack = object : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
@@ -187,30 +186,7 @@ class InterventionListActivity : AppCompatActivity(), InterventionAdapter.Interv
             })
     }
 
-    private fun updateSeverities() {
-        App.bladeExpertService.getSeverities()
-            .enqueue(object : retrofit2.Callback<Array<SeverityWrapper>> {
-                override fun onResponse(
-                    call: Call<Array<SeverityWrapper>>,
-                    response: Response<Array<SeverityWrapper>>
-                ) {
-                    response?.body().let {
-                        it?.map { sevw -> mapBladeExpertSeverity(sevw) }
-                            ?.let { sev -> database.severityDao().insertAll(sev) }
 
-                        it?.map { sevw -> mapBladeExpertSeverity(sevw).id }?.let { sevIds ->
-                            database.severityDao().deleteWhereIdsNotIn(sevIds)}
-                    }
-
-                    database.severityDao().getAll()
-                        .forEach { Log.d(TAG, "Severity in database : $it") }
-                }
-
-                override fun onFailure(call: Call<Array<SeverityWrapper>>, t: Throwable) {
-                    Log.e(TAG, "Impossible to load severities", t)
-                }
-            })
-    }
 
     override fun onInterventionSelected(intervention: Intervention) {
         val intent = Intent(this, InterventionDetailsActivity::class.java)

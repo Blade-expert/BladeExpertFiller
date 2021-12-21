@@ -33,7 +33,7 @@
         >
 
         <Button
-            android:id="@+id/button_le"
+            android:id="@+id/button_ole"
             android:layout_width="180dp"
             android:layout_height="@dimen/button_height_outdoor_position"
             android:layout_margin="0dp"
@@ -45,7 +45,7 @@
             android:text="LE" />
 
         <Button
-            android:id="@+id/button_te"
+            android:id="@+id/button_ote"
             android:layout_width="180dp"
             android:layout_height="@dimen/button_height_outdoor_position"
             android:layout_margin="0dp"
@@ -57,7 +57,7 @@
             android:text="TE" />
 
         <Button
-            android:id="@+id/button_ps"
+            android:id="@+id/button_ops"
             android:layout_width="180dp"
             android:layout_height="@dimen/button_height_outdoor_position"
             android:layout_margin="0dp"
@@ -69,7 +69,7 @@
             android:text="PS" />
 
         <Button
-            android:id="@+id/button_ss"
+            android:id="@+id/button_oss"
             android:layout_width="180dp"
             android:layout_height="@dimen/button_height_outdoor_position"
             android:layout_margin="0dp"
@@ -85,7 +85,7 @@
     </GridLayout>
 
     <Button
-        android:id="@+id/button_na"
+        android:id="@+id/button_ona"
         android:layout_width="180dp"
         android:layout_height="@dimen/button_height_outdoor_position"
         android:layout_margin="0dp"

@@ -8,6 +8,10 @@ import android.view.WindowManager
 import android.widget.ImageButton
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
+import android.app.Activity
+import android.view.View
+import android.view.inputmethod.InputMethodManager
+
 
 fun Context.toast(message: String, duration: Int = Toast.LENGTH_SHORT) {
     Toast.makeText(this, message, duration).show()
@@ -47,3 +51,18 @@ fun Context.spToPx(sp: Float): Float {
     )
 }
 
+fun Activity.closeKeyboard() {
+    val imm: InputMethodManager =
+        getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
+
+    // To get the correct window token, lets first get the currently focused view
+    var view: View? = currentFocus
+
+    // To get the window token when there is no currently focused view, we have a to create a view
+    if (view == null) {
+        view = View(this)
+    }
+
+    // hide the keyboard
+    imm.hideSoftInputFromWindow(view.windowToken, 0)
+}

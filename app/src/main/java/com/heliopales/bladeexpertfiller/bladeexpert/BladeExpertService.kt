@@ -18,4 +18,7 @@ interface BladeExpertService {
 
     @GET(value = "api/mobile/severity")
     fun getSeverities(@Query("key") key:String = API_KEY): Call<Array<SeverityWrapper>>
+
+    @GET(value = "api/mobile/damagetype")
+    fun getDamageTypes(@Query("key") key:String = API_KEY): Call<Array<DamageTypeWrapper>>
 }

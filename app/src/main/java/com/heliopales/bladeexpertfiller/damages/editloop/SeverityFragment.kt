@@ -11,6 +11,7 @@ import android.widget.Button
 import com.heliopales.bladeexpertfiller.App
 import com.heliopales.bladeexpertfiller.AppDatabase
 import com.heliopales.bladeexpertfiller.R
+import com.heliopales.bladeexpertfiller.utils.closeKeyboard
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -88,5 +89,10 @@ class SeverityFragment : Fragment(), View.OnClickListener {
                 it.foreground = null
             }
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        activity?.closeKeyboard()
     }
 }

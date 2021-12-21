@@ -33,7 +33,7 @@
         >
 
         <Button
-            android:id="@+id/button_le"
+            android:id="@+id/button_ile"
             android:layout_width="180dp"
             android:layout_height="@dimen/button_height_indoor_position"
             android:layout_margin="0dp"
@@ -45,7 +45,7 @@
             android:text="LE" />
 
         <Button
-            android:id="@+id/button_te"
+            android:id="@+id/button_ite"
             android:layout_width="180dp"
             android:layout_height="@dimen/button_height_indoor_position"
             android:layout_margin="0dp"
@@ -57,7 +57,7 @@
             android:text="TE" />
 
         <Button
-            android:id="@+id/button_ps"
+            android:id="@+id/button_ips"
             android:layout_width="180dp"
             android:layout_height="@dimen/button_height_indoor_position"
             android:layout_margin="0dp"
@@ -69,7 +69,7 @@
             android:text="PS" />
 
         <Button
-            android:id="@+id/button_ss"
+            android:id="@+id/button_iss"
             android:layout_width="180dp"
             android:layout_height="@dimen/button_height_indoor_position"
             android:layout_margin="0dp"
@@ -81,7 +81,7 @@
             android:text="SS" />
 
         <Button
-            android:id="@+id/button_root"
+            android:id="@+id/button_iroot"
             android:layout_width="180dp"
             android:layout_height="@dimen/button_height_indoor_position"
             android:layout_margin="0dp"
@@ -93,7 +93,7 @@
             android:text="ROOT" />
 
         <Button
-            android:id="@+id/button_tip"
+            android:id="@+id/button_itip"
             android:layout_width="180dp"
             android:layout_height="@dimen/button_height_indoor_position"
             android:layout_margin="0dp"
@@ -107,7 +107,7 @@
 
 
         <Button
-            android:id="@+id/button_web"
+            android:id="@+id/button_iweb"
             android:layout_width="180dp"
             android:layout_height="@dimen/button_height_indoor_position"
             android:layout_margin="0dp"
@@ -119,7 +119,7 @@
             android:text="WEB" />
 
         <Button
-            android:id="@+id/button_hatch"
+            android:id="@+id/button_ihatch"
             android:layout_width="180dp"
             android:layout_height="@dimen/button_height_indoor_position"
             android:layout_margin="0dp"
@@ -133,7 +133,7 @@
     </GridLayout>
 
     <Button
-        android:id="@+id/button_na"
+        android:id="@+id/button_ina"
         android:layout_width="180dp"
         android:layout_height="@dimen/button_height_indoor_position"
         android:layout_margin="0dp"

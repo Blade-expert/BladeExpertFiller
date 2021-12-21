@@ -67,7 +67,7 @@
             android:text="TE\nPANEL" />
 
         <Button
-            android:id="@+id/button_w1l"
+            android:id="@+id/button_iw1l"
             android:layout_width="@dimen/button_width_indoor_profile"
             android:layout_height="@dimen/button_height_indoor_profile"
             android:background="@drawable/ic_square_24"
@@ -79,7 +79,7 @@
             android:text="WEB 1\nLE" />
 
         <Button
-            android:id="@+id/button_w1t"
+            android:id="@+id/button_iw1t"
             android:layout_width="@dimen/button_width_indoor_profile"
             android:layout_height="@dimen/button_height_indoor_profile"
             android:background="@drawable/ic_square_24"
@@ -92,7 +92,7 @@
 
 
         <Button
-            android:id="@+id/button_w2l"
+            android:id="@+id/button_iw2l"
             android:layout_width="@dimen/button_width_indoor_profile"
             android:layout_height="@dimen/button_height_indoor_profile"
             android:background="@drawable/ic_square_24"
@@ -104,7 +104,7 @@
             android:text="WEB 2\nLE" />
 
         <Button
-            android:id="@+id/button_w2t"
+            android:id="@+id/button_iw2t"
             android:layout_width="@dimen/button_width_indoor_profile"
             android:layout_height="@dimen/button_height_indoor_profile"
             android:background="@drawable/ic_square_24"
@@ -116,7 +116,7 @@
             android:text="WEB 2\nTE" />
 
         <Button
-            android:id="@+id/button_w3l"
+            android:id="@+id/button_iw3l"
             android:layout_width="@dimen/button_width_indoor_profile"
             android:layout_height="@dimen/button_height_indoor_profile"
             android:background="@drawable/ic_square_24"
@@ -128,7 +128,7 @@
             android:text="WEB 3\nLE" />
 
         <Button
-            android:id="@+id/button_w3t"
+            android:id="@+id/button_iw3t"
             android:layout_width="@dimen/button_width_indoor_profile"
             android:layout_height="@dimen/button_height_indoor_profile"
             android:background="@drawable/ic_square_24"
@@ -140,7 +140,7 @@
             android:text="WEB 3\nTE" />
 
         <Button
-            android:id="@+id/button_w4l"
+            android:id="@+id/button_iw4l"
             android:layout_width="@dimen/button_width_indoor_profile"
             android:layout_height="@dimen/button_height_indoor_profile"
             android:background="@drawable/ic_square_24"
@@ -152,7 +152,7 @@
             android:text="WEB 4\nLE" />
 
         <Button
-            android:id="@+id/button_w4t"
+            android:id="@+id/button_iw4t"
             android:layout_width="@dimen/button_width_indoor_profile"
             android:layout_height="@dimen/button_height_indoor_profile"
             android:background="@drawable/ic_square_24"
@@ -164,7 +164,7 @@
             android:text="WEB 4\nTE" />
 
         <Button
-            android:id="@+id/button_na"
+            android:id="@+id/button_ipna"
             android:layout_width="@dimen/button_width_indoor_profile"
             android:layout_height="@dimen/button_height_indoor_profile"
             android:background="@drawable/ic_square_24"

@@ -6,7 +6,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import com.heliopales.bladeexpertfiller.INDEX_DAMAGE_LOOP_DEPT
+import com.heliopales.bladeexpertfiller.INDEX_DAMAGE_LOOP_TYPE
 import com.heliopales.bladeexpertfiller.R
+import com.heliopales.bladeexpertfiller.damages.DamageViewPagerActivity
+import com.heliopales.bladeexpertfiller.utils.closeKeyboard
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -71,7 +75,7 @@ class OutdoorPositionFragment : Fragment(), View.OnClickListener {
             }
     }
 
-    override fun onClick(v: View?) {
+    override fun onClick(v: View) {
         buttons.forEach {
             if (it == v) {
                 it.foreground = requireContext().getDrawable(R.drawable.ic_baseline_crop_din_24)
@@ -79,5 +83,17 @@ class OutdoorPositionFragment : Fragment(), View.OnClickListener {
                 it.foreground = null
             }
         }
+
+        when (v.id) {
+            R.id.button_ops, R.id.button_oss -> (activity as DamageViewPagerActivity).pager.currentItem =
+                INDEX_DAMAGE_LOOP_DEPT
+            else -> (activity as DamageViewPagerActivity).pager.currentItem =
+                INDEX_DAMAGE_LOOP_TYPE
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        activity?.closeKeyboard()
     }
 }
