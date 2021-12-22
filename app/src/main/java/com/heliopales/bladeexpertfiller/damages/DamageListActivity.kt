@@ -64,6 +64,7 @@ class DamageListActivity : AppCompatActivity(), DamageAdapter.DamageItemListener
     }
 
     override fun onResume() {
+        Log.i(TAG, "onResume()")
         super.onResume()
         damages = App.database.spotConditionDao().getDamagesByBladeAndInterventionAndInheritType(
             bladeId,
@@ -96,8 +97,6 @@ class DamageListActivity : AppCompatActivity(), DamageAdapter.DamageItemListener
         with(damage) {
             bladeId = this@DamageListActivity.bladeId
             interventionId = this@DamageListActivity.interventionId
-            radialPosition = (Random.nextDouble(0.0, 450.0).roundToInt() / 10.0).toFloat()
-            severityId = Random.nextInt(0, 6)
         }
         val newId = App.database.spotConditionDao().insertDamage(damage)
 

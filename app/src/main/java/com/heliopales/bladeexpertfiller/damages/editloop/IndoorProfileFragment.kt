@@ -8,6 +8,7 @@ import android.widget.Button
 import androidx.fragment.app.Fragment
 import com.heliopales.bladeexpertfiller.INDEX_DAMAGE_LOOP_TYPE
 import com.heliopales.bladeexpertfiller.R
+import com.heliopales.bladeexpertfiller.damages.DamageSpotCondition
 import com.heliopales.bladeexpertfiller.damages.DamageViewPagerActivity
 import com.heliopales.bladeexpertfiller.utils.closeKeyboard
 
@@ -28,8 +29,11 @@ class IndoorProfileFragment : Fragment(), View.OnClickListener {
 
     private val buttons = mutableListOf<Button>();
 
+    private lateinit var damage: DamageSpotCondition
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        damage = (activity as DamageViewPagerActivity).damage
         arguments?.let {
             param1 = it.getString(ARG_PARAM1)
             param2 = it.getString(ARG_PARAM2)
@@ -74,7 +78,7 @@ class IndoorProfileFragment : Fragment(), View.OnClickListener {
             }
     }
 
-    override fun onClick(v: View?) {
+    override fun onClick(v: View) {
         buttons.forEach {
             if (it == v) {
                 it.foreground = requireContext().getDrawable(R.drawable.ic_baseline_crop_din_24)
@@ -83,11 +87,35 @@ class IndoorProfileFragment : Fragment(), View.OnClickListener {
             }
         }
 
-        (activity as DamageViewPagerActivity).pager.currentItem = INDEX_DAMAGE_LOOP_TYPE
+        if(v is Button){
+            when (v.id) {
+                R.id.button_ipna -> damage.profileDepth = null
+                else -> damage.profileDepth = v.tag as String
+            }
+            (activity as DamageViewPagerActivity).pager.currentItem = INDEX_DAMAGE_LOOP_TYPE
+        }
     }
 
     override fun onResume() {
         super.onResume()
         activity?.closeKeyboard()
+        if (damage.profileDepth == null) {
+            buttons.forEach {
+                if (it.id == R.id.button_ipna) {
+                    it.foreground = requireContext().getDrawable(R.drawable.ic_baseline_crop_din_24)
+                } else {
+                    it.foreground = null
+                }
+            }
+        } else {
+            buttons.forEach {
+                if (it.tag == damage.profileDepth) {
+                    it.foreground = requireContext().getDrawable(R.drawable.ic_baseline_crop_din_24)
+                } else {
+                    it.foreground = null
+                }
+            }
+        }
     }
+
 }

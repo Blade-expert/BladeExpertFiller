@@ -3,6 +3,7 @@ package com.heliopales.bladeexpertfiller.secondaryentities
 import android.os.Parcel
 import android.os.Parcelable
 import androidx.room.Entity
+import androidx.room.Ignore
 import androidx.room.PrimaryKey
 import com.heliopales.bladeexpertfiller.damages.DamageTypeCategory
 
@@ -13,6 +14,8 @@ data class DamageType(
     val name: String,
     val inheritType: String
 ):Parcelable {
+
+    @Ignore var selected: Boolean = false
 
     override fun toString(): String {
         return "${category?.name ?: ""} - $name"

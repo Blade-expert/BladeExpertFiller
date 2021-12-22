@@ -42,13 +42,15 @@
         <entry key="..\:/Users/Colin/StudioProjects/BladeExpertFiller/app/src/main/res/layout/activity_damage_view_pager.xml" value="0.1828125" />
         <entry key="..\:/Users/Colin/StudioProjects/BladeExpertFiller/app/src/main/res/layout/activity_intervention_list.xml" value="0.18697916666666667" />
         <entry key="..\:/Users/Colin/StudioProjects/BladeExpertFiller/app/src/main/res/layout/fragment_damage_basics.xml" value="0.36102564102564105" />
-        <entry key="..\:/Users/Colin/StudioProjects/BladeExpertFiller/app/src/main/res/layout/fragment_damage_type.xml" value="0.20520833333333333" />
-        <entry key="..\:/Users/Colin/StudioProjects/BladeExpertFiller/app/src/main/res/layout/fragment_indoor_position.xml" value="0.1828125" />
-        <entry key="..\:/Users/Colin/StudioProjects/BladeExpertFiller/app/src/main/res/layout/fragment_indoor_profile.xml" value="0.1828125" />
-        <entry key="..\:/Users/Colin/StudioProjects/BladeExpertFiller/app/src/main/res/layout/fragment_outdoor_position.xml" value="0.1828125" />
-        <entry key="..\:/Users/Colin/StudioProjects/BladeExpertFiller/app/src/main/res/layout/fragment_outdoor_profile.xml" value="0.1828125" />
-        <entry key="..\:/Users/Colin/StudioProjects/BladeExpertFiller/app/src/main/res/layout/fragment_severity.xml" value="0.18697916666666667" />
+        <entry key="..\:/Users/Colin/StudioProjects/BladeExpertFiller/app/src/main/res/layout/fragment_damage_type.xml" value="0.36666666666666664" />
+        <entry key="..\:/Users/Colin/StudioProjects/BladeExpertFiller/app/src/main/res/layout/fragment_indoor_position.xml" value="0.36666666666666664" />
+        <entry key="..\:/Users/Colin/StudioProjects/BladeExpertFiller/app/src/main/res/layout/fragment_indoor_profile.xml" value="0.36666666666666664" />
+        <entry key="..\:/Users/Colin/StudioProjects/BladeExpertFiller/app/src/main/res/layout/fragment_outdoor_position.xml" value="0.36666666666666664" />
+        <entry key="..\:/Users/Colin/StudioProjects/BladeExpertFiller/app/src/main/res/layout/fragment_outdoor_profile.xml" value="0.36666666666666664" />
+        <entry key="..\:/Users/Colin/StudioProjects/BladeExpertFiller/app/src/main/res/layout/fragment_severity.xml" value="0.3717948717948718" />
         <entry key="..\:/Users/Colin/StudioProjects/BladeExpertFiller/app/src/main/res/layout/item_damage.xml" value="0.33" />
+        <entry key="..\:/Users/Colin/StudioProjects/BladeExpertFiller/app/src/main/res/layout/item_damage_type.xml" value="0.19791666666666666" />
+        <entry key="..\:/Users/Colin/StudioProjects/BladeExpertFiller/app/src/main/res/layout/item_damage_type_category.xml" value="0.19791666666666666" />
         <entry key="..\:/Users/Colin/StudioProjects/BladeExpertFiller/app/src/main/res/layout/item_intervention.xml" value="0.18697916666666667" />
         <entry key="..\:/Users/Colin/StudioProjects/BladeExpertFiller/app/src/main/res/layout/item_spinner.xml" value="0.1578125" />
         <entry key="..\:/Users/Colin/StudioProjects/BladeExpertFiller/app/src/main/res/layout/link_cursor.xml" value="0.35260416666666666" />

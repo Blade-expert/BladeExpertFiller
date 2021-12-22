@@ -49,15 +49,15 @@ class DamageViewPagerActivity : AppCompatActivity() {
                 INDEX_DAMAGE_LOOP_SEVE -> tab.text = "Grav."
             }
         }.attach()
-
-
     }
 
 
     override fun onPause() {
         Log.d(TAG, "onPause()")
         super.onPause()
+        App.database.spotConditionDao().updateDamage(damage)
     }
+
 
 
 }
@@ -72,7 +72,7 @@ class DamagePagerAdapter(val fa: FragmentActivity, val damage: DamageSpotConditi
                 INDEX_DAMAGE_LOOP_BASE -> return DamageBasicsFragment.newInstance("123", "125")
                 INDEX_DAMAGE_LOOP_POSI -> return IndoorPositionFragment.newInstance("123", "123")
                 INDEX_DAMAGE_LOOP_DEPT -> return IndoorProfileFragment.newInstance("456", "456")
-                INDEX_DAMAGE_LOOP_TYPE -> return DamageTypeFragment()
+                INDEX_DAMAGE_LOOP_TYPE -> return DamageTypeFragment.newInstance()
                 INDEX_DAMAGE_LOOP_SEVE -> return SeverityFragment.newInstance("456", "456")
             }
             INHERIT_TYPE_DAMAGE_OUT -> when (position) {

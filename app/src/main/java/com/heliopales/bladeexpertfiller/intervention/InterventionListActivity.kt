@@ -64,6 +64,8 @@ class InterventionListActivity : AppCompatActivity(), InterventionAdapter.Interv
         refreshLayout.setOnRefreshListener { updateInterventionList() }
 
         updateInterventionList()
+        updateSeverities()
+        updateDamageTypes()
     }
 
     val simpleCallBack = object : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
@@ -239,5 +241,59 @@ class InterventionListActivity : AppCompatActivity(), InterventionAdapter.Interv
         return true;
     }
 
+    private fun updateSeverities() {
+        Log.d(TAG, "updateSeverities()")
+        App.bladeExpertService.getSeverities()
+            .enqueue(object : retrofit2.Callback<Array<SeverityWrapper>> {
+                override fun onResponse(
+                    call: Call<Array<SeverityWrapper>>,
+                    response: Response<Array<SeverityWrapper>>
+                ) {
+                    response?.body().let {
+                        it?.map { sevw -> mapBladeExpertSeverity(sevw) }
+                            ?.let { sevs -> App.database.severityDao().insertAll(sevs) }
+
+                        it?.map { sevw -> mapBladeExpertSeverity(sevw).id }?.let { sevIds ->
+                            App.database.severityDao().deleteWhereIdsNotIn(sevIds)
+                        }
+                    }
+
+                    App.database.severityDao().getAll()
+                        .forEach { Log.d(TAG, "Severity in database : $it") }
+                }
+                override fun onFailure(call: Call<Array<SeverityWrapper>>, t: Throwable) {
+                    Log.e(TAG, "Impossible to load severities", t)
+                }
+            })
+    }
+
+    private fun updateDamageTypes() {
+        Log.d(TAG, "updateDamageTypes()")
+        App.bladeExpertService.getDamageTypes()
+            .enqueue(object : retrofit2.Callback<Array<DamageTypeWrapper>> {
+                override fun onResponse(
+                    call: Call<Array<DamageTypeWrapper>>,
+                    response: Response<Array<DamageTypeWrapper>>
+                ) {
+                    response?.body().let {
+                        it?.map { dmtw -> mapBladeExpertDamageType(dmtw) }
+                            ?.let {dmts -> App.database.damageTypeDao().insertAll(dmts) }
+
+                        it?.map { dmtw -> mapBladeExpertDamageType(dmtw).id }?.let { dmtIds ->
+                            App.database.damageTypeDao().deleteWhereIdsNotIn(dmtIds)
+                        }
+                    }
+                    Log.d(TAG, "DamageType Insert done, retrieving task")
+                    App.database.damageTypeDao().getAllInner()
+                        .forEach { Log.d(TAG, "Inner DamageType in database : $it") }
+                    App.database.damageTypeDao().getAllOuter()
+                        .forEach { Log.d(TAG, "Outer DamageType in database : $it") }
+                }
+
+                override fun onFailure(call: Call<Array<DamageTypeWrapper>>, t: Throwable) {
+                    Log.e(TAG, "Impossible to load DamageTypes", t)
+                }
+            })
+    }
 
 }

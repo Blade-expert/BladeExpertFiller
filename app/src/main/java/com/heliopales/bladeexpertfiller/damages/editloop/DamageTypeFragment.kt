@@ -6,15 +6,10 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.AdapterView
-import android.widget.ArrayAdapter
-import android.widget.Spinner
-import com.heliopales.bladeexpertfiller.App
-import com.heliopales.bladeexpertfiller.R
-import com.heliopales.bladeexpertfiller.damages.DamageTypeCategory
-import com.heliopales.bladeexpertfiller.damages.DamageViewPagerActivity
-import com.heliopales.bladeexpertfiller.damages.INHERIT_TYPE_DAMAGE_IN
-import com.heliopales.bladeexpertfiller.damages.INHERIT_TYPE_DAMAGE_OUT
+import android.widget.*
+import androidx.core.view.children
+import com.heliopales.bladeexpertfiller.*
+import com.heliopales.bladeexpertfiller.damages.*
 import com.heliopales.bladeexpertfiller.secondaryentities.DamageType
 import com.heliopales.bladeexpertfiller.utils.closeKeyboard
 
@@ -28,19 +23,23 @@ private const val ARG_PARAM2 = "param2"
  * Use the [DamageTypeFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
-class DamageTypeFragment : Fragment() {
+class DamageTypeFragment : Fragment(), View.OnClickListener {
     private val TAG = DamageTypeFragment::class.java.simpleName
 
     private lateinit var damageTypes: List<DamageType>
 
-    private lateinit var categorySpinner: Spinner
-    private lateinit var damageTypeSpinner: Spinner
+    private lateinit var list: ExpandableListView
+    private lateinit var listAdapter: ExpandableListAdapter
 
+    private lateinit var naButton: Button
+
+    private lateinit var damage: DamageSpotCondition
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        when ((activity as DamageViewPagerActivity).damage.inheritType) {
+        Log.v(TAG, "onCreate()")
+        damage = (activity as DamageViewPagerActivity).damage
+        when (damage.inheritType) {
             INHERIT_TYPE_DAMAGE_OUT -> damageTypes = App.database.damageTypeDao().getAllOuter()
                 .sortedWith(compareBy({ it.category?.name }, { it.name }))
 
@@ -51,52 +50,48 @@ class DamageTypeFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        categorySpinner = view.findViewById(R.id.damage_type_category_spinner)
-        damageTypeSpinner = view.findViewById(R.id.damage_type_spinner)
+        Log.v(TAG, "onViewCreated()")
 
-        categorySpinner.adapter = ArrayAdapter(
-            requireContext(),
-            R.layout.item_spinner,
-            DamageTypeCategory.values()
-        )
+        naButton = view.findViewById<Button>(R.id.button_dmt_na)
+        naButton.setOnClickListener(this)
 
-        categorySpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(
-                parent: AdapterView<*>?,
-                view: View?,
-                position: Int,
-                id: Long
-            ) {
-                val damageTypeList = mutableListOf<DamageType>()
-                damageTypeList.add(0, DamageType(-1, null, "- -", "IDT"))
-                damageTypeList.addAll(damageTypes.filter { it.category == categorySpinner.selectedItem })
-                damageTypeSpinner.adapter = ArrayAdapter(
-                    requireContext(),
-                    R.layout.item_spinner,
-                    damageTypeList
-                )
-                Log.v(
-                    TAG,
-                    "Selected item : ${categorySpinner.selectedItem}"
-                )
-            }
+        list = view.findViewById(R.id.expandable_dmt)
 
-            override fun onNothingSelected(parent: AdapterView<*>?) {
-                Log.v(
-                    TAG,
-                    "Nothing selected"
-                )
-            }
+        val data = HashMap<DamageTypeCategory, List<DamageType>>()
 
+        DamageTypeCategory.values().forEach {
+            val l = damageTypes.filter { dmt -> dmt.category == it }
+            if (l.isNotEmpty())
+                data[it] = l
         }
+        listAdapter = CustomExpandableListAdapter(
+            requireContext(),
+            ArrayList(data.keys).sortedBy { it.name },
+            data
+        )
+        list.setAdapter(listAdapter)
 
+        list.setOnChildClickListener { _, _, groupPosition, childPosition, _ ->
+            val selectedDamageType = listAdapter.getChild(groupPosition, childPosition) as DamageType
+            damage.damageTypeId = selectedDamageType.id
+            naButton.foreground = null
+            (listAdapter as CustomExpandableListAdapter).dataList.forEach { entry ->
+                entry.value.forEach {
+                    it.selected = it.id == selectedDamageType.id
+                }
+            }
+            (listAdapter as CustomExpandableListAdapter).notifyDataSetChanged()
+            (activity as DamageViewPagerActivity).pager.currentItem = INDEX_DAMAGE_LOOP_SEVE
+            true
+        }
     }
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
+        Log.v(TAG, "onCreateView()")
         return inflater.inflate(R.layout.fragment_damage_type, container, false)
     }
 
@@ -107,7 +102,31 @@ class DamageTypeFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
+        Log.v(TAG, "onResume()")
         activity?.closeKeyboard()
+
+        if (damage.damageTypeId != null) {
+            Log.d(TAG, "id not null, retrieveing")
+            damageTypes.forEach {
+                if (it.id == damage.damageTypeId) {
+
+                }
+            }
+        }
+    }
+
+    override fun onClick(v: View) {
+        when (v.id) {
+            R.id.button_dmt_na -> {
+                v.foreground = requireContext().getDrawable(R.drawable.ic_baseline_crop_din_24)
+                damage.damageTypeId = null
+                (listAdapter as CustomExpandableListAdapter).dataList.forEach { entry ->
+                    entry.value.forEach { it.selected = false }
+                }
+                (listAdapter as CustomExpandableListAdapter).notifyDataSetChanged()
+                (activity as DamageViewPagerActivity).pager.currentItem = INDEX_DAMAGE_LOOP_SEVE
+            }
+        }
     }
 
 }

@@ -74,63 +74,11 @@ class App : Application() {
     override fun onCreate() {
         super.onCreate()
         instance = this
-        updateSeverities()
-        updateDamageTypes()
+
     }
 
 
-    private fun updateSeverities() {
-        Log.d(TAG, "updateSeverities()")
-        bladeExpertService.getSeverities()
-            .enqueue(object : retrofit2.Callback<Array<SeverityWrapper>> {
-                override fun onResponse(
-                    call: Call<Array<SeverityWrapper>>,
-                    response: Response<Array<SeverityWrapper>>
-                ) {
-                    response?.body().let {
-                        it?.map { sevw -> mapBladeExpertSeverity(sevw) }
-                            ?.let { sevs -> database.severityDao().insertAll(sevs) }
 
-                        it?.map { sevw -> mapBladeExpertSeverity(sevw).id }?.let { sevIds ->
-                            database.severityDao().deleteWhereIdsNotIn(sevIds)
-                        }
-                    }
 
-                    database.severityDao().getAll()
-                        .forEach { Log.d(TAG, "Severity in database : $it") }
-                }
-                override fun onFailure(call: Call<Array<SeverityWrapper>>, t: Throwable) {
-                    Log.e(TAG, "Impossible to load severities", t)
-                }
-            })
-    }
 
-    private fun updateDamageTypes() {
-        Log.d(TAG, "updateDamageTypes()")
-        bladeExpertService.getDamageTypes()
-            .enqueue(object : retrofit2.Callback<Array<DamageTypeWrapper>> {
-                override fun onResponse(
-                    call: Call<Array<DamageTypeWrapper>>,
-                    response: Response<Array<DamageTypeWrapper>>
-                ) {
-                    response?.body().let {
-                        it?.map { dmtw -> mapBladeExpertDamageType(dmtw) }
-                            ?.let {dmts -> database.damageTypeDao().insertAll(dmts) }
-
-                        it?.map { dmtw -> mapBladeExpertDamageType(dmtw).id }?.let { dmtIds ->
-                            database.damageTypeDao().deleteWhereIdsNotIn(dmtIds)
-                        }
-                    }
-                    Log.d(TAG, "DamageType Insert done, retrieving task")
-                    database.damageTypeDao().getAllInner()
-                        .forEach { Log.d(TAG, "Inner DamageType in database : $it") }
-                    database.damageTypeDao().getAllOuter()
-                        .forEach { Log.d(TAG, "Outer DamageType in database : $it") }
-                }
-
-                override fun onFailure(call: Call<Array<DamageTypeWrapper>>, t: Throwable) {
-                    Log.e(TAG, "Impossible to load DamageTypes", t)
-                }
-            })
-    }
 }
