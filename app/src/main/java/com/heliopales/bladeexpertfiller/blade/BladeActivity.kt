@@ -89,15 +89,7 @@ class BladeActivity : AppCompatActivity(), View.OnClickListener {
 
     private fun takeBladeSerialPicture() {
         val intent = Intent(this, CameraActivity::class.java)
-
-        var path = App.getOutputDirectory()
-        path += "/${intervention.id}_${
-            intervention.turbineName?.replace(
-                " ",
-                "-"
-            )
-        }/blade_${blade.id}_${blade.position?.replace(" ", "-")}"
-
+        var path = "${App.getBladePath(intervention, blade)}/bladeSerialPicture"
         intent.putExtra(CameraActivity.EXTRA_OUTPUT_PATH, path)
         startActivity(intent)
     }
@@ -108,7 +100,6 @@ class BladeActivity : AppCompatActivity(), View.OnClickListener {
             override fun onDialogPositiveClick(serial: String) {
                 updateBladeSerialNumber(serial)
             }
-
             override fun onDialogNegativeClick() {
             }
         }

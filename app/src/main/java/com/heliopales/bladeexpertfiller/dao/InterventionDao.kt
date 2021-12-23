@@ -8,6 +8,9 @@ interface InterventionDao {
     @Query("SELECT * FROM intervention")
     fun getAllInterventions(): List<Intervention>
 
+    @Query("SELECT * FROM intervention WHERE id= :id")
+    fun getById(id: Int): Intervention
+
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     fun insertNonExistingIntervention(intervention: Intervention) : Long
 

@@ -3,13 +3,11 @@ package com.heliopales.bladeexpertfiller
 import android.app.Application
 import android.util.Log
 import androidx.room.Room
-import androidx.room.RoomDatabase
-import com.google.android.material.tabs.TabLayout
+import com.heliopales.bladeexpertfiller.blade.Blade
 import com.heliopales.bladeexpertfiller.bladeexpert.*
+import com.heliopales.bladeexpertfiller.intervention.Intervention
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
-import retrofit2.Call
-import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.io.File
@@ -69,6 +67,47 @@ class App : Application() {
             Log.i("App", "Output Directory is : ${file.absolutePath}")
             return file.absolutePath
         }
+
+        fun getInterventionPath(intervention: Intervention): String {
+            return "${getOutputDirectory()}/intervention_${intervention.id}_${
+                intervention.turbineName?.replace(
+                    " ",
+                    "-"
+                )
+            }"
+        }
+
+        fun getInterventionPath(interventionId: Int): String {
+            val intervention = database.interventionDao().getById(interventionId)
+            return getInterventionPath(intervention)
+        }
+
+        fun getBladePath(intervention: Intervention, blade: Blade): String {
+            return "${getInterventionPath(intervention)}/blade_${blade.id}_${
+                blade.position?.replace(
+                    " ",
+                    "-"
+                )
+            }"
+        }
+
+        fun getBladePath(interventionId: Int, bladeId: Int): String {
+            val intervention = database.interventionDao().getById(interventionId)
+            val blade = database.bladeDao().getById(bladeId)
+            return getBladePath(intervention, blade)
+        }
+
+        fun getDamagePath(interventionId: Int, bladeId: Int, damageSpotConditionLocalId: Long?):String{
+            val intervention = database.interventionDao().getById(interventionId)
+            val blade = database.bladeDao().getById(bladeId)
+            if(damageSpotConditionLocalId != null){
+                val damage = database.spotConditionDao().getDamageByLocalId(damageSpotConditionLocalId)
+                return "${getBladePath(intervention, blade)}/damage_${damage.fieldCode}"
+            }else{
+                return "${getBladePath(intervention, blade)}/damage_unknown"
+            }
+        }
+
     }
 
     override fun onCreate() {
@@ -76,9 +115,6 @@ class App : Application() {
         instance = this
 
     }
-
-
-
 
 
 }

@@ -31,8 +31,6 @@ class InterventionDetailsActivity : AppCompatActivity(), View.OnClickListener {
         const val EXTRA_INTERVENTION = "intervention"
     }
 
-    lateinit var currentPhotoPath: String
-
     private lateinit var intervention: Intervention;
     private lateinit var database: AppDatabase;
     private lateinit var turbineNameView: TextView;
@@ -135,11 +133,8 @@ class InterventionDetailsActivity : AppCompatActivity(), View.OnClickListener {
 
     private fun takeTurbineSerialPicture() {
         val intent = Intent(this, CameraActivity::class.java)
-
-        var path = App.getOutputDirectory()
-        path+="/${intervention.id}_${intervention.turbineName?.replace(" ","-")}/turbinePictures"
+        var path = "${App.getInterventionPath(intervention)}/turbineSerialPicture"
         intent.putExtra(CameraActivity.EXTRA_OUTPUT_PATH, path)
-
         startActivity(intent)
     }
 

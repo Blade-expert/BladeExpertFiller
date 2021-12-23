@@ -25,6 +25,7 @@ class DamageViewPagerActivity : AppCompatActivity() {
     lateinit var damage: DamageSpotCondition
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        Log.d(TAG, "onCreate()")
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_damage_view_pager)
 
@@ -47,6 +48,16 @@ class DamageViewPagerActivity : AppCompatActivity() {
                 INDEX_DAMAGE_LOOP_SEVE -> tab.text = "Grav."
             }
         }.attach()
+    }
+
+    override fun onRestart() {
+        Log.d(TAG, "onRestart()")
+        super.onRestart()
+    }
+
+    override fun onResume() {
+        Log.d(TAG, "onResume()")
+        super.onResume()
     }
 
     override fun onPause() {

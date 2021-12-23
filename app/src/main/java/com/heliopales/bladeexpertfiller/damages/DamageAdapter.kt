@@ -19,8 +19,11 @@ class DamageAdapter(
     private val damageListener: DamageItemListener
 ) : RecyclerView.Adapter<DamageAdapter.ViewHolder>(), View.OnClickListener {
 
+    private val TAG = DamageAdapter::class.java.simpleName
+
     interface DamageItemListener {
         fun onDamageSelected(damage: DamageSpotCondition)
+        fun onCameraButtonClicked(damage: DamageSpotCondition)
     }
 
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -42,6 +45,9 @@ class DamageAdapter(
         with(holder) {
             cardView.tag = dsc
             cardView.setOnClickListener(this@DamageAdapter)
+            cameraButton.tag = dsc
+            cameraButton.setOnClickListener(this@DamageAdapter)
+
             textView1.text =
                 "R = ${if (dsc.radialPosition != null) dsc.radialPosition else "--"} m${getDamagePosition(dsc)}${getDamageProfileDepth(dsc)}"
 
@@ -135,6 +141,11 @@ class DamageAdapter(
     override fun getItemCount(): Int = damages.size
 
     override fun onClick(view: View) {
-        damageListener.onDamageSelected(view.tag as DamageSpotCondition)
+        when(view.id){
+            R.id.damage_card_view -> damageListener.onDamageSelected(view.tag as DamageSpotCondition)
+            R.id.damage_camera_button -> damageListener.onCameraButtonClicked(view.tag as DamageSpotCondition)
+
+        }
+
     }
 }

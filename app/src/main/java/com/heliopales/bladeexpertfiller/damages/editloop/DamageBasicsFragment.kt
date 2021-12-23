@@ -1,5 +1,6 @@
 package com.heliopales.bladeexpertfiller.damages.editloop
 
+import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -7,8 +8,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
+import android.widget.ImageButton
 import androidx.fragment.app.Fragment
+import com.heliopales.bladeexpertfiller.App
 import com.heliopales.bladeexpertfiller.R
+import com.heliopales.bladeexpertfiller.camera.CameraActivity
 import com.heliopales.bladeexpertfiller.damages.DamageSpotCondition
 import com.heliopales.bladeexpertfiller.damages.DamageViewPagerActivity
 
@@ -36,6 +40,8 @@ class DamageBasicsFragment : Fragment() {
     private lateinit var radialLength: EditText
     private lateinit var repetition: EditText
     private lateinit var description: EditText
+    private lateinit var pictureButton: ImageButton
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -51,12 +57,12 @@ class DamageBasicsFragment : Fragment() {
 
         view.findViewById<EditText>(R.id.damage_radial_position)
 
-        radialPosition = view.findViewById<EditText>(R.id.damage_radial_position)
-        longitudinalLength = view.findViewById<EditText>(R.id.damage_longitudinal_length)
-        radialLength = view.findViewById<EditText>(R.id.damage_radial_length)
-        repetition = view.findViewById<EditText>(R.id.damage_repetition)
-        description = view.findViewById<EditText>(R.id.damage_description)
-
+        radialPosition = view.findViewById(R.id.damage_radial_position)
+        longitudinalLength = view.findViewById(R.id.damage_longitudinal_length)
+        radialLength = view.findViewById(R.id.damage_radial_length)
+        repetition = view.findViewById(R.id.damage_repetition)
+        description = view.findViewById(R.id.damage_description)
+        pictureButton = view.findViewById(R.id.damage_picture_button)
         attachListeners()
     }
 
@@ -115,6 +121,14 @@ class DamageBasicsFragment : Fragment() {
                     damage.description = description.text.toString()
             }
         })
+
+        pictureButton.setOnClickListener {
+            val intent = Intent(requireContext(), CameraActivity::class.java)
+            var path =
+                "${App.getDamagePath(damage.interventionId!!, damage.bladeId!!, damage.localId)}"
+            intent.putExtra(CameraActivity.EXTRA_OUTPUT_PATH, path)
+            startActivity(intent)
+        }
     }
 
     override fun onResume() {

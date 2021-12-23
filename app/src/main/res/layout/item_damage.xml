@@ -68,7 +68,6 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 android:foreground="@drawable/ic_round_camera_alt_24"
                 android:foregroundTint="@color/bulma_black"
-                android:scaleType="fitCenter"
                 android:background="@null"
 
                 />

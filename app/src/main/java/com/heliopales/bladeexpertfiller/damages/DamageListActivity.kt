@@ -11,12 +11,11 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.heliopales.bladeexpertfiller.App
 import com.heliopales.bladeexpertfiller.R
-import kotlin.math.roundToInt
-import kotlin.random.Random
+import com.heliopales.bladeexpertfiller.camera.CameraActivity
 
 class DamageListActivity : AppCompatActivity(), DamageAdapter.DamageItemListener,
     View.OnClickListener {
-    val TAG = this.javaClass.simpleName
+    val TAG = DamageListActivity::class.java.simpleName
 
     companion object {
         val EXTRA_INTERVENTION_ID = "intervention_id";
@@ -56,10 +55,6 @@ class DamageListActivity : AppCompatActivity(), DamageAdapter.DamageItemListener
             findViewById<TextView>(R.id.damage_list_label).text = "Error - extra value missing"
         }
 
-
-
-
-
         findViewById<ImageButton>(R.id.add_damage_button).setOnClickListener(this)
     }
 
@@ -78,8 +73,14 @@ class DamageListActivity : AppCompatActivity(), DamageAdapter.DamageItemListener
     }
 
     override fun onDamageSelected(damage: DamageSpotCondition) {
-        Log.i(TAG, "onDamageSelected() : $damage")
         launchDamagePager(damage.localId ?: -1L)
+    }
+
+    override fun onCameraButtonClicked(damage: DamageSpotCondition) {
+        val intent = Intent(this, CameraActivity::class.java)
+        var path = "${App.getDamagePath(interventionId, bladeId, damage.localId)}"
+        intent.putExtra(CameraActivity.EXTRA_OUTPUT_PATH, path)
+        startActivity(intent)
     }
 
     override fun onClick(v: View) {
@@ -104,8 +105,6 @@ class DamageListActivity : AppCompatActivity(), DamageAdapter.DamageItemListener
         damages.add(damage);
         damages.sortBy { it.radialPosition }
         adapter.notifyDataSetChanged()
-
-
 
         return newId
     }

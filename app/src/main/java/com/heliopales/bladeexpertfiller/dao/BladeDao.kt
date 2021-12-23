@@ -18,4 +18,7 @@ interface BladeDao {
 
     @Update
     fun updateBlade(blade: Blade): Int
+
+    @Query("SELECT * FROM blade WHERE id = :id")
+    fun getById(id: Int): Blade
 }

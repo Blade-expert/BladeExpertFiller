@@ -72,7 +72,8 @@ class DamageTypeFragment : Fragment(), View.OnClickListener {
         list.setAdapter(listAdapter)
 
         list.setOnChildClickListener { _, _, groupPosition, childPosition, _ ->
-            val selectedDamageType = listAdapter.getChild(groupPosition, childPosition) as DamageType
+            val selectedDamageType =
+                listAdapter.getChild(groupPosition, childPosition) as DamageType
             damage.damageTypeId = selectedDamageType.id
             naButton.foreground = null
             (listAdapter as CustomExpandableListAdapter).dataList.forEach { entry ->
@@ -106,24 +107,38 @@ class DamageTypeFragment : Fragment(), View.OnClickListener {
         activity?.closeKeyboard()
 
         if (damage.damageTypeId != null) {
+            naButton.foreground = null
+
             Log.d(TAG, "id not null, retrieveing")
 
             var groupToExpand = 0;
             var indexOffset = 0;
             (listAdapter as CustomExpandableListAdapter).titleList.forEachIndexed { index, damageTypeCategory ->
-                (listAdapter as CustomExpandableListAdapter).dataList[damageTypeCategory]?.forEachIndexed {i, dmt ->
-                    if(damage.damageTypeId == dmt.id){
+                (listAdapter as CustomExpandableListAdapter).dataList[damageTypeCategory]?.forEachIndexed { i, dmt ->
+                    if (damage.damageTypeId == dmt.id) {
                         groupToExpand = index
                         dmt.selected = true
                         indexOffset = i;
-                    }else
+                    } else
                         dmt.selected = false
                 }
             }
             (listAdapter as CustomExpandableListAdapter).notifyDataSetChanged()
-            if(!list.isGroupExpanded(groupToExpand)) list.expandGroup(groupToExpand)
+            if (!list.isGroupExpanded(groupToExpand)) list.expandGroup(groupToExpand)
 
-            list.smoothScrollToPosition(groupToExpand+indexOffset+1)
+            list.smoothScrollToPosition(groupToExpand + indexOffset + 1)
+
+
+        } else {
+            naButton.foreground = requireContext().getDrawable(R.drawable.ic_baseline_crop_din_24)
+            (listAdapter as CustomExpandableListAdapter).titleList.forEachIndexed { index, damageTypeCategory ->
+                (listAdapter as CustomExpandableListAdapter).dataList[damageTypeCategory]?.forEachIndexed { i, dmt ->
+                    dmt.selected = false
+                }
+                if (list.isGroupExpanded(index)) list.collapseGroup(index)
+            }
+            (listAdapter as CustomExpandableListAdapter).notifyDataSetChanged()
+
         }
     }
 
