@@ -13,7 +13,7 @@ import com.heliopales.bladeexpertfiller.secondaryentities.DamageType
 
 class CustomExpandableListAdapter internal constructor(
     private val context: Context,
-    private val titleList: List<DamageTypeCategory>,
+    val titleList: List<DamageTypeCategory>,
     val dataList: HashMap<DamageTypeCategory, List<DamageType>>
 ) : BaseExpandableListAdapter() {
 

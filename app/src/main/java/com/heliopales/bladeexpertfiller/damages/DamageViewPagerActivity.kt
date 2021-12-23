@@ -32,15 +32,13 @@ class DamageViewPagerActivity : AppCompatActivity() {
         damage = App.database.spotConditionDao().getDamageByLocalId(damageLocalId)
 
         pager = findViewById(R.id.damage_view_pager)
+        pager.offscreenPageLimit=4
         pager.adapter = DamagePagerAdapter(this, damage)
 
         Log.i(TAG, "Damage loaded : $damage")
 
-
         val tabLayout = findViewById<TabLayout>(R.id.damage_tab_layout)
         TabLayoutMediator(tabLayout, pager) { tab, position ->
-
-
             when (position) {
                 INDEX_DAMAGE_LOOP_BASE -> tab.text = "Base"
                 INDEX_DAMAGE_LOOP_POSI -> tab.text = "Pos."
@@ -50,7 +48,6 @@ class DamageViewPagerActivity : AppCompatActivity() {
             }
         }.attach()
     }
-
 
     override fun onPause() {
         Log.d(TAG, "onPause()")

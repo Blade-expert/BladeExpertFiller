@@ -92,7 +92,8 @@ class DamageListActivity : AppCompatActivity(), DamageAdapter.DamageItemListener
 
     private fun addNewDamage(): Long {
         Log.d(TAG, "addNewDamage()")
-        var damage = DamageSpotCondition(damageInheritType)
+
+        var damage = DamageSpotCondition(damageInheritType, "D${adapter.itemCount + 1}")
 
         with(damage) {
             bladeId = this@DamageListActivity.bladeId

@@ -107,11 +107,23 @@ class DamageTypeFragment : Fragment(), View.OnClickListener {
 
         if (damage.damageTypeId != null) {
             Log.d(TAG, "id not null, retrieveing")
-            damageTypes.forEach {
-                if (it.id == damage.damageTypeId) {
 
+            var groupToExpand = 0;
+            var indexOffset = 0;
+            (listAdapter as CustomExpandableListAdapter).titleList.forEachIndexed { index, damageTypeCategory ->
+                (listAdapter as CustomExpandableListAdapter).dataList[damageTypeCategory]?.forEachIndexed {i, dmt ->
+                    if(damage.damageTypeId == dmt.id){
+                        groupToExpand = index
+                        dmt.selected = true
+                        indexOffset = i;
+                    }else
+                        dmt.selected = false
                 }
             }
+            (listAdapter as CustomExpandableListAdapter).notifyDataSetChanged()
+            if(!list.isGroupExpanded(groupToExpand)) list.expandGroup(groupToExpand)
+
+            list.smoothScrollToPosition(groupToExpand+indexOffset+1)
         }
     }
 

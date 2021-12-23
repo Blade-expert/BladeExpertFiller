@@ -20,32 +20,58 @@
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="80dp"
-            android:paddingHorizontal="16dp"
-            android:paddingVertical="16dp">
+            android:layout_height="wrap_content"
+            android:paddingHorizontal="12dp"
+            android:paddingVertical="18dp">
+
+            <TextView
+                android:id="@+id/damage_field_code"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent"
+                android:paddingRight="12dp"
+                android:textColor="@color/bulma_black"
+                android:textSize="20sp"
+                tools:text="D1"/>
 
             <TextView
                 android:id="@+id/damage_text_1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="@color/bulma_dark"
-                android:textSize="20sp"
+                android:textColor="@color/bulma_black"
+                android:textSize="22sp"
                 app:layout_constraintBottom_toTopOf="@id/damage_text_2"
-                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintLeft_toRightOf="@id/damage_field_code"
                 app:layout_constraintTop_toTopOf="parent"
-                tools:text="R = 14 m  |  PS  |  Spar Cap" />
+                tools:text="R = 14 m  -  PS  -  Spar Cap" />
 
             <TextView
                 android:id="@+id/damage_text_2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="16dp"
-                android:textColor="@color/bulma_dark"
+                android:layout_marginLeft="8dp"
+                android:textColor="@color/bulma_black"
                 android:textSize="18sp"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/damage_text_1"
+                app:layout_constraintLeft_toLeftOf="@id/damage_text_1"
                 tools:text="LAM - Crack" />
+
+            <ImageButton
+                android:id="@+id/damage_camera_button"
+                android:layout_width="35dp"
+                android:layout_height="35dp"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                android:foreground="@drawable/ic_round_camera_alt_24"
+                android:foregroundTint="@color/bulma_black"
+                android:scaleType="fitCenter"
+                android:background="@null"
+
+                />
 
 
         </androidx.constraintlayout.widget.ConstraintLayout>

@@ -22,7 +22,7 @@
         android:id="@+id/grid_layout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:rowCount="2"
+        android:rowCount="3"
         android:columnCount="2"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
@@ -79,6 +79,29 @@
             android:tag="OSS"
             android:text="SS" />
 
+        <Button
+            android:id="@+id/button_ort"
+            android:layout_width="180dp"
+            android:layout_height="@dimen/button_height_outdoor_position"
+            android:layout_margin="0dp"
+            android:background="@drawable/ic_square_24"
+            android:backgroundTint="@color/bulma_link_light"
+            android:foregroundTint="@color/bulma_link"
+            android:textSize="30sp"
+            android:tag="ORT"
+            android:text="ROOT" />
+
+        <Button
+            android:id="@+id/button_otp"
+            android:layout_width="180dp"
+            android:layout_height="@dimen/button_height_outdoor_position"
+            android:layout_margin="0dp"
+            android:background="@drawable/ic_square_24"
+            android:backgroundTint="@color/bulma_link_light"
+            android:foregroundTint="@color/bulma_link"
+            android:textSize="30sp"
+            android:tag="OTP"
+            android:text="TIP" />
 
 
     </GridLayout>

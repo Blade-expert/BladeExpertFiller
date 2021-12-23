@@ -9,6 +9,9 @@ import com.heliopales.bladeexpertfiller.secondaryentities.DamageType
 @Dao
 interface DamageTypeDao {
 
+    @Query("SELECT * FROM DamageType WHERE id = :id")
+    fun getById(id: Int): DamageType;
+
     @Query("SELECT * FROM DamageType WHERE inheritType = 'IDT'")
     fun getAllInner(): List<DamageType>;
 

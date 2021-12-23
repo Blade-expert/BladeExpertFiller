@@ -12,7 +12,8 @@ const val INHERIT_TYPE_DAMAGE_OUT = "ODC"
 
 
 @Entity
-data class DamageSpotCondition(val inheritType: String) {
+data class DamageSpotCondition(val inheritType: String, val fieldCode: String) {
+
     @PrimaryKey(autoGenerate = true)
     var localId: Long? = null
     var id: Int? = null
@@ -27,6 +28,7 @@ data class DamageSpotCondition(val inheritType: String) {
     var repetition: Int? = null
     var position: String? = null
     var profileDepth: String? = null
+
 }
 
 @Entity

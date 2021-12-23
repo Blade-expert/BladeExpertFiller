@@ -28,6 +28,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintBottom_toTopOf="@id/button_dmt_na"
+            android:choiceMode="singleChoice"
             android:divider="@color/bulma_dark"
             android:dividerHeight="1dp"
             android:indicatorLeft="?android:attr/expandableListPreferredItemIndicatorLeft"
