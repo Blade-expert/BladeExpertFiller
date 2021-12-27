@@ -4,6 +4,8 @@ import android.os.Parcel
 import android.os.Parcelable
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.heliopales.bladeexpertfiller.EXPORTATION_STATE_EMPTY
+import com.heliopales.bladeexpertfiller.EXPORTATION_STATE_NOT_EXPORTED
 import io.reactivex.internal.operators.flowable.FlowableElementAt
 import kotlinx.android.parcel.Parcelize
 
@@ -12,13 +14,13 @@ const val INHERIT_TYPE_DAMAGE_OUT = "ODC"
 
 
 @Entity
-data class DamageSpotCondition(val inheritType: String, val fieldCode: String) {
+data class DamageSpotCondition(val inheritType: String, val fieldCode: String, val interventionId: Int, val bladeId: Int) {
 
     @PrimaryKey(autoGenerate = true)
     var localId: Long? = null
     var id: Int? = null
-    var interventionId: Int? = null
-    var bladeId: Int? = null
+
+
     var severityId: Int? = null
     var description: String? = null
     var damageTypeId: Int? = null
@@ -32,22 +34,18 @@ data class DamageSpotCondition(val inheritType: String, val fieldCode: String) {
 }
 
 @Entity
-class DrainholeSpotCondition {
+class DrainholeSpotCondition(val interventionId: Int, val bladeId: Int) {
     @PrimaryKey(autoGenerate = true)
     var localId: Int? = null
     var id: Int? = null
-    var interventionId: Int? = null
-    var bladeId: Int? = null
     var severityId: Int? = null
     var description: String? = null
 }
 
 @Entity
-class LightningSpotCondition {
+class LightningSpotCondition(val interventionId: Int, val bladeId: Int) {
     @PrimaryKey(autoGenerate = true)
     var localId: Int? = null
     var id: Int? = null
-    var interventionId: Int? = null
-    var bladeId: Int? = null
     var description: String? = null
 }

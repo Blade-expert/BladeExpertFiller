@@ -88,10 +88,11 @@
 
     <GridLayout
         android:id="@+id/blade_buttons_layout"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:rowCount="2"
         android:columnCount="2"
+        android:alignmentMode="alignBounds"
+        android:useDefaultMargins="true"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -99,46 +100,50 @@
 
         <Button
             android:id="@+id/see_indoor_damages_button"
-            android:layout_width="170dp"
+            android:layout_width="0dp"
             android:layout_height="150dp"
-            android:text="Défauts Intérieurs"
+            android:layout_columnWeight="1"
+            android:layout_gravity="fill_horizontal"
+            android:text="IN"
             android:textColor="@color/bulma_light"
             android:backgroundTint="@color/bulma_link"
-            android:textSize="20sp"
-            android:layout_margin="10dp"
+            android:textSize="30sp"
             />
 
         <Button
             android:id="@+id/see_outdoor_damages_button"
-            android:layout_width="170dp"
+            android:layout_width="0dp"
             android:layout_height="150dp"
-            android:text="Défauts Extérieurs"
+            android:layout_columnWeight="1"
+            android:layout_gravity="fill_horizontal"
+            android:text="OUT"
             android:textColor="@color/bulma_light"
             android:backgroundTint="@color/bulma_link"
-            android:textSize="20sp"
-            android:layout_margin="10dp"
+            android:textSize="30sp"
             />
 
         <Button
             android:id="@+id/see_drainhole_button"
-            android:layout_width="170dp"
+            android:layout_width="0dp"
             android:layout_height="150dp"
-            android:text="DRAINS"
+            android:layout_columnWeight="1"
+            android:layout_gravity="fill_horizontal"
+            android:text="DRAIN"
             android:textColor="@color/bulma_light"
             android:backgroundTint="@color/bulma_link"
-            android:textSize="20sp"
-            android:layout_margin="10dp"
+            android:textSize="25sp"
             />
 
         <Button
             android:id="@+id/see_lightning_button"
-            android:layout_width="170dp"
+            android:layout_width="0dp"
             android:layout_height="150dp"
+            android:layout_columnWeight="1"
+            android:layout_gravity="fill_horizontal"
             android:text="LPS"
             android:textColor="@color/bulma_light"
             android:backgroundTint="@color/bulma_link"
-            android:textSize="20sp"
-            android:layout_margin="10dp"
+            android:textSize="30sp"
             />
 
     </GridLayout>

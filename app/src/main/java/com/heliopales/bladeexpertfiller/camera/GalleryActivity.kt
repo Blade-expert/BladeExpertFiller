@@ -3,6 +3,7 @@ package com.heliopales.bladeexpertfiller.camera
 import android.os.Bundle
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import com.heliopales.bladeexpertfiller.App
 import com.heliopales.bladeexpertfiller.R
 import kotlinx.android.synthetic.main.activity_gallery.*
 import java.io.File
@@ -44,14 +45,16 @@ class GalleryActivity : AppCompatActivity() {
 
         delete_photo_button.setOnClickListener {
             AlertDialog.Builder(photo_view_pager.context, android.R.style.Theme_Material_Dialog)
-                .setTitle("Confirmer")
-                .setMessage("Etes vous sur de vouloir supprimer cette photo ?")
+                .setTitle("Confirm")
+                .setMessage("Are you sure ?")
                 .setIcon(android.R.drawable.ic_dialog_alert)
-                .setPositiveButton("Oui") { _, _ ->
+                .setPositiveButton("Yes") { _, _ ->
                     val position = photo_view_pager.currentItem
-
+                    val mediaFile = mediaList[position]
                     println("=== delete ${mediaList[position].name}")
-                    mediaList[position].delete()
+                    mediaFile.delete()
+                    App.database.pictureDao().deletePictureByFileName(mediaFile.name)
+
                     mediaList.removeAt(position)
                     viewPagerAdapter.notifyDataSetChanged()
 
@@ -61,7 +64,7 @@ class GalleryActivity : AppCompatActivity() {
                     }
 
                 }
-                .setNegativeButton("Non", null)
+                .setNegativeButton("No", null)
                 .create().show()
 
 

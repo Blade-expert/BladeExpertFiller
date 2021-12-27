@@ -3,7 +3,6 @@ package com.heliopales.bladeexpertfiller.blade
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
-import android.provider.SyncStateContract
 import android.util.Log
 import android.view.View
 import android.widget.Button
@@ -20,6 +19,7 @@ import com.heliopales.bladeexpertfiller.intervention.Intervention
 
 class BladeActivity : AppCompatActivity(), View.OnClickListener {
     val TAG = this.javaClass.simpleName
+
     companion object {
         val EXTRA_INTERVENTION = "intervention"
         val EXTRA_BLADE = "blade"
@@ -62,7 +62,7 @@ class BladeActivity : AppCompatActivity(), View.OnClickListener {
     }
 
     private fun startIndoorActivity() {
-        Log.d(TAG,"startIndoorActivity()")
+        Log.d(TAG, "startIndoorActivity()")
         val intent = Intent(this, DamageListActivity::class.java)
         intent.putExtra(DamageListActivity.EXTRA_INTERVENTION_ID, intervention.id)
         intent.putExtra(DamageListActivity.EXTRA_BLADE_ID, blade.id)
@@ -78,18 +78,12 @@ class BladeActivity : AppCompatActivity(), View.OnClickListener {
         startActivity(intent)
     }
 
-    override fun onBackPressed() {
-        val intent = Intent()
-        intent.putExtra(BladeActivity.EXTRA_INTERVENTION, intervention)
-        intent.putExtra(BladeActivity.EXTRA_BLADE, blade)
-        setResult(Activity.RESULT_OK, intent)
-        super.onBackPressed()
-    }
-
-
     private fun takeBladeSerialPicture() {
         val intent = Intent(this, CameraActivity::class.java)
         var path = "${App.getBladePath(intervention, blade)}/bladeSerialPicture"
+        intent.putExtra(CameraActivity.EXTRA_PICTURE_TYPE, PICTURE_TYPE_BLADE)
+        intent.putExtra(CameraActivity.EXTRA_RELATED_ID, blade.id)
+        intent.putExtra(CameraActivity.EXTRA_INTERVENTION_ID, intervention.id)
         intent.putExtra(CameraActivity.EXTRA_OUTPUT_PATH, path)
         startActivity(intent)
     }
@@ -100,6 +94,7 @@ class BladeActivity : AppCompatActivity(), View.OnClickListener {
             override fun onDialogPositiveClick(serial: String) {
                 updateBladeSerialNumber(serial)
             }
+
             override fun onDialogNegativeClick() {
             }
         }
@@ -108,11 +103,10 @@ class BladeActivity : AppCompatActivity(), View.OnClickListener {
 
     private fun updateBladeSerialNumber(serial: String) {
         blade.serial = serial
-        blade.state = EXPORTATION_STATE_NOT_EXPORTED
-        intervention.state = EXPORTATION_STATE_NOT_EXPORTED
         bladeSerialView.text = serial
         database.bladeDao().updateBlade(blade)
-        database.interventionDao().updateIntervention(intervention)
+        App.database.interventionDao()
+            .updateExportationState(intervention.id, EXPORTATION_STATE_NOT_EXPORTED)
     }
 
 

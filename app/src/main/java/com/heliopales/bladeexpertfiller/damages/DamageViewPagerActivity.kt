@@ -11,6 +11,9 @@ import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import com.heliopales.bladeexpertfiller.*
 import com.heliopales.bladeexpertfiller.damages.editloop.*
+import android.app.Activity
+import android.view.inputmethod.InputMethodManager
+
 
 class DamageViewPagerActivity : AppCompatActivity() {
 
@@ -30,7 +33,7 @@ class DamageViewPagerActivity : AppCompatActivity() {
         setContentView(R.layout.activity_damage_view_pager)
 
         val damageLocalId = intent.getLongExtra(EXTRA_DAMAGE_SPOT_CONDITION_LOCAL_ID, -1)
-        damage = App.database.spotConditionDao().getDamageByLocalId(damageLocalId)
+        damage = App.database.damageDao().getDamageByLocalId(damageLocalId)
 
         pager = findViewById(R.id.damage_view_pager)
         pager.offscreenPageLimit=4
@@ -50,6 +53,12 @@ class DamageViewPagerActivity : AppCompatActivity() {
         }.attach()
     }
 
+    fun hideKeyboard(){
+        val imm: InputMethodManager =
+            getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
+        imm.hideSoftInputFromWindow(pager.windowToken, 0)
+    }
+
     override fun onRestart() {
         Log.d(TAG, "onRestart()")
         super.onRestart()
@@ -63,7 +72,7 @@ class DamageViewPagerActivity : AppCompatActivity() {
     override fun onPause() {
         Log.d(TAG, "onPause()")
         super.onPause()
-        App.database.spotConditionDao().updateDamage(damage)
+        App.database.damageDao().updateDamage(damage)
     }
 
 
@@ -77,18 +86,18 @@ class DamagePagerAdapter(val fa: FragmentActivity, val damage: DamageSpotConditi
     override fun createFragment(position: Int): Fragment {
         when (damage.inheritType) {
             INHERIT_TYPE_DAMAGE_IN -> when (position) {
-                INDEX_DAMAGE_LOOP_BASE -> return DamageBasicsFragment.newInstance("123", "125")
-                INDEX_DAMAGE_LOOP_POSI -> return IndoorPositionFragment.newInstance("123", "123")
-                INDEX_DAMAGE_LOOP_DEPT -> return IndoorProfileFragment.newInstance("456", "456")
-                INDEX_DAMAGE_LOOP_TYPE -> return DamageTypeFragment.newInstance()
-                INDEX_DAMAGE_LOOP_SEVE -> return SeverityFragment.newInstance("456", "456")
+                INDEX_DAMAGE_LOOP_BASE -> return DamageBasicsFragment()
+                INDEX_DAMAGE_LOOP_POSI -> return IndoorPositionFragment()
+                INDEX_DAMAGE_LOOP_DEPT -> return IndoorProfileFragment()
+                INDEX_DAMAGE_LOOP_TYPE -> return DamageTypeFragment()
+                INDEX_DAMAGE_LOOP_SEVE -> return SeverityFragment()
             }
             INHERIT_TYPE_DAMAGE_OUT -> when (position) {
-                INDEX_DAMAGE_LOOP_BASE -> return DamageBasicsFragment.newInstance("123", "125")
-                INDEX_DAMAGE_LOOP_POSI -> return OutdoorPositionFragment.newInstance("123", "123")
-                INDEX_DAMAGE_LOOP_DEPT -> return OutdoorProfileFragment.newInstance("456", "456")
-                INDEX_DAMAGE_LOOP_TYPE -> return DamageTypeFragment.newInstance()
-                INDEX_DAMAGE_LOOP_SEVE -> return SeverityFragment.newInstance("456", "456")
+                INDEX_DAMAGE_LOOP_BASE -> return DamageBasicsFragment()
+                INDEX_DAMAGE_LOOP_POSI -> return OutdoorPositionFragment()
+                INDEX_DAMAGE_LOOP_DEPT -> return OutdoorProfileFragment()
+                INDEX_DAMAGE_LOOP_TYPE -> return DamageTypeFragment()
+                INDEX_DAMAGE_LOOP_SEVE -> return SeverityFragment()
             }
         }
         return DamageTypeFragment()

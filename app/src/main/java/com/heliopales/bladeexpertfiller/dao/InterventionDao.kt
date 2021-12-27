@@ -19,4 +19,7 @@ interface InterventionDao {
 
     @Update
     fun updateIntervention(intervention: Intervention) : Int
+
+    @Query("UPDATE intervention SET exportationState = :state WHERE id = :interventionId")
+    fun updateExportationState(interventionId: Int, state:Int)
 }

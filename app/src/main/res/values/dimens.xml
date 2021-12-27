@@ -1,9 +1,3 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <dimen name="button_height_indoor_position">110dp</dimen>
-    <dimen name="button_height_outdoor_position">130dp</dimen>
-    <dimen name="button_height_indoor_profile">120dp</dimen>
-    <dimen name="button_width_indoor_profile">120dp</dimen>
-    <dimen name="button_height_outdoor_profile">180dp</dimen>
-    <dimen name="button_width_outdoor_profile">180dp</dimen>
 </resources>

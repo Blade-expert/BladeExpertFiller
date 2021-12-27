@@ -50,19 +50,3 @@ fun Context.spToPx(sp: Float): Float {
         resources.displayMetrics
     )
 }
-
-fun Activity.closeKeyboard() {
-    val imm: InputMethodManager =
-        getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
-
-    // To get the correct window token, lets first get the currently focused view
-    var view: View? = currentFocus
-
-    // To get the window token when there is no currently focused view, we have a to create a view
-    if (view == null) {
-        view = View(this)
-    }
-
-    // hide the keyboard
-    imm.hideSoftInputFromWindow(view.windowToken, 0)
-}

@@ -21,4 +21,6 @@ interface BladeDao {
 
     @Query("SELECT * FROM blade WHERE id = :id")
     fun getById(id: Int): Blade
+
+
 }

@@ -2,27 +2,17 @@ package com.heliopales.bladeexpertfiller.damages.editloop
 
 import android.os.Bundle
 import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.*
-import androidx.core.view.children
+import android.widget.Button
+import android.widget.ExpandableListAdapter
+import android.widget.ExpandableListView
+import androidx.fragment.app.Fragment
 import com.heliopales.bladeexpertfiller.*
 import com.heliopales.bladeexpertfiller.damages.*
 import com.heliopales.bladeexpertfiller.secondaryentities.DamageType
-import com.heliopales.bladeexpertfiller.utils.closeKeyboard
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
-
-/**
- * A simple [Fragment] subclass.
- * Use the [DamageTypeFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
 class DamageTypeFragment : Fragment(), View.OnClickListener {
     private val TAG = DamageTypeFragment::class.java.simpleName
 
@@ -75,6 +65,7 @@ class DamageTypeFragment : Fragment(), View.OnClickListener {
             val selectedDamageType =
                 listAdapter.getChild(groupPosition, childPosition) as DamageType
             damage.damageTypeId = selectedDamageType.id
+            App.database.interventionDao().updateExportationState(damage.interventionId, EXPORTATION_STATE_NOT_EXPORTED)
             naButton.foreground = null
             (listAdapter as CustomExpandableListAdapter).dataList.forEach { entry ->
                 entry.value.forEach {
@@ -96,15 +87,11 @@ class DamageTypeFragment : Fragment(), View.OnClickListener {
         return inflater.inflate(R.layout.fragment_damage_type, container, false)
     }
 
-    companion object {
-        @JvmStatic
-        fun newInstance() = DamageTypeFragment()
-    }
 
     override fun onResume() {
         super.onResume()
         Log.v(TAG, "onResume()")
-        activity?.closeKeyboard()
+        (requireActivity() as DamageViewPagerActivity).hideKeyboard()
 
         if (damage.damageTypeId != null) {
             naButton.foreground = null
@@ -145,6 +132,7 @@ class DamageTypeFragment : Fragment(), View.OnClickListener {
     override fun onClick(v: View) {
         when (v.id) {
             R.id.button_dmt_na -> {
+                App.database.interventionDao().updateExportationState(damage.interventionId, EXPORTATION_STATE_NOT_EXPORTED)
                 v.foreground = requireContext().getDrawable(R.drawable.ic_baseline_crop_din_24)
                 damage.damageTypeId = null
                 (listAdapter as CustomExpandableListAdapter).dataList.forEach { entry ->

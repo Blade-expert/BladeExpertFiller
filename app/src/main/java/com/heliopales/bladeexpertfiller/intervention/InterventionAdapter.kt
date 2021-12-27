@@ -57,7 +57,7 @@ class InterventionAdapter(
                 ))
                 uploadButton.visibility = View.GONE
             }else {
-                when(itv.state){
+                when(itv.exportationState){
                     EXPORTATION_STATE_EXPORTED -> {
                         cardView.setCardBackgroundColor(
                             ContextCompat.getColor(

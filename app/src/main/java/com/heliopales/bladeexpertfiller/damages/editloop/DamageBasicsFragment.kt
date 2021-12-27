@@ -11,27 +11,15 @@ import android.widget.EditText
 import android.widget.ImageButton
 import androidx.fragment.app.Fragment
 import com.heliopales.bladeexpertfiller.App
+import com.heliopales.bladeexpertfiller.EXPORTATION_STATE_NOT_EXPORTED
+import com.heliopales.bladeexpertfiller.PICTURE_TYPE_SPOT_CONDITION
 import com.heliopales.bladeexpertfiller.R
 import com.heliopales.bladeexpertfiller.camera.CameraActivity
 import com.heliopales.bladeexpertfiller.damages.DamageSpotCondition
 import com.heliopales.bladeexpertfiller.damages.DamageViewPagerActivity
 
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
-
-/**
- * A simple [Fragment] subclass.
- * Use the [DamageBasicsFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
 class DamageBasicsFragment : Fragment() {
-
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
 
     private lateinit var damage: DamageSpotCondition
 
@@ -46,10 +34,6 @@ class DamageBasicsFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         damage = (activity as DamageViewPagerActivity).damage
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -75,6 +59,7 @@ class DamageBasicsFragment : Fragment() {
                     damage.radialPosition = null
                 else
                     damage.radialPosition = radialPosition.text.toString().toFloat()
+                App.database.interventionDao().updateExportationState(damage.interventionId, EXPORTATION_STATE_NOT_EXPORTED)
             }
         })
 
@@ -86,6 +71,7 @@ class DamageBasicsFragment : Fragment() {
                     damage.longitudinalLength = null
                 else
                     damage.longitudinalLength = longitudinalLength.text.toString().toInt()
+                App.database.interventionDao().updateExportationState(damage.interventionId, EXPORTATION_STATE_NOT_EXPORTED)
             }
         })
 
@@ -97,6 +83,7 @@ class DamageBasicsFragment : Fragment() {
                     damage.radialLength = null
                 else
                     damage.radialLength = radialLength.text.toString().toInt()
+                App.database.interventionDao().updateExportationState(damage.interventionId, EXPORTATION_STATE_NOT_EXPORTED)
             }
         })
 
@@ -108,6 +95,7 @@ class DamageBasicsFragment : Fragment() {
                     damage.repetition = null
                 else
                     damage.repetition = repetition.text.toString().toInt()
+                App.database.interventionDao().updateExportationState(damage.interventionId, EXPORTATION_STATE_NOT_EXPORTED)
             }
         })
 
@@ -119,6 +107,7 @@ class DamageBasicsFragment : Fragment() {
                     damage.description = null
                 else
                     damage.description = description.text.toString()
+                App.database.interventionDao().updateExportationState(damage.interventionId, EXPORTATION_STATE_NOT_EXPORTED)
             }
         })
 
@@ -127,6 +116,9 @@ class DamageBasicsFragment : Fragment() {
             var path =
                 "${App.getDamagePath(damage.interventionId!!, damage.bladeId!!, damage.localId)}"
             intent.putExtra(CameraActivity.EXTRA_OUTPUT_PATH, path)
+            intent.putExtra(CameraActivity.EXTRA_INTERVENTION_ID, damage.interventionId)
+            intent.putExtra(CameraActivity.EXTRA_RELATED_ID, damage.localId)
+            intent.putExtra(CameraActivity.EXTRA_PICTURE_TYPE, PICTURE_TYPE_SPOT_CONDITION)
             startActivity(intent)
         }
     }
@@ -146,25 +138,5 @@ class DamageBasicsFragment : Fragment() {
     ): View? {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_damage_basics, container, false)
-    }
-
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment DamageBasicsFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            DamageBasicsFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
-            }
     }
 }

@@ -11,7 +11,7 @@ data class Intervention(
     @PrimaryKey val id: Int,
     val turbineName: String?,
     var turbineSerial: String?,
-    var state: Int = EXPORTATION_STATE_EMPTY
+    var exportationState: Int = EXPORTATION_STATE_EMPTY
 ) : Parcelable {
 
     var expired: Boolean = false
@@ -45,7 +45,7 @@ data class Intervention(
         parcel.writeInt(id)
         parcel.writeString(turbineName)
         parcel.writeString(turbineSerial)
-        parcel.writeInt(state)
+        parcel.writeInt(exportationState)
         parcel.writeByte(if (expired) 1 else 0)
     }
 

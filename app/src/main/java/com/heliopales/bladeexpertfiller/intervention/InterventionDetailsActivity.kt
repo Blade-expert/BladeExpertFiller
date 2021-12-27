@@ -2,6 +2,7 @@ package com.heliopales.bladeexpertfiller.intervention
 
 import android.app.Activity
 import android.content.Intent
+import android.graphics.Camera
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -13,11 +14,7 @@ import android.widget.TextView
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.setMargins
-import androidx.core.view.setPadding
-import com.heliopales.bladeexpertfiller.App
-import com.heliopales.bladeexpertfiller.AppDatabase
-import com.heliopales.bladeexpertfiller.EXPORTATION_STATE_NOT_EXPORTED
-import com.heliopales.bladeexpertfiller.R
+import com.heliopales.bladeexpertfiller.*
 import com.heliopales.bladeexpertfiller.blade.Blade
 import com.heliopales.bladeexpertfiller.blade.BladeActivity
 import com.heliopales.bladeexpertfiller.camera.CameraActivity
@@ -32,10 +29,8 @@ class InterventionDetailsActivity : AppCompatActivity(), View.OnClickListener {
     }
 
     private lateinit var intervention: Intervention;
-    private lateinit var database: AppDatabase;
     private lateinit var turbineNameView: TextView;
     private lateinit var turbineSerialView: TextView;
-    private lateinit var blades: MutableList<Blade>;
     private val bladeButtons = mutableListOf<Button>();
 
     val TAG = InterventionDetailsActivity::class.java.simpleName
@@ -44,12 +39,7 @@ class InterventionDetailsActivity : AppCompatActivity(), View.OnClickListener {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_intervention_details)
 
-        database = App.database;
-
         intervention = intent.getParcelableExtra<Intervention>(EXTRA_INTERVENTION)!!
-        blades = database.bladeDao().getBladesByInterventionId(intervention.id)
-            .sortedBy { bla -> bla.position } as MutableList<Blade>
-
         turbineNameView = findViewById(R.id.turbineName)
         turbineNameView.text = intervention.turbineName
 
@@ -72,9 +62,10 @@ class InterventionDetailsActivity : AppCompatActivity(), View.OnClickListener {
             )
             layoutParams.setMargins(dpToPx(10f))
 
-            blades.forEach { bla ->
+            App.database.bladeDao().getBladesByInterventionId(intervention.id)
+                .sortedBy { bla -> bla.position } .forEach { bla ->
                 val button = Button(this)
-                button.tag = bla
+                button.tag = bla.id
                 button.text =
                     "${bla.position}" + if (bla.serial == null) "" else " - ${bla.serial}"
                 button.setPadding(dpToPx(24f),dpToPx(32f),dpToPx(24f),dpToPx(32f))
@@ -95,33 +86,16 @@ class InterventionDetailsActivity : AppCompatActivity(), View.OnClickListener {
         val intent = Intent(this, BladeActivity::class.java)
         intent.putExtra(BladeActivity.EXTRA_INTERVENTION, intervention)
         intent.putExtra(BladeActivity.EXTRA_BLADE, blade)
-        bladeLauncher.launch(intent)
+        startActivity(intent)
     }
 
-    var bladeLauncher =
-        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-            if (result.resultCode == Activity.RESULT_OK) {
-                val data: Intent? = result.data
-                val itvResult =
-                    data?.getParcelableExtra<Intervention>(BladeActivity.EXTRA_INTERVENTION)
-                val blaResult =
-                    data?.getParcelableExtra<Blade>(BladeActivity.EXTRA_BLADE)
-
-                if (itvResult != null) intervention.state = itvResult.state
-
-                bladeButtons.forEach { but ->
-                    if (blaResult == but.tag) but.text =
-                        "${blaResult?.position}" + if (blaResult?.serial == null) "" else " - ${blaResult?.serial}";
-                }
-
-                blades.forEach { bla ->
-                    if (bla.equals(blaResult)) {
-                        bla.serial = blaResult?.serial
-                        bla.state = blaResult?.state
-                    }
-                }
-            }
+    override fun onResume() {
+        super.onResume()
+        bladeButtons.forEach { but ->
+            val dbBla = App.database.bladeDao().getById(but.tag as Int)
+            but.text = "${dbBla?.position}" + if (dbBla?.serial == null) "" else " - ${dbBla?.serial}";
         }
+    }
 
     override fun onClick(v: View?) {
         when (v?.id) {
@@ -134,7 +108,10 @@ class InterventionDetailsActivity : AppCompatActivity(), View.OnClickListener {
     private fun takeTurbineSerialPicture() {
         val intent = Intent(this, CameraActivity::class.java)
         var path = "${App.getInterventionPath(intervention)}/turbineSerialPicture"
+        intent.putExtra(CameraActivity.EXTRA_PICTURE_TYPE, PICTURE_TYPE_TURBINE)
+        intent.putExtra(CameraActivity.EXTRA_RELATED_ID, intervention.id)
         intent.putExtra(CameraActivity.EXTRA_OUTPUT_PATH, path)
+        intent.putExtra(CameraActivity.EXTRA_INTERVENTION_ID, intervention.id)
         startActivity(intent)
     }
 
@@ -154,9 +131,9 @@ class InterventionDetailsActivity : AppCompatActivity(), View.OnClickListener {
 
     private fun updateTurbineSerialNumber(serial: String) {
         intervention.turbineSerial = serial
-        intervention.state = EXPORTATION_STATE_NOT_EXPORTED
+        intervention.exportationState = EXPORTATION_STATE_NOT_EXPORTED
 
-        if (database.interventionDao().updateIntervention(intervention) == 1) {
+        if (App.database.interventionDao().updateIntervention(intervention) == 1) {
             turbineSerialView.text = serial
         } else {
             toast("Impossible de mettre à jour ce numéro")

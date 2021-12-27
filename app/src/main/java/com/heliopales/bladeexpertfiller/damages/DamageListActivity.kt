@@ -10,6 +10,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.heliopales.bladeexpertfiller.App
+import com.heliopales.bladeexpertfiller.PICTURE_TYPE_SPOT_CONDITION
+import com.heliopales.bladeexpertfiller.PICTURE_TYPE_TURBINE
 import com.heliopales.bladeexpertfiller.R
 import com.heliopales.bladeexpertfiller.camera.CameraActivity
 
@@ -61,7 +63,7 @@ class DamageListActivity : AppCompatActivity(), DamageAdapter.DamageItemListener
     override fun onResume() {
         Log.i(TAG, "onResume()")
         super.onResume()
-        damages = App.database.spotConditionDao().getDamagesByBladeAndInterventionAndInheritType(
+        damages = App.database.damageDao().getDamagesByBladeAndInterventionAndInheritType(
             bladeId,
             interventionId,
             damageInheritType
@@ -79,6 +81,9 @@ class DamageListActivity : AppCompatActivity(), DamageAdapter.DamageItemListener
     override fun onCameraButtonClicked(damage: DamageSpotCondition) {
         val intent = Intent(this, CameraActivity::class.java)
         var path = "${App.getDamagePath(interventionId, bladeId, damage.localId)}"
+        intent.putExtra(CameraActivity.EXTRA_PICTURE_TYPE, PICTURE_TYPE_SPOT_CONDITION)
+        intent.putExtra(CameraActivity.EXTRA_RELATED_ID, damage.localId)
+        intent.putExtra(CameraActivity.EXTRA_INTERVENTION_ID, interventionId)
         intent.putExtra(CameraActivity.EXTRA_OUTPUT_PATH, path)
         startActivity(intent)
     }
@@ -94,14 +99,14 @@ class DamageListActivity : AppCompatActivity(), DamageAdapter.DamageItemListener
     private fun addNewDamage(): Long {
         Log.d(TAG, "addNewDamage()")
 
-        var damage = DamageSpotCondition(damageInheritType, "D${adapter.itemCount + 1}")
-
-        with(damage) {
-            bladeId = this@DamageListActivity.bladeId
-            interventionId = this@DamageListActivity.interventionId
-        }
-        val newId = App.database.spotConditionDao().insertDamage(damage)
-
+        var damage = DamageSpotCondition(
+            damageInheritType,
+            "D${adapter.itemCount + 1}",
+            interventionId,
+            bladeId
+        )
+        val newId = App.database.damageDao().insertDamage(damage)
+        damage.localId = newId
         damages.add(damage);
         damages.sortBy { it.radialPosition }
         adapter.notifyDataSetChanged()

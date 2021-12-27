@@ -1,6 +1,5 @@
 package com.heliopales.bladeexpertfiller.intervention
 
-import android.app.Activity
 import android.content.Intent
 import android.graphics.Canvas
 import android.os.Bundle
@@ -8,7 +7,6 @@ import android.util.Log
 import android.view.Menu
 import android.widget.Switch
 import android.widget.Toast
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.recyclerview.widget.ItemTouchHelper
@@ -147,6 +145,8 @@ class InterventionListActivity : AppCompatActivity(), InterventionAdapter.Interv
         database.interventionDao().deleteIntervention(deletedIntervention)
     }
 
+
+
     private fun updateInterventionList() {
         if (!refreshLayout.isRefreshing) {
             refreshLayout.isRefreshing = true
@@ -193,28 +193,26 @@ class InterventionListActivity : AppCompatActivity(), InterventionAdapter.Interv
     override fun onInterventionSelected(intervention: Intervention) {
         val intent = Intent(this, InterventionDetailsActivity::class.java)
         intent.putExtra(InterventionDetailsActivity.EXTRA_INTERVENTION, intervention)
-        interventionDetailsLauncher.launch(intent)
+        startActivity(intent)
     }
 
-    private var interventionDetailsLauncher =
-        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-            if (result.resultCode == Activity.RESULT_OK) {
-                val data: Intent? = result.data
-                val itvResult =
-                    data?.getParcelableExtra<Intervention>(InterventionDetailsActivity.EXTRA_INTERVENTION)
-                interventions.forEach {
-                    if (it.equals(itvResult)) {
-                        it.turbineSerial = itvResult?.turbineSerial
-                        it.state = itvResult.state
-                    }
-                }
-                adapter.notifyDataSetChanged()
+    override fun onResume() {
+        super.onResume()
+        interventions.forEach {
+            with(it){
+                val dbitv = database.interventionDao().getById(id)
+                turbineSerial = dbitv.turbineSerial
+                it.exportationState = dbitv.exportationState
             }
+
         }
+        adapter.notifyDataSetChanged()
+    }
 
     override fun onInterventionUploadClick(intervention: Intervention) {
         toast("${intervention.turbineName} upload selected")
     }
+
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         Log.i(TAG, "onCreateOptionsMenu()")
@@ -240,6 +238,8 @@ class InterventionListActivity : AppCompatActivity(), InterventionAdapter.Interv
         }
         return true;
     }
+
+
 
     private fun updateSeverities() {
         Log.d(TAG, "updateSeverities()")

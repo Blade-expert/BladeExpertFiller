@@ -3,6 +3,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:grid="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
@@ -22,86 +23,99 @@
         android:layout_height="match_parent">
     <GridLayout
         android:id="@+id/grid_layout"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:rowCount="4"
-        android:columnCount="2"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/button_ina"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintVertical_chainStyle="packed"
-        >
+        android:columnCount="2"
+        android:alignmentMode="alignBounds"
+        android:useDefaultMargins="true">
 
         <Button
             android:id="@+id/button_ile"
-            android:layout_width="180dp"
-            android:layout_height="@dimen/button_height_indoor_position"
-            android:layout_margin="0dp"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
             android:background="@drawable/ic_square_24"
             android:backgroundTint="@color/bulma_link_light"
             android:foregroundTint="@color/bulma_link"
             android:textSize="30sp"
+            android:layout_gravity="fill"
+            android:layout_rowWeight="1"
+            android:layout_columnWeight="1"
             android:tag="ILE"
-            android:text="LE" />
+            android:text="LE"
+            />
 
         <Button
             android:id="@+id/button_ite"
-            android:layout_width="180dp"
-            android:layout_height="@dimen/button_height_indoor_position"
-            android:layout_margin="0dp"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
             android:background="@drawable/ic_square_24"
             android:backgroundTint="@color/bulma_link_light"
             android:foregroundTint="@color/bulma_link"
             android:textSize="30sp"
+            android:layout_gravity="fill"
+            android:layout_rowWeight="1"
+            android:layout_columnWeight="1"
             android:tag="ITE"
             android:text="TE" />
 
         <Button
             android:id="@+id/button_ips"
-            android:layout_width="180dp"
-            android:layout_height="@dimen/button_height_indoor_position"
-            android:layout_margin="0dp"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
             android:background="@drawable/ic_square_24"
             android:backgroundTint="@color/bulma_link_light"
             android:foregroundTint="@color/bulma_link"
             android:textSize="30sp"
+            android:layout_gravity="fill"
+            android:layout_rowWeight="1"
+            android:layout_columnWeight="1"
             android:tag="IPS"
             android:text="PS" />
 
         <Button
             android:id="@+id/button_iss"
-            android:layout_width="180dp"
-            android:layout_height="@dimen/button_height_indoor_position"
-            android:layout_margin="0dp"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
             android:background="@drawable/ic_square_24"
             android:backgroundTint="@color/bulma_link_light"
             android:foregroundTint="@color/bulma_link"
             android:textSize="30sp"
+            android:layout_gravity="fill"
+            android:layout_rowWeight="1"
+            android:layout_columnWeight="1"
             android:tag="ISS"
             android:text="SS" />
 
         <Button
             android:id="@+id/button_iroot"
-            android:layout_width="180dp"
-            android:layout_height="@dimen/button_height_indoor_position"
-            android:layout_margin="0dp"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
             android:background="@drawable/ic_square_24"
             android:backgroundTint="@color/bulma_link_light"
             android:foregroundTint="@color/bulma_link"
             android:textSize="30sp"
+            android:layout_gravity="fill"
+            android:layout_rowWeight="1"
+            android:layout_columnWeight="1"
             android:tag="IRT"
             android:text="ROOT" />
 
         <Button
             android:id="@+id/button_itip"
-            android:layout_width="180dp"
-            android:layout_height="@dimen/button_height_indoor_position"
-            android:layout_margin="0dp"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
             android:background="@drawable/ic_square_24"
             android:backgroundTint="@color/bulma_link_light"
             android:foregroundTint="@color/bulma_link"
             android:textSize="30sp"
+            android:layout_gravity="fill"
+            android:layout_rowWeight="1"
+            android:layout_columnWeight="1"
             android:tag="ITP"
             android:text="TIP" />
 
@@ -109,43 +123,47 @@
 
         <Button
             android:id="@+id/button_iweb"
-            android:layout_width="180dp"
-            android:layout_height="@dimen/button_height_indoor_position"
-            android:layout_margin="0dp"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
             android:background="@drawable/ic_square_24"
             android:backgroundTint="@color/bulma_link_light"
             android:foregroundTint="@color/bulma_link"
             android:textSize="30sp"
+            android:layout_gravity="fill"
+            android:layout_rowWeight="1"
+            android:layout_columnWeight="1"
             android:tag="IWB"
             android:text="WEB" />
 
         <Button
             android:id="@+id/button_ihatch"
-            android:layout_width="180dp"
-            android:layout_height="@dimen/button_height_indoor_position"
-            android:layout_margin="0dp"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
             android:background="@drawable/ic_square_24"
             android:backgroundTint="@color/bulma_link_light"
             android:foregroundTint="@color/bulma_link"
             android:textSize="30sp"
+            android:layout_gravity="fill"
+            android:layout_rowWeight="1"
+            android:layout_columnWeight="1"
             android:tag="IHA"
             android:text="HATCH" />
 
+        <Button
+            android:id="@+id/button_ina"
+            android:layout_width="180dp"
+            android:layout_height="0dp"
+            android:background="@drawable/ic_square_24"
+            android:backgroundTint="@color/bulma_link_light"
+            android:foregroundTint="@color/bulma_link"
+            android:textSize="30sp"
+            android:layout_gravity="fill_vertical|center_horizontal"
+            android:layout_rowWeight="1"
+            android:layout_columnSpan="2"
+            android:text="N/A"/>
+
     </GridLayout>
 
-    <Button
-        android:id="@+id/button_ina"
-        android:layout_width="180dp"
-        android:layout_height="@dimen/button_height_indoor_position"
-        android:layout_margin="0dp"
-        android:background="@drawable/ic_square_24"
-        android:backgroundTint="@color/bulma_link_light"
-        android:foregroundTint="@color/bulma_link"
-        android:textSize="30sp"
-        android:text="N/A"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/grid_layout"/>
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 </LinearLayout>

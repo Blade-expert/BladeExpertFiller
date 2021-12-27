@@ -8,7 +8,6 @@ import android.graphics.drawable.ColorDrawable
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.os.Handler
 import android.util.Log
 import android.util.Size
 import android.view.KeyEvent
@@ -24,11 +23,12 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
+import com.heliopales.bladeexpertfiller.App
+import com.heliopales.bladeexpertfiller.EXPORTATION_STATE_NOT_EXPORTED
+import com.heliopales.bladeexpertfiller.PICTURE_TYPE_TURBINE
 import com.heliopales.bladeexpertfiller.R
-import com.heliopales.bladeexpertfiller.utils.ANIMATION_FAST_MILLIS
-import com.heliopales.bladeexpertfiller.utils.ANIMATION_SLOW_MILLIS
-import com.heliopales.bladeexpertfiller.utils.dpToPx
-import com.heliopales.bladeexpertfiller.utils.simulateClick
+import com.heliopales.bladeexpertfiller.picture.Picture
+import com.heliopales.bladeexpertfiller.utils.*
 import kotlinx.android.synthetic.main.activity_camera.*
 import java.io.File
 import java.text.SimpleDateFormat
@@ -37,7 +37,10 @@ import java.util.*
 class CameraActivity : AppCompatActivity() {
 
     companion object {
-        val EXTRA_OUTPUT_PATH = "output_path"
+        const val EXTRA_OUTPUT_PATH = "output_path"
+        const val EXTRA_PICTURE_TYPE = "pic_type"
+        const val EXTRA_RELATED_ID = "pic_related_id"
+        const val EXTRA_INTERVENTION_ID = "intervention_id"
         private const val FILENAME_FORMAT = "yyyyMMdd_HHmmss_SSS"
         private const val REQUEST_CODE_PERMISSIONS = 10
         private val REQUIRED_PERMISSIONS = arrayOf(Manifest.permission.CAMERA)
@@ -48,6 +51,9 @@ class CameraActivity : AppCompatActivity() {
     private var imageCapture: ImageCapture? = null
     lateinit var outputDirectoryPath: String
     lateinit var outputDirectory: File
+    private var pictureType: Int = PICTURE_TYPE_TURBINE
+    private var relatedId: Int? = -1
+    private var interventionId: Int = -1
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -61,7 +67,9 @@ class CameraActivity : AppCompatActivity() {
                 this, REQUIRED_PERMISSIONS, REQUEST_CODE_PERMISSIONS
             )
         }
-
+        pictureType = intent.getIntExtra(EXTRA_PICTURE_TYPE, PICTURE_TYPE_TURBINE)
+        relatedId = intent.getIntExtra(EXTRA_RELATED_ID, -1)
+        interventionId = intent.getIntExtra(EXTRA_INTERVENTION_ID, -1)
         outputDirectoryPath = intent.getStringExtra(EXTRA_OUTPUT_PATH).toString()
         outputDirectory = File(outputDirectoryPath)
         outputDirectory.mkdirs()
@@ -74,12 +82,12 @@ class CameraActivity : AppCompatActivity() {
         }
 
         camera_capture_button.setOnClickListener { takePhoto() }
-        see_photos_button.setOnClickListener{openGallery()}
+        see_photos_button.setOnClickListener { openGallery() }
     }
 
     private fun openGallery() {
-        val intent = Intent(this,GalleryActivity::class.java);
-        intent.putExtra(GalleryActivity.EXTRA_DIRECTORY_PATH,outputDirectoryPath)
+        val intent = Intent(this, GalleryActivity::class.java);
+        intent.putExtra(GalleryActivity.EXTRA_DIRECTORY_PATH, outputDirectoryPath)
         startActivity(intent)
     }
 
@@ -100,9 +108,9 @@ class CameraActivity : AppCompatActivity() {
 
     override fun onRestart() {
         super.onRestart()
-        if( outputDirectory.listFiles { file ->
+        if (outputDirectory.listFiles { file ->
                 arrayOf("JPG").contains(file.extension.uppercase(Locale.ROOT))
-            }?.size == 0 ){
+            }?.size == 0) {
             see_photos_button.visibility = View.INVISIBLE
         }
     }
@@ -156,26 +164,33 @@ class CameraActivity : AppCompatActivity() {
             ).format(System.currentTimeMillis()) + ".jpg"
         )
 
-        // Create output options object which contains file + metadata
         val outputOptions = ImageCapture.OutputFileOptions.Builder(photoFile).build()
 
-        // Set up image capture listener, which is triggered after photo has
-        // been taken
         imageCapture.takePicture(
             outputOptions,
             ContextCompat.getMainExecutor(this),
             object : ImageCapture.OnImageSavedCallback {
                 override fun onError(exc: ImageCaptureException) {
                     Log.e(TAG, "Photo capture failed: ${exc.message}", exc)
+                    toast("Can't take picture")
                 }
 
                 override fun onImageSaved(output: ImageCapture.OutputFileResults) {
                     val savedUri = Uri.fromFile(photoFile)
+                    App.database.interventionDao().updateExportationState(interventionId, EXPORTATION_STATE_NOT_EXPORTED)
+                    App.database.pictureDao().insertPicture(
+                        Picture(
+                            fileName = photoFile.name,
+                            absolutePath = photoFile.absolutePath,
+                            uri = savedUri.toString(),
+                            type = pictureType,
+                            relatedId = relatedId
+                        )
+                    )
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                         setGalleryThumbnail(savedUri)
                     }
-                    val msg = "Photo capture succeeded: $savedUri"
-                    Log.d(TAG, msg)
+                    Log.d(TAG, "Photo capture succeeded: $savedUri")
                 }
             })
         // We can only change the foreground Drawable using API level 23+ API
@@ -192,7 +207,6 @@ class CameraActivity : AppCompatActivity() {
         }
     }
 
-    /** When key down event is triggered, relay it via local broadcast so fragments can handle it */
     override fun onKeyDown(keyCode: Int, event: KeyEvent): Boolean {
         return when (keyCode) {
             KeyEvent.KEYCODE_VOLUME_DOWN -> {
@@ -205,10 +219,6 @@ class CameraActivity : AppCompatActivity() {
             }
             else -> super.onKeyDown(keyCode, event)
         }
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
     }
 
     private fun allPermissionsGranted() = REQUIRED_PERMISSIONS.all {

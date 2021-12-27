@@ -8,7 +8,7 @@ import com.heliopales.bladeexpertfiller.damages.DamageSpotCondition
 import com.heliopales.bladeexpertfiller.damages.INHERIT_TYPE_DAMAGE_IN
 
 @Dao
-interface SpotConditionDao {
+interface DamageDao {
 
     @Insert
     fun insertDamage(damage: DamageSpotCondition): Long
@@ -21,6 +21,7 @@ interface SpotConditionDao {
 
     @Query("SELECT * FROM DamageSpotCondition WHERE localId = :localId")
     fun getDamageByLocalId(localId: Long): DamageSpotCondition
+
 
 
 }

@@ -27,11 +27,11 @@ class DamageAdapter(
     }
 
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val cardView = itemView.findViewById<CardView>(R.id.damage_card_view)
-        val textView1 = itemView.findViewById<TextView>(R.id.damage_text_1)
-        val textView2 = itemView.findViewById<TextView>(R.id.damage_text_2)
-        val fieldCode = itemView.findViewById<TextView>(R.id.damage_field_code)
-        val cameraButton = itemView.findViewById<ImageButton>(R.id.damage_camera_button)
+        val cardView: CardView = itemView.findViewById<CardView>(R.id.damage_card_view)
+        val textView1: TextView = itemView.findViewById<TextView>(R.id.damage_text_1)
+        val textView2: TextView = itemView.findViewById<TextView>(R.id.damage_text_2)
+        val fieldCode: TextView = itemView.findViewById<TextView>(R.id.damage_field_code)
+        val cameraButton: ImageButton = itemView.findViewById<ImageButton>(R.id.damage_camera_button)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {

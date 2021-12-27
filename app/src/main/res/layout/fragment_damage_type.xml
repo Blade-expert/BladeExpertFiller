@@ -39,8 +39,8 @@
         <Button
             android:id="@+id/button_dmt_na"
             android:layout_width="180dp"
-            android:layout_height="@dimen/button_height_indoor_position"
-            android:layout_margin="0dp"
+            android:layout_height="wrap_content"
+            android:padding="32dp"
             android:background="@drawable/ic_square_24"
             android:backgroundTint="@color/bulma_link_light"
             android:foregroundTint="@color/bulma_link"

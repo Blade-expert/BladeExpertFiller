@@ -101,7 +101,7 @@ class App : Application() {
             val intervention = database.interventionDao().getById(interventionId)
             val blade = database.bladeDao().getById(bladeId)
             if(damageSpotConditionLocalId != null){
-                val damage = database.spotConditionDao().getDamageByLocalId(damageSpotConditionLocalId)
+                val damage = database.damageDao().getDamageByLocalId(damageSpotConditionLocalId)
                 return "${getBladePath(intervention, blade)}/damage_${damage.fieldCode}"
             }else{
                 return "${getBladePath(intervention, blade)}/damage_unknown"
