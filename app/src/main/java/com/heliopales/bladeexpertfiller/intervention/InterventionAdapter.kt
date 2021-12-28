@@ -4,9 +4,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
+import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.cardview.widget.CardView
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.RecyclerView
 import com.heliopales.bladeexpertfiller.EXPORTATION_STATE_EXPORTED
 import com.heliopales.bladeexpertfiller.EXPORTATION_STATE_NOT_EXPORTED
@@ -14,7 +18,8 @@ import com.heliopales.bladeexpertfiller.R
 
 class InterventionAdapter(
     private val interventions: List<Intervention>,
-    private val interventionListener: InterventionItemListener
+    private val interventionListener: InterventionItemListener,
+private val lifecycleOwner: LifecycleOwner
 ) :
     RecyclerView.Adapter<InterventionAdapter.ViewHolder>(), View.OnClickListener {
 
@@ -28,6 +33,8 @@ class InterventionAdapter(
         val turbineNameView = itemView.findViewById<TextView>(R.id.turbine_name)!!
         val helperView = itemView.findViewById<TextView>(R.id.helper)!!
         val uploadButton = itemView.findViewById<ImageButton>(R.id.upload_button)!!
+        val indeterminateProgress = itemView.findViewById<ProgressBar>(R.id.indeterminate_progress)!!
+        val progressBar = itemView.findViewById<ProgressBar>(R.id.progress_bar)!!
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -66,12 +73,14 @@ class InterventionAdapter(
                             )
                         )
                         helperView.visibility = View.VISIBLE
-                        helperView.text = "Les données ont été exportées"
+                        helperView.text = "Datas has been sent"
                         helperView.setTextColor(ContextCompat.getColor(
                             cardView.context,
                             R.color.bulma_success_dark
                         ))
                         uploadButton.visibility = View.GONE
+                        progressBar.visibility = View.GONE
+                        indeterminateProgress.visibility = View.GONE
                     }
                     EXPORTATION_STATE_NOT_EXPORTED -> {
                         cardView.setCardBackgroundColor(
@@ -81,12 +90,23 @@ class InterventionAdapter(
                             )
                         )
                         helperView.visibility = View.VISIBLE
-                        helperView.text = "Les données ne sont pas toutes exportées"
                         helperView.setTextColor(ContextCompat.getColor(
                             cardView.context,
                             R.color.bulma_warning_dark
                         ))
-                        uploadButton.visibility = View.VISIBLE
+
+                        if(itv.exporting){
+                            helperView.text = "Exporting..."
+                            uploadButton.visibility = View.GONE
+                            progressBar.visibility = View.VISIBLE
+                            itv.progress.observe(lifecycleOwner, Observer { newVal ->
+                                progressBar.progress = newVal
+                            })
+                            indeterminateProgress.visibility = View.VISIBLE
+                        }else{
+                            helperView.text = "Datas are not exported"
+                            uploadButton.visibility = View.VISIBLE
+                        }
                     }
                     else -> {
                         cardView.setCardBackgroundColor(
@@ -108,12 +128,17 @@ class InterventionAdapter(
     override fun getItemCount(): Int = interventions.size
 
     override fun onClick(view: View) {
-        when (view.id) {
-            R.id.upload_button -> {
-                interventionListener.onInterventionUploadClick(view.tag as Intervention)
-            }
-            R.id.card_view -> {
-                interventionListener.onInterventionSelected(view.tag as Intervention)
+        val itv = view.tag
+        if(itv != null && itv is Intervention){
+            if(! itv.exporting){
+                when (view.id) {
+                    R.id.upload_button -> {
+                        interventionListener.onInterventionUploadClick(itv)
+                    }
+                    R.id.card_view -> {
+                        interventionListener.onInterventionSelected(itv)
+                    }
+                }
             }
         }
     }

@@ -12,7 +12,7 @@ import android.widget.ImageButton
 import androidx.fragment.app.Fragment
 import com.heliopales.bladeexpertfiller.App
 import com.heliopales.bladeexpertfiller.EXPORTATION_STATE_NOT_EXPORTED
-import com.heliopales.bladeexpertfiller.PICTURE_TYPE_SPOT_CONDITION
+import com.heliopales.bladeexpertfiller.PICTURE_TYPE_DAMAGE
 import com.heliopales.bladeexpertfiller.R
 import com.heliopales.bladeexpertfiller.camera.CameraActivity
 import com.heliopales.bladeexpertfiller.damages.DamageSpotCondition
@@ -118,7 +118,7 @@ class DamageBasicsFragment : Fragment() {
             intent.putExtra(CameraActivity.EXTRA_OUTPUT_PATH, path)
             intent.putExtra(CameraActivity.EXTRA_INTERVENTION_ID, damage.interventionId)
             intent.putExtra(CameraActivity.EXTRA_RELATED_ID, damage.localId)
-            intent.putExtra(CameraActivity.EXTRA_PICTURE_TYPE, PICTURE_TYPE_SPOT_CONDITION)
+            intent.putExtra(CameraActivity.EXTRA_PICTURE_TYPE, PICTURE_TYPE_DAMAGE)
             startActivity(intent)
         }
     }

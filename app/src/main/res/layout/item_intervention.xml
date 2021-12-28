@@ -42,13 +42,24 @@
                 android:id="@+id/helper"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="8dp"
                 android:textStyle="italic"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintBottom_toTopOf="@id/progress_bar"
                 app:layout_constraintTop_toBottomOf="@id/turbine_name"
+                app:layout_constraintLeft_toLeftOf="@id/turbine_name"
+                app:layout_constraintRight_toRightOf="@id/turbine_name"
                 tools:text="L'intervention n'est plus en 'TODO'" />
 
+            <ProgressBar
+                android:id="@+id/progress_bar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                style="?android:progressBarStyleHorizontal"
+                android:progress="45"
+                android:visibility="gone"
+                android:progressTint="@color/bulma_warning"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/helper"
+                app:layout_constraintBottom_toBottomOf="parent"/>
 
             <ImageButton
                 android:id="@+id/upload_button"
@@ -57,13 +68,31 @@
                 android:background="@null"
                 android:src="@drawable/ic_baseline_cloud_upload_24"
                 android:focusable="true"
-                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintLeft_toRightOf="@id/turbine_name"
-                app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintRight_toLeftOf="@id/indeterminate_progress"
+                app:layout_constraintTop_toTopOf="@id/turbine_name"
+                app:layout_constraintBottom_toBottomOf="@id/helper"
                 app:tint="@color/bulma_dark" />
 
+            <ProgressBar
+                android:id="@+id/indeterminate_progress"
+                style="?android:progressBarStyle"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:indeterminate="true"
+                android:indeterminateTint="@color/bulma_link"
+                android:visibility="gone"
+                app:layout_constraintLeft_toRightOf="@id/upload_button"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="@id/turbine_name"
+                app:layout_constraintBottom_toBottomOf="@id/helper"
+                />
+
+
+
         </androidx.constraintlayout.widget.ConstraintLayout>
+
+
 
 
     </androidx.cardview.widget.CardView>

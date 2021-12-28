@@ -1,6 +1,7 @@
 package com.heliopales.bladeexpertfiller.bladeexpert
 
 import com.heliopales.bladeexpertfiller.blade.Blade
+import com.heliopales.bladeexpertfiller.damages.DamageSpotCondition
 import com.heliopales.bladeexpertfiller.damages.DamageTypeCategory
 import com.heliopales.bladeexpertfiller.intervention.Intervention
 import com.heliopales.bladeexpertfiller.secondaryentities.DamageType
@@ -14,6 +15,14 @@ fun mapBladeExpertIntervention(interventionWrapper: InterventionWrapper): Interv
     )
 }
 
+fun mapToBladeExpertIntervention(intervention: Intervention): InterventionWrapper {
+    return InterventionWrapper(
+        id = intervention.id,
+        turbineName = intervention.turbineName,
+        turbineSerial = intervention.turbineSerial,
+        blades = null
+    )
+}
 
 fun mapBladeExpertBlade(bladeWrapper: BladeWrapper): Blade {
     return Blade(
@@ -21,6 +30,15 @@ fun mapBladeExpertBlade(bladeWrapper: BladeWrapper): Blade {
         interventionId = bladeWrapper.interventionId,
         position = bladeWrapper.position,
         serial = bladeWrapper.serial
+    )
+}
+
+fun mapToBladeExpertBlade(blade: Blade): BladeWrapper {
+    return BladeWrapper(
+        id = blade.id,
+        interventionId = blade.interventionId,
+        serial = blade.serial,
+        position = blade.position
     )
 }
 
@@ -39,5 +57,23 @@ fun mapBladeExpertDamageType(damageTypeWrapper: DamageTypeWrapper): DamageType {
         category = DamageTypeCategory.getDamageTypeCategoryByCode(damageTypeWrapper.categoryCode),
         name = damageTypeWrapper.name,
         inheritType = damageTypeWrapper.inheritType
+    )
+}
+
+fun mapToBladeExpertDamageSpotCondition(dsc: DamageSpotCondition): DamageSpotConditionWrapper{
+    return DamageSpotConditionWrapper(
+        id = dsc.id,
+        fieldCode = dsc.fieldCode,
+        interventionId = dsc.interventionId,
+        bladeId = dsc.bladeId,
+        severityId = dsc.severityId,
+        description = dsc.description,
+        damageTypeId = dsc.damageTypeId,
+        radialPosition = dsc.radialPosition,
+        radialLength = dsc.radialLength,
+        longitudinalLength = dsc.radialLength,
+        repetition = dsc.repetition,
+        position = dsc.position,
+        profileDepth = dsc.profileDepth
     )
 }

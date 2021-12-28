@@ -6,6 +6,7 @@ import androidx.room.Room
 import com.heliopales.bladeexpertfiller.blade.Blade
 import com.heliopales.bladeexpertfiller.bladeexpert.*
 import com.heliopales.bladeexpertfiller.intervention.Intervention
+import okhttp3.Dispatcher
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -18,6 +19,7 @@ private const val BASE_URL = "https://bladeexpert-recette.herokuapp.com/bladeexp
 //LOCAL
 //private const val BASE_URL = "http://192.168.1.181/bladeexpert/"
 
+private const val MAXIMUM_PARALLEL_REQUESTS = 3
 
 class App : Application() {
 
@@ -46,13 +48,17 @@ class App : Application() {
             })
             .build()
 
-        private val retrofit = Retrofit.Builder()
-            .client(httpClient)
-            .baseUrl(BASE_URL)
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
+        private fun retrofit() : Retrofit{
+            httpClient.dispatcher.maxRequests = MAXIMUM_PARALLEL_REQUESTS
+            httpClient.dispatcher.maxRequestsPerHost = MAXIMUM_PARALLEL_REQUESTS
+            return Retrofit.Builder()
+                .client(httpClient)
+                .baseUrl(BASE_URL)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build()
+        }
 
-        val bladeExpertService: BladeExpertService = retrofit.create(BladeExpertService::class.java)
+        val bladeExpertService: BladeExpertService = retrofit().create(BladeExpertService::class.java)
 
         fun getOutputDirectory(): String {
             val mediaDir = instance.externalMediaDirs.firstOrNull()?.let {

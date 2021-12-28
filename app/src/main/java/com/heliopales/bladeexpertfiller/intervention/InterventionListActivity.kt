@@ -3,32 +3,37 @@ package com.heliopales.bladeexpertfiller.intervention
 import android.content.Intent
 import android.graphics.Canvas
 import android.os.Bundle
+import android.os.SystemClock
 import android.util.Log
 import android.view.Menu
 import android.widget.Switch
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.google.android.material.snackbar.Snackbar
 import com.heliopales.bladeexpertfiller.App
-import com.heliopales.bladeexpertfiller.AppDatabase
+import com.heliopales.bladeexpertfiller.EXPORTATION_STATE_EXPORTED
+import com.heliopales.bladeexpertfiller.EXPORTATION_STATE_NOT_EXPORTED
 import com.heliopales.bladeexpertfiller.R
 import com.heliopales.bladeexpertfiller.bladeexpert.*
+import com.heliopales.bladeexpertfiller.damages.INHERIT_TYPE_DAMAGE_IN
 import com.heliopales.bladeexpertfiller.utils.toast
 import it.xabaras.android.recyclerview.swipedecorator.RecyclerViewSwipeDecorator
 import retrofit2.Call
 import retrofit2.Response
+import java.lang.Thread.sleep
 
 
 class InterventionListActivity : AppCompatActivity(), InterventionAdapter.InterventionItemListener {
 
     val TAG = InterventionListActivity::class.java.simpleName
 
-    private lateinit var database: AppDatabase
     private lateinit var interventions: MutableList<Intervention>
     private lateinit var recyclerView: RecyclerView
     private lateinit var refreshLayout: SwipeRefreshLayout
@@ -45,14 +50,13 @@ class InterventionListActivity : AppCompatActivity(), InterventionAdapter.Interv
         var toolbar = findViewById<Toolbar>(R.id.toolbar)
         setSupportActionBar(toolbar)
 
-        database = App.database
 
         recyclerView = findViewById<RecyclerView>(R.id.interventions_recycler_view)
         recyclerView.layoutManager = LinearLayoutManager(this)
 
         interventions = mutableListOf()
 
-        adapter = InterventionAdapter(interventions, this)
+        adapter = InterventionAdapter(interventions, this, this)
         recyclerView.adapter = adapter
 
         val itemTouchHelper = ItemTouchHelper(simpleCallBack);
@@ -141,10 +145,9 @@ class InterventionListActivity : AppCompatActivity(), InterventionAdapter.Interv
     }
 
     private fun effectivelyDeleteIntervention(deletedIntervention: Intervention) {
-        database.bladeDao().deleteBladesOfInterventionId(deletedIntervention.id)
-        database.interventionDao().deleteIntervention(deletedIntervention)
+        App.database.bladeDao().deleteBladesOfInterventionId(deletedIntervention.id)
+        App.database.interventionDao().deleteIntervention(deletedIntervention)
     }
-
 
 
     private fun updateInterventionList() {
@@ -153,7 +156,7 @@ class InterventionListActivity : AppCompatActivity(), InterventionAdapter.Interv
         }
         interventions.clear()
         interventions.addAll(
-            database.interventionDao().getAllInterventions().sortedBy { it.turbineName })
+            App.database.interventionDao().getAllInterventions().sortedBy { it.turbineName })
 
         App.bladeExpertService.getInterventions()
             .enqueue(object : retrofit2.Callback<Array<InterventionWrapper>> {
@@ -166,29 +169,28 @@ class InterventionListActivity : AppCompatActivity(), InterventionAdapter.Interv
                     response?.body().let {
                         newInterventions.addAll(it?.map { itv -> mapBladeExpertIntervention(itv) } as MutableList)
                         it.forEach { itvw ->
-                            database.bladeDao().insertNonExistingBlades(
-                                itvw.blades.map { bw -> mapBladeExpertBlade(bw) }
+                            App.database.bladeDao().insertNonExistingBlades(
+                                itvw.blades!!.map { bw -> mapBladeExpertBlade(bw) }
                             )
                         }
                     }
                     interventions.forEach { it.expired = !newInterventions.contains(it) }
                     newInterventions.forEach { if (!interventions.contains(it)) interventions.add(it) }
                     interventions.forEach {
-                        database.interventionDao().insertNonExistingIntervention(it)
+                        App.database.interventionDao().insertNonExistingIntervention(it)
                     }
                     interventions.sortBy { it.turbineName }
                     adapter.notifyDataSetChanged()
                     toast("La liste d'interventions est à jour")
                     refreshLayout.isRefreshing = false
                 }
+
                 override fun onFailure(call: Call<Array<InterventionWrapper>>, t: Throwable) {
                     toast("Impossible de mettre à jour les interventions")
                     refreshLayout.isRefreshing = false
                 }
             })
     }
-
-
 
     override fun onInterventionSelected(intervention: Intervention) {
         val intent = Intent(this, InterventionDetailsActivity::class.java)
@@ -199,18 +201,132 @@ class InterventionListActivity : AppCompatActivity(), InterventionAdapter.Interv
     override fun onResume() {
         super.onResume()
         interventions.forEach {
-            with(it){
-                val dbitv = database.interventionDao().getById(id)
+            with(it) {
+                val dbitv = App.database.interventionDao().getById(id)
                 turbineSerial = dbitv.turbineSerial
                 it.exportationState = dbitv.exportationState
             }
-
         }
         adapter.notifyDataSetChanged()
     }
 
-    override fun onInterventionUploadClick(intervention: Intervention) {
-        toast("${intervention.turbineName} upload selected")
+    override fun onInterventionUploadClick(
+        intervention: Intervention
+    ) {
+
+        intervention.exporting = true
+        adapter.notifyDataSetChanged()
+
+        var count = 0;
+        val numberOfOperations = MutableLiveData<Int>(0)
+        val realizedOperations = MutableLiveData<Int>(0)
+
+
+        val export = Thread {
+            sleep(1000)
+            //EXPORT TURBINE SERIAL
+            App.bladeExpertService.updateTurbineSerial(
+                interventionWrapper = mapToBladeExpertIntervention(
+                    intervention
+                )
+            )
+                .enqueue(object : retrofit2.Callback<Boolean> {
+                    override fun onResponse(
+                        call: Call<Boolean>,
+                        response: Response<Boolean>
+                    ) {
+                        if (response.isSuccessful)
+                            Log.d(TAG, "Turbine serial updated with feedback = ${response.body()}")
+                        realizedOperations.postValue(++count)
+                    }
+
+                    override fun onFailure(call: Call<Boolean>, t: Throwable) {
+                        realizedOperations.postValue(++count)
+                    }
+                })
+
+
+            App.database.bladeDao().getBladesByInterventionId(intervention.id).forEach { bla ->
+                sleep(1000)
+                App.bladeExpertService.updateBladeSerial(bladeWrapper = mapToBladeExpertBlade(bla))
+                    .enqueue(object : retrofit2.Callback<Boolean> {
+                        override fun onResponse(
+                            call: Call<Boolean>,
+                            response: Response<Boolean>
+                        ) {
+                            realizedOperations.postValue(++count)
+                        }
+
+                        override fun onFailure(call: Call<Boolean>, t: Throwable) {
+                            realizedOperations.postValue(++count)
+                        }
+                    })
+
+                App.database.damageDao().getDamagesByBladeAndInterventionAndInheritType(
+                    bla.id,
+                    bla.interventionId,
+                    INHERIT_TYPE_DAMAGE_IN
+                ).forEach { dsc ->
+                    App.bladeExpertService.saveIndoorDamageSpotCondition(
+                        mapToBladeExpertDamageSpotCondition(dsc))
+                }
+            }
+
+        }
+
+        numberOfOperations.observe(this, Observer {
+            Log.d(TAG, "numberOfOperationsObserver newVal = =$it")
+            if (it == 0) return@Observer;
+            export.start();
+        })
+
+        realizedOperations.observe(this, Observer { newVal ->
+            Log.d(TAG, "realizedOperationObserver newVal=$newVal")
+            if (newVal == 0) return@Observer;
+            var percent = newVal.toFloat() / numberOfOperations.value!! * 100;
+            Log.d(TAG, "percent $percent% done")
+            intervention.progress.postValue(percent.toInt())
+            if (newVal == numberOfOperations.value!!) {
+                intervention.exporting = false
+                intervention.exportationState = EXPORTATION_STATE_EXPORTED
+                App.database.interventionDao()
+                    .updateExportationState(intervention.id, EXPORTATION_STATE_EXPORTED)
+
+                runOnUiThread { adapter.notifyDataSetChanged() }
+            }
+        })
+
+        Thread {
+            numberOfOperations.postValue(countOperationsForExport(intervention))
+        }.start()
+
+
+    }
+
+
+    fun countOperationsForExport(intervention: Intervention): Int {
+        Log.d(TAG, "countOperationsForExport()")
+        var count = 0;
+
+        if (intervention != null) {
+            count++ //turbineSerial
+            App.database.bladeDao().getBladesByInterventionId(intervention.id).forEach { bla ->
+                count++ // BladeSerial
+                App.database.damageDao().getDamagesByBladeAndInterventionAndInheritType(
+                    bla.id,
+                    bla.interventionId,
+                    INHERIT_TYPE_DAMAGE_IN
+                ).forEach { dsc ->
+                    count++ //IndoorDamageSpotCondition
+                    /*App.database.pictureDao().getDamageSpotPicturesByDamageId(dsc.localId!!.toInt()).forEach { pic->
+                        if(pic.exportState == EXPORTATION_STATE_NOT_EXPORTED)
+                            count++ //picture
+                    }*/
+                }
+            }
+        }
+        Log.d(TAG, "There will be $count operations")
+        return count;
     }
 
 
@@ -222,7 +338,7 @@ class InterventionListActivity : AppCompatActivity(), InterventionAdapter.Interv
 
         val switch = menuItem?.actionView?.findViewById<Switch>(R.id.switch_show_protected)
         switch?.isChecked = deleteAllowed
-        switch?.setOnCheckedChangeListener { buttonView, isChecked ->
+        switch?.setOnCheckedChangeListener { _, isChecked ->
             deleteAllowed = isChecked
             if (isChecked) {
                 toast(
@@ -238,7 +354,6 @@ class InterventionListActivity : AppCompatActivity(), InterventionAdapter.Interv
         }
         return true;
     }
-
 
 
     private fun updateSeverities() {
@@ -261,6 +376,7 @@ class InterventionListActivity : AppCompatActivity(), InterventionAdapter.Interv
                     App.database.severityDao().getAll()
                         .forEach { Log.d(TAG, "Severity in database : $it") }
                 }
+
                 override fun onFailure(call: Call<Array<SeverityWrapper>>, t: Throwable) {
                     Log.e(TAG, "Impossible to load severities", t)
                 }
@@ -277,7 +393,7 @@ class InterventionListActivity : AppCompatActivity(), InterventionAdapter.Interv
                 ) {
                     response?.body().let {
                         it?.map { dmtw -> mapBladeExpertDamageType(dmtw) }
-                            ?.let {dmts -> App.database.damageTypeDao().insertAll(dmts) }
+                            ?.let { dmts -> App.database.damageTypeDao().insertAll(dmts) }
 
                         it?.map { dmtw -> mapBladeExpertDamageType(dmtw).id }?.let { dmtIds ->
                             App.database.damageTypeDao().deleteWhereIdsNotIn(dmtIds)

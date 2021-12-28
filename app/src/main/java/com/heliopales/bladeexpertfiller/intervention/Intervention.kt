@@ -2,7 +2,10 @@ package com.heliopales.bladeexpertfiller.intervention
 
 import android.os.Parcel
 import android.os.Parcelable
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.room.Entity
+import androidx.room.Ignore
 import androidx.room.PrimaryKey
 import com.heliopales.bladeexpertfiller.EXPORTATION_STATE_EMPTY
 
@@ -15,6 +18,9 @@ data class Intervention(
 ) : Parcelable {
 
     var expired: Boolean = false
+
+    @Ignore var exporting: Boolean = false
+    @Ignore var progress = MutableLiveData<Int>(0)
 
     constructor(parcel: Parcel) : this(
         parcel.readInt(),
