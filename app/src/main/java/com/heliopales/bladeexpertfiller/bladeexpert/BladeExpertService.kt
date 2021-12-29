@@ -1,6 +1,7 @@
 package com.heliopales.bladeexpertfiller.bladeexpert
 
 import com.heliopales.bladeexpertfiller.App
+import okhttp3.MultipartBody
 import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.http.*
@@ -25,9 +26,15 @@ interface BladeExpertService {
     @PUT(value = "api/mobile/bladeSerial")
     fun updateBladeSerial(@Query("key") key:String = API_KEY, @Body bladeWrapper:BladeWrapper): Call<Boolean>
 
+    @Multipart
+    @POST(value = "api/mobile/spotCondition/{id}/addPicture")
+    fun addPictureToSpotCondition(@Path("id") spotConditionId: Int, @Query("key") key:String = API_KEY, @Part filePart: MultipartBody.Part): Call<ResponseBody>
+
     @POST(value = "api/mobile/indoorDamage")
-    fun saveIndoorDamageSpotCondition(mapToBladeExpertDamageSpotCondition: DamageSpotConditionWrapper)
+    fun saveIndoorDamageSpotCondition(@Query("key") key:String = API_KEY, @Body damageSpotConditionWrapper: DamageSpotConditionWrapper): Call<DamageSpotConditionWrapper>
 
     @POST(value = "api/mobile/outdoorDamage")
-    fun saveOutdoorDamageSpotCondition(mapToBladeExpertDamageSpotCondition: DamageSpotConditionWrapper)
+    fun saveOutdoorDamageSpotCondition(@Query("key") key:String = API_KEY, @Body damageSpotConditionWrapper: DamageSpotConditionWrapper): Call<DamageSpotConditionWrapper>
+
+
 }

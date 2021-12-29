@@ -1,5 +1,6 @@
 package com.heliopales.bladeexpertfiller.camera
 
+import android.media.MediaScannerConnection
 import android.os.Bundle
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -55,6 +56,9 @@ class GalleryActivity : AppCompatActivity() {
                     mediaFile.delete()
                     App.database.pictureDao().deletePictureByFileName(mediaFile.name)
 
+                    MediaScannerConnection.scanFile(
+                        photo_view_pager.context, arrayOf(mediaFile.absolutePath), null, null)
+
                     mediaList.removeAt(position)
                     viewPagerAdapter.notifyDataSetChanged()
 
@@ -67,32 +71,6 @@ class GalleryActivity : AppCompatActivity() {
                 .setNegativeButton("No", null)
                 .create().show()
 
-
-
-
-            /*mediaList.getOrNull(photo_view_pager.currentItem)?.let { mediaFile ->
-                println("=== delete ${mediaFile.name}")
-                AlertDialog.Builder(photo_view_pager.context, android.R.style.Theme_Material_Dialog)
-                    .setTitle("Confirmer")
-                    .setMessage("Etes vous sur de vouloir supprimer cette photo ?")
-                    .setIcon(android.R.drawable.ic_dialog_alert)
-                    .setPositiveButton("Oui") { _, _ ->
-                        // Delete current photo
-                        mediaFile.delete()
-
-                        // Notify our view pager
-                        mediaList.removeAt(photo_view_pager.currentItem)
-                        viewPagerAdapter.notifyDataSetChanged()
-
-                        // If all photos have been deleted, return to camera
-                        if (mediaList.isEmpty()) {
-                            finish()
-                        }
-
-                    }
-                    .setNegativeButton("Non", null)
-                    .create().show()
-            }*/
         }
 
     }

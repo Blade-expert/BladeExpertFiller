@@ -12,6 +12,7 @@ import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.io.File
+import java.util.concurrent.TimeUnit
 
 //RECETTE
 private const val BASE_URL = "https://bladeexpert-recette.herokuapp.com/bladeexpert/"
@@ -19,7 +20,7 @@ private const val BASE_URL = "https://bladeexpert-recette.herokuapp.com/bladeexp
 //LOCAL
 //private const val BASE_URL = "http://192.168.1.181/bladeexpert/"
 
-private const val MAXIMUM_PARALLEL_REQUESTS = 3
+private const val MAXIMUM_PARALLEL_REQUESTS = 1
 
 class App : Application() {
 
@@ -38,7 +39,6 @@ class App : Application() {
                 .build()
         }
 
-
         private val httpClient = OkHttpClient.Builder()
             .addInterceptor(run {
                 val httpLoggingInterceptor = HttpLoggingInterceptor()
@@ -46,9 +46,13 @@ class App : Application() {
                     httpLoggingInterceptor.level = HttpLoggingInterceptor.Level.BODY
                 }
             })
+            .readTimeout(60, TimeUnit.SECONDS)
+            .writeTimeout(60, TimeUnit.SECONDS)
+            .callTimeout(60, TimeUnit.SECONDS)
+            .connectTimeout(60, TimeUnit.SECONDS)
             .build()
 
-        private fun retrofit() : Retrofit{
+        private fun retrofit(): Retrofit {
             httpClient.dispatcher.maxRequests = MAXIMUM_PARALLEL_REQUESTS
             httpClient.dispatcher.maxRequestsPerHost = MAXIMUM_PARALLEL_REQUESTS
             return Retrofit.Builder()
@@ -58,7 +62,8 @@ class App : Application() {
                 .build()
         }
 
-        val bladeExpertService: BladeExpertService = retrofit().create(BladeExpertService::class.java)
+        val bladeExpertService: BladeExpertService =
+            retrofit().create(BladeExpertService::class.java)
 
         fun getOutputDirectory(): String {
             val mediaDir = instance.externalMediaDirs.firstOrNull()?.let {
@@ -103,14 +108,18 @@ class App : Application() {
             return getBladePath(intervention, blade)
         }
 
-        fun getDamagePath(interventionId: Int, bladeId: Int, damageSpotConditionLocalId: Long?):String{
+        fun getDamagePath(
+            interventionId: Int,
+            bladeId: Int,
+            damageSpotConditionLocalId: Int?
+        ): String {
             val intervention = database.interventionDao().getById(interventionId)
             val blade = database.bladeDao().getById(bladeId)
-            if(damageSpotConditionLocalId != null){
+            return if (damageSpotConditionLocalId != null) {
                 val damage = database.damageDao().getDamageByLocalId(damageSpotConditionLocalId)
-                return "${getBladePath(intervention, blade)}/damage_${damage.fieldCode}"
-            }else{
-                return "${getBladePath(intervention, blade)}/damage_unknown"
+                "${getBladePath(intervention, blade)}/damage_${damage.localId}_${damage.fieldCode}"
+            } else {
+                "${getBladePath(intervention, blade)}/damage_unknown"
             }
         }
 

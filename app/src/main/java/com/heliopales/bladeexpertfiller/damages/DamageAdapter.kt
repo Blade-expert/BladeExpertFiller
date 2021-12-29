@@ -46,6 +46,7 @@ class DamageAdapter(
             cardView.tag = dsc
             cardView.setOnClickListener(this@DamageAdapter)
             cameraButton.tag = dsc
+            Log.d(TAG,"camera tag set for damage${(cameraButton.tag as DamageSpotCondition).localId}")
             cameraButton.setOnClickListener(this@DamageAdapter)
 
             textView1.text =

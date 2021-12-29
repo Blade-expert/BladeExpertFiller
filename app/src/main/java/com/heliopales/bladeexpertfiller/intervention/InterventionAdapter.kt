@@ -35,6 +35,7 @@ private val lifecycleOwner: LifecycleOwner
         val uploadButton = itemView.findViewById<ImageButton>(R.id.upload_button)!!
         val indeterminateProgress = itemView.findViewById<ProgressBar>(R.id.indeterminate_progress)!!
         val progressBar = itemView.findViewById<ProgressBar>(R.id.progress_bar)!!
+        val progressText = itemView.findViewById<TextView>(R.id.progress_text)!!
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -80,6 +81,7 @@ private val lifecycleOwner: LifecycleOwner
                         ))
                         uploadButton.visibility = View.GONE
                         progressBar.visibility = View.GONE
+                        progressText.visibility = View.GONE
                         indeterminateProgress.visibility = View.GONE
                     }
                     EXPORTATION_STATE_NOT_EXPORTED -> {
@@ -90,6 +92,7 @@ private val lifecycleOwner: LifecycleOwner
                             )
                         )
                         helperView.visibility = View.VISIBLE
+
                         helperView.setTextColor(ContextCompat.getColor(
                             cardView.context,
                             R.color.bulma_warning_dark
@@ -99,12 +102,22 @@ private val lifecycleOwner: LifecycleOwner
                             helperView.text = "Exporting..."
                             uploadButton.visibility = View.GONE
                             progressBar.visibility = View.VISIBLE
+                            progressText.visibility = View.VISIBLE
                             itv.progress.observe(lifecycleOwner, Observer { newVal ->
                                 progressBar.progress = newVal
+                                progressText.text = "$newVal %"
                             })
                             indeterminateProgress.visibility = View.VISIBLE
                         }else{
-                            helperView.text = "Datas are not exported"
+                            if(itv.export_errorsInLastExport){
+                                helperView.setTextColor(ContextCompat.getColor(
+                                    cardView.context,
+                                    R.color.bulma_danger_dark
+                                ))
+                                helperView.text = "There was errors on exportation"
+                            }else{
+                                helperView.text = "Datas are not exported"
+                            }
                             uploadButton.visibility = View.VISIBLE
                         }
                     }

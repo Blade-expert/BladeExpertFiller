@@ -52,7 +52,7 @@ class CameraActivity : AppCompatActivity() {
     lateinit var outputDirectoryPath: String
     lateinit var outputDirectory: File
     private var pictureType: Int = PICTURE_TYPE_TURBINE
-    private var relatedId: Int? = -1
+    private var relatedId: Int = -1
     private var interventionId: Int = -1
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -73,6 +73,8 @@ class CameraActivity : AppCompatActivity() {
         outputDirectoryPath = intent.getStringExtra(EXTRA_OUTPUT_PATH).toString()
         outputDirectory = File(outputDirectoryPath)
         outputDirectory.mkdirs()
+
+        Log.d(TAG, "onCreate -> relatedId=$relatedId, interventionId=$interventionId")
 
         // In the background, load latest photo taken (if any) for gallery thumbnail
         outputDirectory.listFiles { file ->

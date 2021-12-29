@@ -74,7 +74,7 @@ class DamageListActivity : AppCompatActivity(), DamageAdapter.DamageItemListener
     }
 
     override fun onDamageSelected(damage: DamageSpotCondition) {
-        launchDamagePager(damage.localId ?: -1L)
+        launchDamagePager(damage.localId ?: -1)
     }
 
     override fun onCameraButtonClicked(damage: DamageSpotCondition) {
@@ -95,7 +95,7 @@ class DamageListActivity : AppCompatActivity(), DamageAdapter.DamageItemListener
     }
 
 
-    private fun addNewDamage(): Long {
+    private fun addNewDamage(): Int {
         Log.d(TAG, "addNewDamage()")
 
         var damage = DamageSpotCondition(
@@ -104,16 +104,21 @@ class DamageListActivity : AppCompatActivity(), DamageAdapter.DamageItemListener
             interventionId,
             bladeId
         )
-        val newId = App.database.damageDao().insertDamage(damage)
+        val newId = App.database.damageDao().insertDamage(damage).toInt()
         damage.localId = newId
-        damages.add(damage);
+        damages.add(damage)
         damages.sortBy { it.radialPosition }
+
+        damages.forEach {
+            Log.d(TAG,"damage in list : id = ${damage.localId}")
+        }
+
         adapter.notifyDataSetChanged()
 
         return newId
     }
 
-    private fun launchDamagePager(damageLocalId: Long) {
+    private fun launchDamagePager(damageLocalId: Int) {
         val intent = Intent(this, DamageViewPagerActivity::class.java)
         intent.putExtra(DamageViewPagerActivity.EXTRA_DAMAGE_SPOT_CONDITION_LOCAL_ID, damageLocalId)
         startActivity(intent)

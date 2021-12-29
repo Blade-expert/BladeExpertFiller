@@ -6,7 +6,7 @@ import com.heliopales.bladeexpertfiller.EXPORTATION_STATE_NOT_EXPORTED
 import java.net.URI
 
 @Entity
-class Picture(
+data class Picture(
     @PrimaryKey val fileName: String,
     val absolutePath: String,
     val uri: String, //To Retrieve URI => Uri.parse(s);

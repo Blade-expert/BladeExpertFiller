@@ -22,6 +22,11 @@ data class Intervention(
     @Ignore var exporting: Boolean = false
     @Ignore var progress = MutableLiveData<Int>(0)
 
+    @Ignore var export_count = 0;
+    @Ignore val export_numberOfOperations = MutableLiveData<Int>(0)
+    @Ignore val export_realizedOperations = MutableLiveData<Int>(0)
+    var export_errorsInLastExport: Boolean = false;
+
     constructor(parcel: Parcel) : this(
         parcel.readInt(),
         parcel.readString(),

@@ -32,7 +32,7 @@ class DamageViewPagerActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_damage_view_pager)
 
-        val damageLocalId = intent.getLongExtra(EXTRA_DAMAGE_SPOT_CONDITION_LOCAL_ID, -1)
+        val damageLocalId = intent.getIntExtra(EXTRA_DAMAGE_SPOT_CONDITION_LOCAL_ID, -1)
         damage = App.database.damageDao().getDamageByLocalId(damageLocalId)
 
         pager = findViewById(R.id.damage_view_pager)

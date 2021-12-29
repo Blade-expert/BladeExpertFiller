@@ -2,7 +2,9 @@ package com.heliopales.bladeexpertfiller.intervention
 
 import android.content.Intent
 import android.graphics.Canvas
+import android.media.MediaScannerConnection
 import android.os.Bundle
+import android.os.FileUtils
 import android.os.SystemClock
 import android.util.Log
 import android.view.Menu
@@ -21,13 +23,28 @@ import com.heliopales.bladeexpertfiller.App
 import com.heliopales.bladeexpertfiller.EXPORTATION_STATE_EXPORTED
 import com.heliopales.bladeexpertfiller.EXPORTATION_STATE_NOT_EXPORTED
 import com.heliopales.bladeexpertfiller.R
+import com.heliopales.bladeexpertfiller.blade.Blade
 import com.heliopales.bladeexpertfiller.bladeexpert.*
+import com.heliopales.bladeexpertfiller.damages.DamageSpotCondition
 import com.heliopales.bladeexpertfiller.damages.INHERIT_TYPE_DAMAGE_IN
+import com.heliopales.bladeexpertfiller.damages.INHERIT_TYPE_DAMAGE_OUT
+import com.heliopales.bladeexpertfiller.picture.Picture
 import com.heliopales.bladeexpertfiller.utils.toast
 import it.xabaras.android.recyclerview.swipedecorator.RecyclerViewSwipeDecorator
+import kotlinx.android.synthetic.main.activity_gallery.*
+import okhttp3.MediaType
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import retrofit2.Call
 import retrofit2.Response
+import java.io.File
 import java.lang.Thread.sleep
+import java.util.concurrent.ExecutorService
+import java.util.concurrent.Executors
+import okhttp3.RequestBody
+
+import okhttp3.MultipartBody
+import okhttp3.RequestBody.Companion.asRequestBody
+import okhttp3.ResponseBody
 
 
 class InterventionListActivity : AppCompatActivity(), InterventionAdapter.InterventionItemListener {
@@ -39,6 +56,7 @@ class InterventionListActivity : AppCompatActivity(), InterventionAdapter.Interv
     private lateinit var refreshLayout: SwipeRefreshLayout
     private lateinit var adapter: InterventionAdapter
 
+    private var snackBarActive: Boolean = false
 
     private var deleteAllowed = false;
 
@@ -119,7 +137,9 @@ class InterventionListActivity : AppCompatActivity(), InterventionAdapter.Interv
         }
     }
 
+
     private fun preDeleteIntervention(deletedIntervention: Intervention, position: Int) {
+        snackBarActive = true
         interventions.remove(deletedIntervention)
         adapter.notifyItemRemoved(position)
         Snackbar.make(
@@ -130,27 +150,57 @@ class InterventionListActivity : AppCompatActivity(), InterventionAdapter.Interv
             .setAction("Annuler") {
                 interventions.add(position, deletedIntervention)
                 adapter.notifyItemInserted(position)
+                snackBarActive = false
             }
             .addCallback(object : Snackbar.Callback() {
                 override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
                     if (event == Snackbar.Callback.DISMISS_EVENT_TIMEOUT ||
                         event == Snackbar.Callback.DISMISS_EVENT_CONSECUTIVE
                     ) {
+                        snackBarActive = false
                         effectivelyDeleteIntervention(deletedIntervention)
                     }
                     super.onDismissed(transientBottomBar, event)
                 }
             })
             .show()
+
     }
 
     private fun effectivelyDeleteIntervention(deletedIntervention: Intervention) {
-        App.database.bladeDao().deleteBladesOfInterventionId(deletedIntervention.id)
+        //delete damages and related pictures
+        App.database.damageDao().getDamagesByInterventionId(interventionId = deletedIntervention.id).forEach{
+            App.database.pictureDao().deleteDamagePictures(damageLocalId = it.localId)
+            App.database.damageDao().delete(it)
+        }
+        //delete blade and related pictures
+        App.database.bladeDao().getBladesByInterventionId(deletedIntervention.id).forEach {
+            App.database.pictureDao().deleteBladePictures(bladeId = it.id)
+            App.database.bladeDao().delete(it)
+        }
+
+        //Delete turbine picture and intervention
+        App.database.pictureDao().deleteTurbinePictures(interventionId = deletedIntervention.id)
         App.database.interventionDao().deleteIntervention(deletedIntervention)
+
+        //delete interventionFolder
+        val file = File(App.getInterventionPath(deletedIntervention))
+        if(file.exists() && file.isDirectory) {
+            Log.w(TAG,"will delete directory ${file.absolutePath}" )
+            file.deleteRecursively()
+            MediaScannerConnection.scanFile(
+                this, arrayOf(file.absolutePath), null, null)
+        }
     }
 
 
     private fun updateInterventionList() {
+        if (snackBarActive) {
+            if (refreshLayout.isRefreshing) {
+                refreshLayout.isRefreshing = false
+            }
+            return
+        }
         if (!refreshLayout.isRefreshing) {
             refreshLayout.isRefreshing = true
         }
@@ -210,125 +260,6 @@ class InterventionListActivity : AppCompatActivity(), InterventionAdapter.Interv
         adapter.notifyDataSetChanged()
     }
 
-    override fun onInterventionUploadClick(
-        intervention: Intervention
-    ) {
-
-        intervention.exporting = true
-        adapter.notifyDataSetChanged()
-
-        var count = 0;
-        val numberOfOperations = MutableLiveData<Int>(0)
-        val realizedOperations = MutableLiveData<Int>(0)
-
-
-        val export = Thread {
-            sleep(1000)
-            //EXPORT TURBINE SERIAL
-            App.bladeExpertService.updateTurbineSerial(
-                interventionWrapper = mapToBladeExpertIntervention(
-                    intervention
-                )
-            )
-                .enqueue(object : retrofit2.Callback<Boolean> {
-                    override fun onResponse(
-                        call: Call<Boolean>,
-                        response: Response<Boolean>
-                    ) {
-                        if (response.isSuccessful)
-                            Log.d(TAG, "Turbine serial updated with feedback = ${response.body()}")
-                        realizedOperations.postValue(++count)
-                    }
-
-                    override fun onFailure(call: Call<Boolean>, t: Throwable) {
-                        realizedOperations.postValue(++count)
-                    }
-                })
-
-
-            App.database.bladeDao().getBladesByInterventionId(intervention.id).forEach { bla ->
-                sleep(1000)
-                App.bladeExpertService.updateBladeSerial(bladeWrapper = mapToBladeExpertBlade(bla))
-                    .enqueue(object : retrofit2.Callback<Boolean> {
-                        override fun onResponse(
-                            call: Call<Boolean>,
-                            response: Response<Boolean>
-                        ) {
-                            realizedOperations.postValue(++count)
-                        }
-
-                        override fun onFailure(call: Call<Boolean>, t: Throwable) {
-                            realizedOperations.postValue(++count)
-                        }
-                    })
-
-                App.database.damageDao().getDamagesByBladeAndInterventionAndInheritType(
-                    bla.id,
-                    bla.interventionId,
-                    INHERIT_TYPE_DAMAGE_IN
-                ).forEach { dsc ->
-                    App.bladeExpertService.saveIndoorDamageSpotCondition(
-                        mapToBladeExpertDamageSpotCondition(dsc))
-                }
-            }
-
-        }
-
-        numberOfOperations.observe(this, Observer {
-            Log.d(TAG, "numberOfOperationsObserver newVal = =$it")
-            if (it == 0) return@Observer;
-            export.start();
-        })
-
-        realizedOperations.observe(this, Observer { newVal ->
-            Log.d(TAG, "realizedOperationObserver newVal=$newVal")
-            if (newVal == 0) return@Observer;
-            var percent = newVal.toFloat() / numberOfOperations.value!! * 100;
-            Log.d(TAG, "percent $percent% done")
-            intervention.progress.postValue(percent.toInt())
-            if (newVal == numberOfOperations.value!!) {
-                intervention.exporting = false
-                intervention.exportationState = EXPORTATION_STATE_EXPORTED
-                App.database.interventionDao()
-                    .updateExportationState(intervention.id, EXPORTATION_STATE_EXPORTED)
-
-                runOnUiThread { adapter.notifyDataSetChanged() }
-            }
-        })
-
-        Thread {
-            numberOfOperations.postValue(countOperationsForExport(intervention))
-        }.start()
-
-
-    }
-
-
-    fun countOperationsForExport(intervention: Intervention): Int {
-        Log.d(TAG, "countOperationsForExport()")
-        var count = 0;
-
-        if (intervention != null) {
-            count++ //turbineSerial
-            App.database.bladeDao().getBladesByInterventionId(intervention.id).forEach { bla ->
-                count++ // BladeSerial
-                App.database.damageDao().getDamagesByBladeAndInterventionAndInheritType(
-                    bla.id,
-                    bla.interventionId,
-                    INHERIT_TYPE_DAMAGE_IN
-                ).forEach { dsc ->
-                    count++ //IndoorDamageSpotCondition
-                    /*App.database.pictureDao().getDamageSpotPicturesByDamageId(dsc.localId!!.toInt()).forEach { pic->
-                        if(pic.exportState == EXPORTATION_STATE_NOT_EXPORTED)
-                            count++ //picture
-                    }*/
-                }
-            }
-        }
-        Log.d(TAG, "There will be $count operations")
-        return count;
-    }
-
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         Log.i(TAG, "onCreateOptionsMenu()")
@@ -355,6 +286,279 @@ class InterventionListActivity : AppCompatActivity(), InterventionAdapter.Interv
         return true;
     }
 
+    private val executor: ExecutorService = Executors.newFixedThreadPool(1)
+    override fun onInterventionUploadClick(
+        intervention: Intervention
+    ) {
+        if (intervention.exporting) return
+
+        intervention.export_errorsInLastExport = false
+        intervention.exporting = true
+        intervention.progress.value = 0
+        adapter.notifyDataSetChanged()
+
+        intervention.export_realizedOperations.removeObservers(this)
+        intervention.export_numberOfOperations.removeObservers(this)
+
+        intervention.export_count = 0;
+        intervention.export_realizedOperations.value = 0;
+        intervention.export_numberOfOperations.value = 0;
+
+        intervention.export_numberOfOperations.observe(this, Observer {
+            if (it == 0) return@Observer;
+            executor.execute(exportTask(intervention))
+        })
+
+        intervention.export_realizedOperations.observe(this, Observer { newVal ->
+            if (newVal == 0) return@Observer;
+            var percent = newVal.toFloat() / intervention.export_numberOfOperations.value!! * 100;
+            Log.d(TAG, "percent $percent% done")
+            intervention.progress.postValue(percent.toInt())
+            if (newVal == intervention.export_numberOfOperations.value!!) {
+                intervention.exporting = false
+                if (intervention.export_errorsInLastExport)
+                    intervention.exportationState = EXPORTATION_STATE_NOT_EXPORTED
+                else
+                    intervention.exportationState = EXPORTATION_STATE_EXPORTED
+                App.database.interventionDao().updateIntervention(intervention)
+                runOnUiThread { adapter.notifyDataSetChanged() }
+
+            }
+        })
+
+        Thread {
+            intervention.export_numberOfOperations.postValue(countOperationsForExport(intervention))
+        }.start()
+
+    }
+
+    private fun exportTask(intervention: Intervention): Runnable {
+        return Runnable {
+            Log.i(TAG, "saveTurbine ${intervention.turbineName}")
+            saveTurbine(intervention)
+
+            App.database.bladeDao().getBladesByInterventionId(intervention.id).forEach { bla ->
+                Log.i(TAG, "saveBlade ${bla.position}")
+                saveBlade(bla, intervention)
+
+                App.database.damageDao().getDamagesByBladeAndInterventionAndInheritType(
+                    bla.id,
+                    bla.interventionId,
+                    INHERIT_TYPE_DAMAGE_IN
+                ).forEach { dsc ->
+                    Log.i(TAG, "saveDamage ${dsc.fieldCode}")
+                    saveIndoorDamage(dsc, intervention)
+                }
+
+                App.database.damageDao().getDamagesByBladeAndInterventionAndInheritType(
+                    bla.id,
+                    bla.interventionId,
+                    INHERIT_TYPE_DAMAGE_OUT
+                ).forEach { dsc ->
+                    Log.i(TAG, "saveDamage ${dsc.fieldCode}")
+                    saveOutdoorDamage(dsc, intervention)
+                }
+            }
+        }
+    }
+
+    private fun saveTurbine(intervention: Intervention) {
+        App.bladeExpertService.updateTurbineSerial(
+            interventionWrapper = mapToBladeExpertIntervention(
+                intervention
+            )
+        )
+            .enqueue(object : retrofit2.Callback<Boolean> {
+                override fun onResponse(
+                    call: Call<Boolean>,
+                    response: Response<Boolean>
+                ) {
+                    if (!response.isSuccessful) {
+                        intervention.export_errorsInLastExport = true
+                    }
+                    intervention.export_realizedOperations.postValue(++intervention.export_count)
+                }
+
+                override fun onFailure(call: Call<Boolean>, t: Throwable) {
+                    intervention.export_realizedOperations.postValue(++intervention.export_count)
+                    intervention.export_errorsInLastExport = true
+                }
+            })
+    }
+
+    private fun saveBlade(bla: Blade, intervention: Intervention) {
+        App.bladeExpertService.updateBladeSerial(bladeWrapper = mapToBladeExpertBlade(bla))
+            .enqueue(object : retrofit2.Callback<Boolean> {
+                override fun onResponse(
+                    call: Call<Boolean>,
+                    response: Response<Boolean>
+                ) {
+                    if (!response.isSuccessful)
+                        intervention.export_errorsInLastExport = true
+                    intervention.export_realizedOperations.postValue(++intervention.export_count)
+                }
+
+                override fun onFailure(call: Call<Boolean>, t: Throwable) {
+                    intervention.export_realizedOperations.postValue(++intervention.export_count)
+                    intervention.export_errorsInLastExport = true
+                }
+            })
+    }
+
+    private fun saveIndoorDamage(dsc: DamageSpotCondition, intervention: Intervention) {
+        App.bladeExpertService.saveIndoorDamageSpotCondition(
+            damageSpotConditionWrapper =
+            mapToBladeExpertDamageSpotCondition(dsc)
+        )
+            .enqueue(object : retrofit2.Callback<DamageSpotConditionWrapper> {
+                override fun onResponse(
+                    call: Call<DamageSpotConditionWrapper>,
+                    response: Response<DamageSpotConditionWrapper>
+                ) {
+                    //Récupération de l'id de bladeExpert et sauvegarde
+                    intervention.export_realizedOperations.postValue(++intervention.export_count)
+                    Log.i(TAG, "damage ${dsc.fieldCode} saved")
+                    if (response.isSuccessful) {
+                        Log.i(TAG, "damage ${dsc.fieldCode} saved successful")
+                        dsc.id = response.body()?.id
+                        App.database.damageDao().updateDamage(dsc)
+
+                        App.database.pictureDao()
+                            .getNonExportedDamageSpotPicturesByDamageId(dsc.localId!!)
+                            .forEach { pic ->
+                                Log.i(TAG, "send damage picture $pic")
+                                sendDamagePicture(pic, intervention, spotConditionId = dsc.id!!)
+                            }
+                    } else {
+                        intervention.export_errorsInLastExport = true
+                    }
+                }
+
+                override fun onFailure(
+                    call: Call<DamageSpotConditionWrapper>,
+                    t: Throwable
+                ) {
+                    intervention.export_realizedOperations.postValue(++intervention.export_count)
+                    intervention.export_errorsInLastExport = true
+                }
+            })
+    }
+
+    private fun saveOutdoorDamage(dsc: DamageSpotCondition, intervention: Intervention) {
+        App.bladeExpertService.saveOutdoorDamageSpotCondition(
+            damageSpotConditionWrapper =
+            mapToBladeExpertDamageSpotCondition(dsc)
+        )
+            .enqueue(object : retrofit2.Callback<DamageSpotConditionWrapper> {
+                override fun onResponse(
+                    call: Call<DamageSpotConditionWrapper>,
+                    response: Response<DamageSpotConditionWrapper>
+                ) {
+                    intervention.export_realizedOperations.postValue(++intervention.export_count)
+                    if (response.isSuccessful) {
+                        //Récupération de l'id de bladeExpert et sauvegarde
+                        dsc.id = response.body()?.id
+                        App.database.damageDao().updateDamage(dsc)
+                        App.database.pictureDao()
+                            .getNonExportedDamageSpotPicturesByDamageId(dsc.localId!!)
+                            .forEach { pic ->
+                                sendDamagePicture(pic, intervention, spotConditionId = dsc.id!!)
+                            }
+                    } else {
+                        intervention.export_errorsInLastExport = true
+                    }
+                }
+
+                override fun onFailure(call: Call<DamageSpotConditionWrapper>, t: Throwable) {
+                    intervention.export_realizedOperations.postValue(++intervention.export_count)
+                    intervention.export_errorsInLastExport = true
+                }
+            })
+    }
+
+    private fun sendDamagePicture(pic: Picture, intervention: Intervention, spotConditionId: Int) {
+        if (pic.exportState == EXPORTATION_STATE_NOT_EXPORTED) {
+            val pictureFile = File(pic.absolutePath)
+            val filePart = MultipartBody.Part.createFormData(
+                "file",
+                pictureFile.name,
+                pictureFile.asRequestBody("image/jpeg".toMediaTypeOrNull())
+            )
+            App.bladeExpertService.addPictureToSpotCondition(
+                spotConditionId = spotConditionId,
+                filePart = filePart
+            ).enqueue(object : retrofit2.Callback<ResponseBody> {
+                override fun onResponse(
+                    call: Call<ResponseBody>,
+                    response: Response<ResponseBody>
+                ) {
+                    intervention.export_realizedOperations.postValue(++intervention.export_count)
+                    if (response.isSuccessful) {
+                        App.database.pictureDao()
+                            .updateExportationState(pic.fileName, EXPORTATION_STATE_EXPORTED)
+                    } else {
+                        intervention.export_errorsInLastExport = true
+                    }
+                }
+
+                override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
+                    intervention.export_realizedOperations.postValue(++intervention.export_count)
+                    intervention.export_errorsInLastExport = true
+                }
+            })
+        } else {
+            intervention.export_realizedOperations.postValue(++intervention.export_count)
+        }
+    }
+
+    private fun countOperationsForExport(intervention: Intervention): Int {
+        Log.d(TAG, "countOperationsForExport()")
+        var count = 0;
+
+        Log.v(TAG, "listOfAllPicturesInDataBase")
+        App.database.pictureDao().getAll().forEach {
+            Log.v(TAG, "$it")
+        }
+
+        if (intervention != null) {
+            count++ //turbineSerial
+            Log.d(TAG, " - 1 turbine")
+            App.database.bladeDao().getBladesByInterventionId(intervention.id).forEach { bla ->
+                count++ // BladeSerial
+                Log.d(TAG, "   - 1 blade")
+                App.database.damageDao().getDamagesByBladeAndInterventionAndInheritType(
+                    bla.id,
+                    bla.interventionId,
+                    INHERIT_TYPE_DAMAGE_IN
+                ).forEach { dsc ->
+                    count++ //IndoorDamageSpotCondition
+                    Log.d(TAG, "     - indoor damage ${dsc.fieldCode}")
+                    App.database.pictureDao()
+                        .getNonExportedDamageSpotPicturesByDamageId(dsc.localId!!).forEach { pic ->
+                            count++ //picture
+                            Log.d(TAG, "       - pic : ${pic.fileName}")
+                        }
+
+                }
+                App.database.damageDao().getDamagesByBladeAndInterventionAndInheritType(
+                    bla.id,
+                    bla.interventionId,
+                    INHERIT_TYPE_DAMAGE_OUT
+                ).forEach { dsc ->
+                    count++ //IndoorDamageSpotCondition
+                    Log.d(TAG, "     - outdoor damage ${dsc.fieldCode}")
+                    App.database.pictureDao()
+                        .getNonExportedDamageSpotPicturesByDamageId(dsc.localId!!).forEach { pic ->
+                            count++ //picture
+                            Log.d(TAG, "       - pic : ${pic.fileName}")
+                        }
+
+                }
+            }
+        }
+        Log.d(TAG, "There will be $count operations")
+        return count;
+    }
 
     private fun updateSeverities() {
         Log.d(TAG, "updateSeverities()")

@@ -10,8 +10,9 @@ const val INDEX_DAMAGE_LOOP_DEPT = 2
 const val INDEX_DAMAGE_LOOP_TYPE = 3
 const val INDEX_DAMAGE_LOOP_SEVE = 4
 
-const val PICTURE_TYPE_DAMAGE = 0
-const val PICTURE_TYPE_DRAIN = 3
-const val PICTURE_TYPE_LPS = 4
+
 const val PICTURE_TYPE_TURBINE = 1
 const val PICTURE_TYPE_BLADE = 2
+const val PICTURE_TYPE_DAMAGE = 3
+const val PICTURE_TYPE_DRAIN = 4
+const val PICTURE_TYPE_LPS = 5
