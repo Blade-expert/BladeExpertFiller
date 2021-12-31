@@ -1,4 +1,4 @@
-package com.heliopales.bladeexpertfiller.damages
+package com.heliopales.bladeexpertfiller.spotcondition.damages
 
 import android.content.res.ColorStateList
 import android.graphics.Color
@@ -13,6 +13,7 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.heliopales.bladeexpertfiller.App
 import com.heliopales.bladeexpertfiller.R
+import com.heliopales.bladeexpertfiller.spotcondition.DamageSpotCondition
 
 class DamageAdapter(
     private val damages: List<DamageSpotCondition>,

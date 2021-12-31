@@ -1,4 +1,4 @@
-package com.heliopales.bladeexpertfiller.damages
+package com.heliopales.bladeexpertfiller.spotcondition.damages
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -10,9 +10,11 @@ import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import com.heliopales.bladeexpertfiller.*
-import com.heliopales.bladeexpertfiller.damages.editloop.*
-import android.app.Activity
+import com.heliopales.bladeexpertfiller.spotcondition.damages.editloop.*
 import android.view.inputmethod.InputMethodManager
+import com.heliopales.bladeexpertfiller.spotcondition.DamageSpotCondition
+import com.heliopales.bladeexpertfiller.spotcondition.INHERIT_TYPE_DAMAGE_IN
+import com.heliopales.bladeexpertfiller.spotcondition.INHERIT_TYPE_DAMAGE_OUT
 
 
 class DamageViewPagerActivity : AppCompatActivity() {

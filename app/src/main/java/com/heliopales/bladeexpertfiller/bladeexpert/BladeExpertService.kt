@@ -36,5 +36,6 @@ interface BladeExpertService {
     @POST(value = "api/mobile/outdoorDamage")
     fun saveOutdoorDamageSpotCondition(@Query("key") key:String = API_KEY, @Body damageSpotConditionWrapper: DamageSpotConditionWrapper): Call<DamageSpotConditionWrapper>
 
-
+    @POST(value = "api/mobile/drainhole")
+    fun saveDrainholeSpotCondition(@Query("key") key:String = API_KEY, @Body drainholeSpotConditionWrapper: DrainholeSpotConditionWrapper): Call<DrainholeSpotConditionWrapper>
 }

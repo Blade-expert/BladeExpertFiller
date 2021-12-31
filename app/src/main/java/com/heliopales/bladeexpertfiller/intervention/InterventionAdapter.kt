@@ -50,6 +50,18 @@ private val lifecycleOwner: LifecycleOwner
             turbineNameView.text = itv.turbineName
             cardView.tag = itv
             cardView.setOnClickListener(this@InterventionAdapter)
+            progressBar.visibility = View.GONE
+            progressText.visibility = View.GONE
+            indeterminateProgress.visibility = View.GONE
+            cardView.setCardBackgroundColor(
+                ContextCompat.getColor(
+                    cardView.context,
+                    R.color.cardview_light_background
+                )
+            )
+            helperView.visibility = View.GONE
+            uploadButton.visibility = View.GONE
+
             if (itv.expired) {
                 cardView.setCardBackgroundColor(
                     ContextCompat.getColor(
@@ -58,12 +70,11 @@ private val lifecycleOwner: LifecycleOwner
                     )
                 )
                 helperView.visibility = View.VISIBLE
-                helperView.text = "L'intervention n'est plus en 'EN GOING'"
+                helperView.text = "Intervention is not 'ON GOING'"
                 helperView.setTextColor(ContextCompat.getColor(
                     cardView.context,
                     R.color.bulma_danger_dark
                 ))
-                uploadButton.visibility = View.GONE
             }else {
                 when(itv.exportationState){
                     EXPORTATION_STATE_EXPORTED -> {
@@ -79,10 +90,6 @@ private val lifecycleOwner: LifecycleOwner
                             cardView.context,
                             R.color.bulma_success_dark
                         ))
-                        uploadButton.visibility = View.GONE
-                        progressBar.visibility = View.GONE
-                        progressText.visibility = View.GONE
-                        indeterminateProgress.visibility = View.GONE
                     }
                     EXPORTATION_STATE_NOT_EXPORTED -> {
                         cardView.setCardBackgroundColor(
@@ -92,7 +99,6 @@ private val lifecycleOwner: LifecycleOwner
                             )
                         )
                         helperView.visibility = View.VISIBLE
-
                         helperView.setTextColor(ContextCompat.getColor(
                             cardView.context,
                             R.color.bulma_warning_dark
@@ -100,7 +106,6 @@ private val lifecycleOwner: LifecycleOwner
 
                         if(itv.exporting){
                             helperView.text = "Exporting..."
-                            uploadButton.visibility = View.GONE
                             progressBar.visibility = View.VISIBLE
                             progressText.visibility = View.VISIBLE
                             itv.progress.observe(lifecycleOwner, Observer { newVal ->
@@ -120,16 +125,6 @@ private val lifecycleOwner: LifecycleOwner
                             }
                             uploadButton.visibility = View.VISIBLE
                         }
-                    }
-                    else -> {
-                        cardView.setCardBackgroundColor(
-                            ContextCompat.getColor(
-                                cardView.context,
-                                R.color.cardview_light_background
-                            )
-                        )
-                        helperView.visibility = View.GONE
-                        uploadButton.visibility = View.GONE
                     }
                 }
             }

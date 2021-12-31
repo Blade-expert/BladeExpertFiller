@@ -1,6 +1,5 @@
 package com.heliopales.bladeexpertfiller.blade
 
-import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -8,13 +7,15 @@ import android.view.View
 import android.widget.Button
 import android.widget.ImageButton
 import android.widget.TextView
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.heliopales.bladeexpertfiller.*
 import com.heliopales.bladeexpertfiller.camera.CameraActivity
-import com.heliopales.bladeexpertfiller.damages.DamageListActivity
-import com.heliopales.bladeexpertfiller.damages.INHERIT_TYPE_DAMAGE_IN
-import com.heliopales.bladeexpertfiller.damages.INHERIT_TYPE_DAMAGE_OUT
+import com.heliopales.bladeexpertfiller.spotcondition.damages.DamageListActivity
+import com.heliopales.bladeexpertfiller.spotcondition.INHERIT_TYPE_DAMAGE_IN
+import com.heliopales.bladeexpertfiller.spotcondition.INHERIT_TYPE_DAMAGE_OUT
 import com.heliopales.bladeexpertfiller.intervention.Intervention
+import com.heliopales.bladeexpertfiller.spotcondition.drainhole.DrainholeActivity
 
 
 class BladeActivity : AppCompatActivity(), View.OnClickListener {
@@ -50,6 +51,8 @@ class BladeActivity : AppCompatActivity(), View.OnClickListener {
         findViewById<ImageButton>(R.id.take_blade_serial_picture).setOnClickListener(this)
         findViewById<Button>(R.id.see_indoor_damages_button).setOnClickListener(this)
         findViewById<Button>(R.id.see_outdoor_damages_button).setOnClickListener(this)
+        findViewById<Button>(R.id.see_drainhole_button).setOnClickListener(this)
+        findViewById<Button>(R.id.see_lightning_button).setOnClickListener(this)
     }
 
     override fun onClick(v: View?) {
@@ -58,11 +61,26 @@ class BladeActivity : AppCompatActivity(), View.OnClickListener {
             R.id.take_blade_serial_picture -> takeBladeSerialPicture()
             R.id.see_indoor_damages_button -> startIndoorActivity()
             R.id.see_outdoor_damages_button -> startOutdoorActivity()
+            R.id.see_drainhole_button -> startDrainholeActivity()
+            R.id.see_lightning_button -> startLightningActivity()
         }
     }
 
+    private fun startLightningActivity() {
+        AlertDialog.Builder(this)
+            .setMessage("Not yet implemented !")
+            .create()
+            .show()
+    }
+
+    private fun startDrainholeActivity() {
+        val intent = Intent(this, DrainholeActivity::class.java)
+        intent.putExtra(DrainholeActivity.EXTRA_INTERVENTION_ID, intervention.id)
+        intent.putExtra(DrainholeActivity.EXTRA_BLADE_ID, blade.id)
+        startActivity(intent)
+    }
+
     private fun startIndoorActivity() {
-        Log.d(TAG, "startIndoorActivity()")
         val intent = Intent(this, DamageListActivity::class.java)
         intent.putExtra(DamageListActivity.EXTRA_INTERVENTION_ID, intervention.id)
         intent.putExtra(DamageListActivity.EXTRA_BLADE_ID, blade.id)

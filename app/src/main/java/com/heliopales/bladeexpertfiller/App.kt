@@ -12,7 +12,10 @@ import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.io.File
+import java.io.PrintWriter
+import java.util.*
 import java.util.concurrent.TimeUnit
+import kotlin.io.path.Path
 
 //RECETTE
 private const val BASE_URL = "https://bladeexpert-recette.herokuapp.com/bladeexpert/"
@@ -65,7 +68,7 @@ class App : Application() {
         val bladeExpertService: BladeExpertService =
             retrofit().create(BladeExpertService::class.java)
 
-        fun getOutputDirectory(): String {
+        private fun getOutputDirectory(): String {
             val mediaDir = instance.externalMediaDirs.firstOrNull()?.let {
                 File(it, instance.resources.getString(R.string.app_name)).apply { mkdirs() }
             }
@@ -122,6 +125,31 @@ class App : Application() {
                 "${getBladePath(intervention, blade)}/damage_unknown"
             }
         }
+
+        fun getDrainPath(
+            interventionId: Int,
+            bladeId: Int
+        ): String {
+            val intervention = database.interventionDao().getById(interventionId)
+            val blade = database.bladeDao().getById(bladeId)
+            return "${getBladePath(intervention, blade)}/drainhole"
+
+        }
+
+        var printWriter: PrintWriter? = null;
+
+        fun writeOnInterventionLogFile(intervention: Intervention, message: String) {
+            val path = File(getInterventionPath(intervention))
+            if (!path.exists()) path.mkdirs()
+            val logFile = File(path, "log.txt")
+            if (!logFile.exists()) {
+                logFile.createNewFile()
+            }
+            val toWrite = "[${Date()}] $message\n"
+            logFile.appendText(toWrite)
+
+        }
+
 
     }
 

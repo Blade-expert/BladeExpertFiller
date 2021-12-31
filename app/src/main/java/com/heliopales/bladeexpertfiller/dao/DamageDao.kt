@@ -1,8 +1,7 @@
 package com.heliopales.bladeexpertfiller.dao
 
 import androidx.room.*
-import com.heliopales.bladeexpertfiller.damages.DamageSpotCondition
-import com.heliopales.bladeexpertfiller.damages.INHERIT_TYPE_DAMAGE_IN
+import com.heliopales.bladeexpertfiller.spotcondition.DamageSpotCondition
 
 @Dao
 interface DamageDao {

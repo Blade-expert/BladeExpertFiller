@@ -19,6 +19,9 @@
         <entry key="..\:/Users/Colin/AndroidStudioProjects/BladeExpertFiller/app/src/main/res/layout-land/activity_camera.xml" value="0.296875" />
         <entry key="..\:/Users/Colin/AndroidStudioProjects/BladeExpertFiller/app/src/main/res/layout/activity_blade.xml" value="0.36615384615384616" />
         <entry key="..\:/Users/Colin/AndroidStudioProjects/BladeExpertFiller/app/src/main/res/layout/activity_camera.xml" value="0.2140625" />
+        <entry key="..\:/Users/Colin/AndroidStudioProjects/BladeExpertFiller/app/src/main/res/layout/activity_damage_list.xml" value="0.371875" />
+        <entry key="..\:/Users/Colin/AndroidStudioProjects/BladeExpertFiller/app/src/main/res/layout/activity_damage_view_pager.xml" value="0.371875" />
+        <entry key="..\:/Users/Colin/AndroidStudioProjects/BladeExpertFiller/app/src/main/res/layout/activity_drainhole.xml" value="0.371875" />
         <entry key="..\:/Users/Colin/AndroidStudioProjects/BladeExpertFiller/app/src/main/res/layout/activity_gallery.xml" value="0.2140625" />
         <entry key="..\:/Users/Colin/AndroidStudioProjects/BladeExpertFiller/app/src/main/res/layout/activity_intervention_details.xml" value="0.371875" />
         <entry key="..\:/Users/Colin/AndroidStudioProjects/BladeExpertFiller/app/src/main/res/layout/activity_intervention_list.xml" value="0.371875" />
@@ -27,6 +30,8 @@
         <entry key="..\:/Users/Colin/AndroidStudioProjects/BladeExpertFiller/app/src/main/res/layout/fragment_blank.xml" value="0.371875" />
         <entry key="..\:/Users/Colin/AndroidStudioProjects/BladeExpertFiller/app/src/main/res/layout/fragment_damage_basics.xml" value="0.2296875" />
         <entry key="..\:/Users/Colin/AndroidStudioProjects/BladeExpertFiller/app/src/main/res/layout/fragment_damage_type.xml" value="0.371875" />
+        <entry key="..\:/Users/Colin/AndroidStudioProjects/BladeExpertFiller/app/src/main/res/layout/fragment_drain_basics.xml" value="0.371875" />
+        <entry key="..\:/Users/Colin/AndroidStudioProjects/BladeExpertFiller/app/src/main/res/layout/fragment_drain_severity.xml" value="0.371875" />
         <entry key="..\:/Users/Colin/AndroidStudioProjects/BladeExpertFiller/app/src/main/res/layout/fragment_indoor_position.xml" value="0.2296875" />
         <entry key="..\:/Users/Colin/AndroidStudioProjects/BladeExpertFiller/app/src/main/res/layout/fragment_indoor_profile.xml" value="0.2296875" />
         <entry key="..\:/Users/Colin/AndroidStudioProjects/BladeExpertFiller/app/src/main/res/layout/fragment_intervention_list.xml" value="0.2140625" />
@@ -34,12 +39,14 @@
         <entry key="..\:/Users/Colin/AndroidStudioProjects/BladeExpertFiller/app/src/main/res/layout/fragment_outdoor_profile.xml" value="0.2296875" />
         <entry key="..\:/Users/Colin/AndroidStudioProjects/BladeExpertFiller/app/src/main/res/layout/fragment_severity.xml" value="0.371875" />
         <entry key="..\:/Users/Colin/AndroidStudioProjects/BladeExpertFiller/app/src/main/res/layout/fragment_severity2.xml" value="0.371875" />
+        <entry key="..\:/Users/Colin/AndroidStudioProjects/BladeExpertFiller/app/src/main/res/layout/item_damage.xml" value="0.371875" />
         <entry key="..\:/Users/Colin/AndroidStudioProjects/BladeExpertFiller/app/src/main/res/layout/item_damage_type.xml" value="0.20364583333333333" />
         <entry key="..\:/Users/Colin/AndroidStudioProjects/BladeExpertFiller/app/src/main/res/layout/item_damage_type_category.xml" value="0.1" />
         <entry key="..\:/Users/Colin/AndroidStudioProjects/BladeExpertFiller/app/src/main/res/layout/item_image_view.xml" value="0.371875" />
         <entry key="..\:/Users/Colin/AndroidStudioProjects/BladeExpertFiller/app/src/main/res/layout/item_intervention.xml" value="0.371875" />
         <entry key="..\:/Users/Colin/AndroidStudioProjects/BladeExpertFiller/app/src/main/res/layout/menu_switch.xml" value="0.2140625" />
         <entry key="..\:/Users/Colin/AndroidStudioProjects/BladeExpertFiller/app/src/main/res/menu/activity_intervention_list.xml" value="0.2140625" />
+        <entry key="..\:/Users/Colin/AndroidStudioProjects/BladeExpertFiller/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml" value="0.225" />
       </map>
     </option>
   </component>

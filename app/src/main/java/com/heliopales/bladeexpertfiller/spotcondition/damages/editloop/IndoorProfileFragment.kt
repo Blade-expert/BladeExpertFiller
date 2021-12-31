@@ -1,4 +1,4 @@
-package com.heliopales.bladeexpertfiller.damages.editloop
+package com.heliopales.bladeexpertfiller.spotcondition.damages.editloop
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -6,11 +6,14 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import androidx.fragment.app.Fragment
-import com.heliopales.bladeexpertfiller.*
-import com.heliopales.bladeexpertfiller.damages.DamageSpotCondition
-import com.heliopales.bladeexpertfiller.damages.DamageViewPagerActivity
+import com.heliopales.bladeexpertfiller.App
+import com.heliopales.bladeexpertfiller.EXPORTATION_STATE_NOT_EXPORTED
+import com.heliopales.bladeexpertfiller.INDEX_DAMAGE_LOOP_TYPE
+import com.heliopales.bladeexpertfiller.R
+import com.heliopales.bladeexpertfiller.spotcondition.DamageSpotCondition
+import com.heliopales.bladeexpertfiller.spotcondition.damages.DamageViewPagerActivity
 
-class OutdoorPositionFragment : Fragment(), View.OnClickListener {
+class IndoorProfileFragment : Fragment(), View.OnClickListener {
 
     private val buttons = mutableListOf<Button>();
 
@@ -35,8 +38,7 @@ class OutdoorPositionFragment : Fragment(), View.OnClickListener {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_outdoor_position, container, false)
+        return inflater.inflate(R.layout.fragment_indoor_profile, container, false)
     }
 
 
@@ -54,25 +56,19 @@ class OutdoorPositionFragment : Fragment(), View.OnClickListener {
 
         if(v is Button){
             when (v.id) {
-                R.id.button_ona -> damage.position = null
-                else -> damage.position = v.tag as String
+                R.id.button_ipna -> damage.profileDepth = null
+                else -> damage.profileDepth = v.tag as String
             }
-
-            when (v.id) {
-                R.id.button_ops, R.id.button_oss -> (activity as DamageViewPagerActivity).pager.currentItem =
-                    INDEX_DAMAGE_LOOP_DEPT
-                else -> (activity as DamageViewPagerActivity).pager.currentItem =
-                    INDEX_DAMAGE_LOOP_TYPE
-            }
+            (activity as DamageViewPagerActivity).pager.currentItem = INDEX_DAMAGE_LOOP_TYPE
         }
     }
 
     override fun onResume() {
         super.onResume()
         (requireActivity() as DamageViewPagerActivity).hideKeyboard()
-        if (damage.position == null) {
+        if (damage.profileDepth == null) {
             buttons.forEach {
-                if (it.id == R.id.button_ona) {
+                if (it.id == R.id.button_ipna) {
                     it.foreground = requireContext().getDrawable(R.drawable.ic_baseline_crop_din_24)
                 } else {
                     it.foreground = null
@@ -80,7 +76,7 @@ class OutdoorPositionFragment : Fragment(), View.OnClickListener {
             }
         } else {
             buttons.forEach {
-                if (it.tag == damage.position) {
+                if (it.tag == damage.profileDepth) {
                     it.foreground = requireContext().getDrawable(R.drawable.ic_baseline_crop_din_24)
                 } else {
                     it.foreground = null
@@ -88,4 +84,5 @@ class OutdoorPositionFragment : Fragment(), View.OnClickListener {
             }
         }
     }
+
 }

@@ -1,4 +1,4 @@
-package com.heliopales.bladeexpertfiller.damages
+package com.heliopales.bladeexpertfiller.spotcondition.damages
 
 enum class DamageTypeCategory(val code:String, val alias:String) {
 

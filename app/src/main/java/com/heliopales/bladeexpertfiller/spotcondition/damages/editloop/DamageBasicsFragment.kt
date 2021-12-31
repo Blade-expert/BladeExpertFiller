@@ -1,4 +1,4 @@
-package com.heliopales.bladeexpertfiller.damages.editloop
+package com.heliopales.bladeexpertfiller.spotcondition.damages.editloop
 
 import android.content.Intent
 import android.os.Bundle
@@ -15,8 +15,8 @@ import com.heliopales.bladeexpertfiller.EXPORTATION_STATE_NOT_EXPORTED
 import com.heliopales.bladeexpertfiller.PICTURE_TYPE_DAMAGE
 import com.heliopales.bladeexpertfiller.R
 import com.heliopales.bladeexpertfiller.camera.CameraActivity
-import com.heliopales.bladeexpertfiller.damages.DamageSpotCondition
-import com.heliopales.bladeexpertfiller.damages.DamageViewPagerActivity
+import com.heliopales.bladeexpertfiller.spotcondition.DamageSpotCondition
+import com.heliopales.bladeexpertfiller.spotcondition.damages.DamageViewPagerActivity
 
 
 class DamageBasicsFragment : Fragment() {
@@ -38,8 +38,6 @@ class DamageBasicsFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        view.findViewById<EditText>(R.id.damage_radial_position)
 
         radialPosition = view.findViewById(R.id.damage_radial_position)
         longitudinalLength = view.findViewById(R.id.damage_longitudinal_length)

@@ -46,3 +46,11 @@ data class DamageSpotConditionWrapper(
     var position: String?,
     var profileDepth: String?
 )
+
+data class DrainholeSpotConditionWrapper(
+    val id: Int?,
+    val interventionId: Int,
+    val bladeId:Int,
+    var severityId: Int?,
+    var description: String?,
+)

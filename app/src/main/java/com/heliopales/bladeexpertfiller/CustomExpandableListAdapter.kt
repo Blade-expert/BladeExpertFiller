@@ -1,14 +1,12 @@
 package com.heliopales.bladeexpertfiller
 
 import android.content.Context
-import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.BaseExpandableListAdapter
-import android.widget.ListAdapter
 import android.widget.TextView
-import com.heliopales.bladeexpertfiller.damages.DamageTypeCategory
+import com.heliopales.bladeexpertfiller.spotcondition.damages.DamageTypeCategory
 import com.heliopales.bladeexpertfiller.secondaryentities.DamageType
 
 class CustomExpandableListAdapter internal constructor(

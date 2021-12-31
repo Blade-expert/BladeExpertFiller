@@ -5,7 +5,7 @@ import android.os.Parcelable
 import androidx.room.Entity
 import androidx.room.Ignore
 import androidx.room.PrimaryKey
-import com.heliopales.bladeexpertfiller.damages.DamageTypeCategory
+import com.heliopales.bladeexpertfiller.spotcondition.damages.DamageTypeCategory
 
 @Entity
 data class DamageType(

@@ -4,10 +4,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy.REPLACE
 import androidx.room.Query
-import com.heliopales.bladeexpertfiller.EXPORTATION_STATE_NOT_EXPORTED
-import com.heliopales.bladeexpertfiller.PICTURE_TYPE_BLADE
-import com.heliopales.bladeexpertfiller.PICTURE_TYPE_DAMAGE
-import com.heliopales.bladeexpertfiller.PICTURE_TYPE_TURBINE
+import com.heliopales.bladeexpertfiller.*
 import com.heliopales.bladeexpertfiller.picture.Picture
 
 @Dao
@@ -27,6 +24,12 @@ interface PictureDao {
 
     @Query("SELECT * FROM picture WHERE type = $PICTURE_TYPE_DAMAGE and relatedId = :damageLocalId and exportState=$EXPORTATION_STATE_NOT_EXPORTED")
     fun getNonExportedDamageSpotPicturesByDamageId(damageLocalId: Int) : List<Picture>
+
+    @Query("SELECT * FROM picture WHERE type = $PICTURE_TYPE_DRAIN and relatedId = :drainLocalId and exportState=$EXPORTATION_STATE_NOT_EXPORTED")
+    fun getNonExportedDrainholeSpotPicturesByDrainId(drainLocalId: Int) : List<Picture>
+
+    @Query("SELECT * FROM picture WHERE type = $PICTURE_TYPE_LPS and relatedId = :lpsLocalId and exportState=$EXPORTATION_STATE_NOT_EXPORTED")
+    fun getNonExportedLightningSpotPicturesByLightningId(lpsLocalId: Int) : List<Picture>
 
     @Query("SELECT * FROM picture")
     fun getAll(): List<Picture>

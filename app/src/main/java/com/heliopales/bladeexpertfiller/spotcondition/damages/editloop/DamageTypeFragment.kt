@@ -1,4 +1,4 @@
-package com.heliopales.bladeexpertfiller.damages.editloop
+package com.heliopales.bladeexpertfiller.spotcondition.damages.editloop
 
 import android.os.Bundle
 import android.util.Log
@@ -10,8 +10,11 @@ import android.widget.ExpandableListAdapter
 import android.widget.ExpandableListView
 import androidx.fragment.app.Fragment
 import com.heliopales.bladeexpertfiller.*
-import com.heliopales.bladeexpertfiller.damages.*
+import com.heliopales.bladeexpertfiller.spotcondition.damages.*
 import com.heliopales.bladeexpertfiller.secondaryentities.DamageType
+import com.heliopales.bladeexpertfiller.spotcondition.DamageSpotCondition
+import com.heliopales.bladeexpertfiller.spotcondition.INHERIT_TYPE_DAMAGE_IN
+import com.heliopales.bladeexpertfiller.spotcondition.INHERIT_TYPE_DAMAGE_OUT
 
 class DamageTypeFragment : Fragment(), View.OnClickListener {
     private val TAG = DamageTypeFragment::class.java.simpleName

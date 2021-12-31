@@ -1,11 +1,12 @@
 package com.heliopales.bladeexpertfiller.bladeexpert
 
 import com.heliopales.bladeexpertfiller.blade.Blade
-import com.heliopales.bladeexpertfiller.damages.DamageSpotCondition
-import com.heliopales.bladeexpertfiller.damages.DamageTypeCategory
+import com.heliopales.bladeexpertfiller.spotcondition.DamageSpotCondition
+import com.heliopales.bladeexpertfiller.spotcondition.damages.DamageTypeCategory
 import com.heliopales.bladeexpertfiller.intervention.Intervention
 import com.heliopales.bladeexpertfiller.secondaryentities.DamageType
 import com.heliopales.bladeexpertfiller.secondaryentities.Severity
+import com.heliopales.bladeexpertfiller.spotcondition.DrainholeSpotCondition
 
 fun mapBladeExpertIntervention(interventionWrapper: InterventionWrapper): Intervention {
     return Intervention(
@@ -75,5 +76,15 @@ fun mapToBladeExpertDamageSpotCondition(dsc: DamageSpotCondition): DamageSpotCon
         repetition = dsc.repetition,
         position = dsc.position,
         profileDepth = dsc.profileDepth
+    )
+}
+
+fun mapToBladeExpertDrainholeSpotCondition(dhs: DrainholeSpotCondition): DrainholeSpotConditionWrapper{
+    return DrainholeSpotConditionWrapper(
+        id = dhs.id,
+        interventionId = dhs.interventionId,
+        bladeId = dhs.bladeId,
+        severityId = dhs.severityId,
+        description = dhs.description,
     )
 }

@@ -1,4 +1,4 @@
-package com.heliopales.bladeexpertfiller.damages
+package com.heliopales.bladeexpertfiller.spotcondition.damages
 
 import android.content.Intent
 import android.os.Bundle
@@ -13,6 +13,9 @@ import com.heliopales.bladeexpertfiller.App
 import com.heliopales.bladeexpertfiller.PICTURE_TYPE_DAMAGE
 import com.heliopales.bladeexpertfiller.R
 import com.heliopales.bladeexpertfiller.camera.CameraActivity
+import com.heliopales.bladeexpertfiller.spotcondition.DamageSpotCondition
+import com.heliopales.bladeexpertfiller.spotcondition.INHERIT_TYPE_DAMAGE_IN
+import com.heliopales.bladeexpertfiller.spotcondition.INHERIT_TYPE_DAMAGE_OUT
 
 class DamageListActivity : AppCompatActivity(), DamageAdapter.DamageItemListener,
     View.OnClickListener {
