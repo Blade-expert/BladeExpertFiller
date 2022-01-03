@@ -7,7 +7,6 @@ import android.widget.ImageButton
 import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.cardview.widget.CardView
-import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.Observer
@@ -114,7 +113,7 @@ private val lifecycleOwner: LifecycleOwner
                             })
                             indeterminateProgress.visibility = View.VISIBLE
                         }else{
-                            if(itv.export_errorsInLastExport){
+                            if(itv.exportErrorsInLastExport){
                                 helperView.setTextColor(ContextCompat.getColor(
                                     cardView.context,
                                     R.color.bulma_danger_dark

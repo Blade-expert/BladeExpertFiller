@@ -21,6 +21,7 @@ import com.heliopales.bladeexpertfiller.camera.CameraActivity
 import com.heliopales.bladeexpertfiller.utils.dpToPx
 import com.heliopales.bladeexpertfiller.utils.spToPx
 import com.heliopales.bladeexpertfiller.utils.toast
+import kotlinx.android.synthetic.main.activity_intervention_details.*
 
 class InterventionDetailsActivity : AppCompatActivity(), View.OnClickListener {
 
@@ -47,7 +48,12 @@ class InterventionDetailsActivity : AppCompatActivity(), View.OnClickListener {
         turbineSerialView.text =
             if (intervention.turbineSerial == null) "-----" else intervention.turbineSerial;
 
-        findViewById<ImageButton>(R.id.editTurbineSerialNumber).setOnClickListener(this)
+        if (intervention.changeTurbineSerialAllowed) {
+            findViewById<ImageButton>(R.id.editTurbineSerialNumber).setOnClickListener(this)
+        } else {
+            findViewById<ImageButton>(R.id.editTurbineSerialNumber).visibility = View.GONE
+        }
+
         findViewById<ImageButton>(R.id.take_turbine_serial_picture).setOnClickListener(this)
 
         addBladeButtons()
@@ -63,22 +69,22 @@ class InterventionDetailsActivity : AppCompatActivity(), View.OnClickListener {
             layoutParams.setMargins(dpToPx(10f))
 
             App.database.bladeDao().getBladesByInterventionId(intervention.id)
-                .sortedBy { bla -> bla.position } .forEach { bla ->
-                val button = Button(this)
-                button.tag = bla.id
-                button.text =
-                    "${bla.position}" + if (bla.serial == null) "" else " - ${bla.serial}"
-                button.setPadding(dpToPx(24f),dpToPx(32f),dpToPx(24f),dpToPx(32f))
-                button.textSize = spToPx(8f)
-                button.layoutParams = layoutParams
-                button.setBackgroundColor(getColor(R.color.bulma_link))
-                button.setTextColor(getColor(R.color.bulma_white))
-                button.setOnClickListener {
-                    startBladeActivity(bla)
+                .sortedBy { bla -> bla.position }.forEach { bla ->
+                    val button = Button(this)
+                    button.tag = bla.id
+                    button.text =
+                        "${bla.position}" + if (bla.serial == null) "" else " - ${bla.serial}"
+                    button.setPadding(dpToPx(24f), dpToPx(32f), dpToPx(24f), dpToPx(32f))
+                    button.textSize = spToPx(8f)
+                    button.layoutParams = layoutParams
+                    button.setBackgroundColor(getColor(R.color.bulma_link))
+                    button.setTextColor(getColor(R.color.bulma_white))
+                    button.setOnClickListener {
+                        startBladeActivity(bla)
+                    }
+                    bladeButtons.add(button)
+                    it.addView(button)
                 }
-                bladeButtons.add(button)
-                it.addView(button)
-            }
         }
     }
 
@@ -93,7 +99,8 @@ class InterventionDetailsActivity : AppCompatActivity(), View.OnClickListener {
         super.onResume()
         bladeButtons.forEach { but ->
             val dbBla = App.database.bladeDao().getById(but.tag as Int)
-            but.text = "${dbBla?.position}" + if (dbBla?.serial == null) "" else " - ${dbBla?.serial}";
+            but.text =
+                "${dbBla?.position}" + if (dbBla?.serial == null) "" else " - ${dbBla?.serial}";
         }
     }
 

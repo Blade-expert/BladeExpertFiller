@@ -12,9 +12,7 @@
         android:layout_height="?attr/actionBarSize"
         android:background="?attr/colorPrimary"
         app:titleTextColor="?attr/colorOnPrimary"
-        tools:title="Test"
         app:title="Blade Expert"
-
         />
 
 

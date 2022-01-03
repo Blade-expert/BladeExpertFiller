@@ -33,34 +33,44 @@
                 app:layout_constraintBottom_toTopOf="@id/bottomLayout"
                 >
 
-                <TextView
-                    android:id="@+id/turbine_name"
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/left_const_layout"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:maxLines="1"
-                    android:textColor="@color/bulma_dark"
-                    android:textSize="20sp"
-                    app:layout_constraintHorizontal_chainStyle="spread_inside"
                     app:layout_constraintLeft_toLeftOf="parent"
                     app:layout_constraintRight_toLeftOf="@id/upload_button"
-                    app:layout_constraintBottom_toTopOf="@id/helper"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintVertical_chainStyle="packed"
-                    tools:text="Chemin des Haguenets E 25 " />
-
-
-                <TextView
-                    android:id="@+id/helper"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="8dp"
-                    android:maxLines="1"
-                    android:textStyle="italic"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintLeft_toLeftOf="@id/turbine_name"
-                    app:layout_constraintTop_toBottomOf="@id/turbine_name"
-                    tools:text="L'intervention n'est plus en 'TODO'" />
+                    app:layout_constraintHorizontal_chainStyle="spread_inside"
+                    >
+                    <TextView
+                        android:id="@+id/turbine_name"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:maxLines="1"
+                        android:textColor="@color/bulma_dark"
+                        android:textSize="20sp"
+                        app:layout_constraintHorizontal_chainStyle="spread_inside"
+                        app:layout_constraintLeft_toLeftOf="parent"
+                        app:layout_constraintRight_toRightOf="parent"
+                        app:layout_constraintBottom_toTopOf="@id/helper"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintVertical_chainStyle="packed"
+                        tools:text="Chemin des Haguenets E 25 " />
 
+
+                    <TextView
+                        android:id="@+id/helper"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:maxLines="1"
+                        android:textStyle="italic"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/turbine_name"
+                        app:layout_constraintLeft_toLeftOf="parent"
+                        app:layout_constraintRight_toRightOf="parent"
+                        tools:text="L'intervention n'est plus en 'TODO'" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
 
                 <ImageButton
                     android:id="@+id/upload_button"
@@ -70,11 +80,12 @@
                     android:focusable="true"
                     android:paddingHorizontal="12dp"
                     android:src="@drawable/ic_baseline_cloud_upload_24"
-                    app:layout_constraintBottom_toBottomOf="@id/helper"
-                    app:layout_constraintLeft_toRightOf="@id/turbine_name"
+                    app:layout_constraintTop_toTopOf="@id/left_const_layout"
+                    app:layout_constraintBottom_toBottomOf="@id/left_const_layout"
+                    app:layout_constraintLeft_toRightOf="@id/left_const_layout"
                     app:layout_constraintRight_toLeftOf="@id/indeterminate_progress"
-                    app:layout_constraintTop_toTopOf="@id/turbine_name"
-                    app:tint="@color/bulma_dark" />
+                    app:tint="@color/bulma_dark"
+                    android:contentDescription="Upload button" />
 
                 <ProgressBar
                     android:id="@+id/indeterminate_progress"
@@ -84,10 +95,10 @@
                     android:indeterminate="true"
                     android:indeterminateTint="@color/bulma_link"
                     android:visibility="gone"
-                    app:layout_constraintBottom_toBottomOf="@id/helper"
+                    app:layout_constraintTop_toTopOf="@id/left_const_layout"
+                    app:layout_constraintBottom_toBottomOf="@id/left_const_layout"
                     app:layout_constraintLeft_toRightOf="@id/upload_button"
-                    app:layout_constraintRight_toRightOf="parent"
-                    app:layout_constraintTop_toTopOf="@id/turbine_name" />
+                    app:layout_constraintRight_toRightOf="parent"/>
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -120,7 +131,7 @@
                     android:layout_width="40sp"
                     android:layout_height="wrap_content"
                     android:visibility="gone"
-                    android:layout_marginLeft="5dp"
+                    android:layout_marginStart="5dp"
                     android:textAlignment="center"
                     android:textSize="12sp"
                     app:layout_constraintBottom_toBottomOf="parent"

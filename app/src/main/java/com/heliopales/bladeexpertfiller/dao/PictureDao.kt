@@ -31,6 +31,12 @@ interface PictureDao {
     @Query("SELECT * FROM picture WHERE type = $PICTURE_TYPE_LPS and relatedId = :lpsLocalId and exportState=$EXPORTATION_STATE_NOT_EXPORTED")
     fun getNonExportedLightningSpotPicturesByLightningId(lpsLocalId: Int) : List<Picture>
 
+    @Query("SELECT * FROM picture WHERE type = $PICTURE_TYPE_TURBINE and relatedId = :interventionId")
+    fun getTurbinePictures(interventionId: Int) : List<Picture>
+
+    @Query("SELECT * FROM picture WHERE type = $PICTURE_TYPE_BLADE and relatedId = :bladeId")
+    fun getBladePictures(bladeId: Int) : List<Picture>
+
     @Query("SELECT * FROM picture")
     fun getAll(): List<Picture>
 

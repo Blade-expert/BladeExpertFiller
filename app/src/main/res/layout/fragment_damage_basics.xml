@@ -46,7 +46,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Long. ="
+                android:text="Length ="
                 android:textColor="@color/bulma_black"
                 android:textSize="40sp" />
             <EditText
@@ -73,7 +73,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Larg. ="
+                android:text="Width ="
                 android:textColor="@color/bulma_black"
                 android:textSize="40sp" />
             <EditText
@@ -148,7 +148,7 @@
         android:background="@color/bulma_light"
         android:padding="16dp"
         android:layout_margin="16dp"
-        android:hint="Remarque"
+        android:hint="Remark"
         android:gravity="top"
         android:inputType="text|textMultiLine" />
 

@@ -11,13 +11,13 @@ import android.os.Bundle
 import android.util.Log
 import android.util.Size
 import android.view.KeyEvent
+import android.view.MotionEvent
 import android.view.View
+import android.widget.SeekBar
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.camera.core.CameraSelector
-import androidx.camera.core.ImageCapture
-import androidx.camera.core.ImageCaptureException
-import androidx.camera.core.Preview
+import androidx.camera.core.*
+import androidx.camera.core.impl.CameraCaptureMetaData
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -33,6 +33,7 @@ import kotlinx.android.synthetic.main.activity_camera.*
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
+import java.util.concurrent.TimeUnit
 
 class CameraActivity : AppCompatActivity() {
 
@@ -54,6 +55,11 @@ class CameraActivity : AppCompatActivity() {
     private var pictureType: Int = PICTURE_TYPE_TURBINE
     private var relatedId: Int = -1
     private var interventionId: Int = -1
+
+    private var cameraControl: CameraControl? = null
+    private var cameraAvailable = false
+
+    private var linearZoom = 0f;
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -85,6 +91,87 @@ class CameraActivity : AppCompatActivity() {
 
         camera_capture_button.setOnClickListener { takePhoto() }
         see_photos_button.setOnClickListener { openGallery() }
+        flash_button.tag = ImageCapture.FLASH_MODE_OFF
+        flash_button.setOnClickListener { changeFlashMode() }
+
+        camera_preview.setOnTouchListener(View.OnTouchListener{view: View, motionEvent: MotionEvent ->
+            when(motionEvent.action){
+                MotionEvent.ACTION_DOWN -> {
+                    return@OnTouchListener true
+                }
+                MotionEvent.ACTION_UP -> {
+                    focus_image.visibility = View.VISIBLE
+                    focus_image.x = motionEvent.x - focus_image.width/2
+                    focus_image.y = motionEvent.y - focus_image.height/2
+
+                    // Get the MeteringPointFactory from PreviewView
+                    val factory = camera_preview.meteringPointFactory
+
+                    // Create a MeteringPoint from the tap coordinates
+                    val point = factory.createPoint(motionEvent.x, motionEvent.y)
+
+                    // Create a MeteringAction from the MeteringPoint, you can configure it to specify the metering mode
+                    val action = FocusMeteringAction
+                        .Builder(point)
+                        .build()
+
+                    // Trigger the focus and metering. The method returns a ListenableFuture since the operation
+                    // is asynchronous. You can use it get notified when the focus is successful or if it fails.
+                    val focusListenableFuture = cameraControl?.startFocusAndMetering(action)
+                    focusListenableFuture?.addListener( {
+                        focus_image.visibility = View.INVISIBLE
+                    }, ContextCompat.getMainExecutor(this))
+
+                    view.performClick()
+                    return@OnTouchListener true
+                }
+                else -> return@OnTouchListener false
+            }
+        })
+
+        zoom_slider.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+            override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
+                linearZoom = progress.toFloat() / 100.toFloat()
+                cameraControl?.setLinearZoom(linearZoom)
+            }
+
+            override fun onStartTrackingTouch(seekBar: SeekBar?) {}
+
+            override fun onStopTrackingTouch(seekBar: SeekBar?) {}
+        })
+    }
+
+    override fun onResume() {
+        super.onResume()
+        cameraControl?.setLinearZoom(linearZoom)
+    }
+
+    private fun changeFlashMode() {
+        var newState = ImageCapture.FLASH_MODE_OFF
+        when (flash_button.tag as Int) {
+            ImageCapture.FLASH_MODE_OFF -> newState = ImageCapture.FLASH_MODE_ON
+            ImageCapture.FLASH_MODE_ON -> newState = ImageCapture.FLASH_MODE_AUTO
+            ImageCapture.FLASH_MODE_AUTO -> newState = ImageCapture.FLASH_MODE_OFF
+        }
+        flash_button.tag = newState
+        with(flash_button) {
+            when (tag as Int) {
+                ImageCapture.FLASH_MODE_OFF -> background = ContextCompat.getDrawable(
+                    this@CameraActivity,
+                    R.drawable.ic_baseline_flash_off_24
+                )
+                ImageCapture.FLASH_MODE_ON -> background = ContextCompat.getDrawable(
+                    this@CameraActivity,
+                    R.drawable.ic_baseline_flash_on_24
+                )
+                ImageCapture.FLASH_MODE_AUTO -> background = ContextCompat.getDrawable(
+                    this@CameraActivity,
+                    R.drawable.ic_baseline_flash_auto_24
+                )
+            }
+        }
+
+        imageCapture?.flashMode = newState
     }
 
     private fun openGallery() {
@@ -134,20 +221,23 @@ class CameraActivity : AppCompatActivity() {
 
             imageCapture = ImageCapture.Builder()
                 .setCaptureMode(ImageCapture.CAPTURE_MODE_MINIMIZE_LATENCY)
+                .setFlashMode(ImageCapture.FLASH_MODE_OFF)
                 .setTargetResolution(Size(1440, 1080))
                 .build()
 
             // Select back camera as a default
             val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
 
+
             // Unbind use cases before rebinding
             cameraProvider.unbindAll()
             try {
                 // Bind use cases to camera
-                cameraProvider.bindToLifecycle(
+                val camera = cameraProvider.bindToLifecycle(
                     this, cameraSelector, preview, imageCapture
                 )
-
+                cameraControl = camera.cameraControl
+                cameraAvailable = true
             } catch (exc: Exception) {
                 Log.e(TAG, "Use case binding failed", exc)
             }
@@ -155,6 +245,8 @@ class CameraActivity : AppCompatActivity() {
     }
 
     private fun takePhoto() {
+        if (!cameraAvailable) return
+        cameraAvailable = false
         // Get a stable reference of the modifiable image capture use case
         val imageCapture = imageCapture ?: return
 
@@ -178,8 +270,12 @@ class CameraActivity : AppCompatActivity() {
                 }
 
                 override fun onImageSaved(output: ImageCapture.OutputFileResults) {
+
+
+                    cameraAvailable = true
                     val savedUri = Uri.fromFile(photoFile)
-                    App.database.interventionDao().updateExportationState(interventionId, EXPORTATION_STATE_NOT_EXPORTED)
+                    App.database.interventionDao()
+                        .updateExportationState(interventionId, EXPORTATION_STATE_NOT_EXPORTED)
                     App.database.pictureDao().insertPicture(
                         Picture(
                             fileName = photoFile.name,
@@ -195,18 +291,17 @@ class CameraActivity : AppCompatActivity() {
                     Log.d(TAG, "Photo capture succeeded: $savedUri")
                 }
             })
-        // We can only change the foreground Drawable using API level 23+ API
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            val root = findViewById<View>(android.R.id.content).rootView
-            // Display flash animation to indicate that photo was captured
 
-            root.postDelayed({
-                root.foreground = ColorDrawable(Color.WHITE)
-                root.postDelayed(
-                    { root.foreground = null }, ANIMATION_FAST_MILLIS
-                )
-            }, ANIMATION_SLOW_MILLIS)
-        }
+        val root = findViewById<View>(android.R.id.content).rootView
+        // Display flash animation to indicate that photo was captured
+        root.postDelayed({
+            root.foreground = ColorDrawable(Color.WHITE)
+            root.postDelayed(
+                { root.foreground = null }, ANIMATION_FAST_MILLIS
+            )
+        }, ANIMATION_SLOW_MILLIS)
+
+
     }
 
     override fun onKeyDown(keyCode: Int, event: KeyEvent): Boolean {

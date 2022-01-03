@@ -8,34 +8,33 @@ import androidx.room.Entity
 import androidx.room.Ignore
 import androidx.room.PrimaryKey
 import com.heliopales.bladeexpertfiller.EXPORTATION_STATE_EMPTY
+import kotlinx.android.parcel.Parcelize
 
 @Entity
+@Parcelize
 data class Intervention(
     @PrimaryKey val id: Int,
     val turbineName: String?,
     var turbineSerial: String?,
-    var exportationState: Int = EXPORTATION_STATE_EMPTY
+    var exportationState: Int = EXPORTATION_STATE_EMPTY,
+    val changeTurbineSerialAllowed: Boolean,
+    val changeTurbinePictureAllowed: Boolean
 ) : Parcelable {
 
     var expired: Boolean = false
 
-    @Ignore var exporting: Boolean = false
-    @Ignore var progress = MutableLiveData<Int>(0)
+    @Ignore
+    var exporting: Boolean = false
+    @Ignore
+    var progress = MutableLiveData<Int>(0)
+    @Ignore
+    var exportCount = 0;
+    @Ignore
+    val exportNumberOfOperations = MutableLiveData<Int>(0)
+    @Ignore
+    val exportRealizedOperations = MutableLiveData<Int>(0)
 
-    @Ignore var export_count = 0;
-    @Ignore val export_numberOfOperations = MutableLiveData<Int>(0)
-    @Ignore val export_realizedOperations = MutableLiveData<Int>(0)
-    var export_errorsInLastExport: Boolean = false;
-
-    constructor(parcel: Parcel) : this(
-        parcel.readInt(),
-        parcel.readString(),
-        parcel.readString(),
-        parcel.readInt()
-    ) {
-        expired = parcel.readByte() != 0.toByte()
-    }
-
+    var exportErrorsInLastExport: Boolean = false;
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -50,28 +49,6 @@ data class Intervention(
 
     override fun hashCode(): Int {
         return id?.hashCode() ?: 0
-    }
-
-    override fun writeToParcel(parcel: Parcel, flags: Int) {
-        parcel.writeInt(id)
-        parcel.writeString(turbineName)
-        parcel.writeString(turbineSerial)
-        parcel.writeInt(exportationState)
-        parcel.writeByte(if (expired) 1 else 0)
-    }
-
-    override fun describeContents(): Int {
-        return 0
-    }
-
-    companion object CREATOR : Parcelable.Creator<Intervention> {
-        override fun createFromParcel(parcel: Parcel): Intervention {
-            return Intervention(parcel)
-        }
-
-        override fun newArray(size: Int): Array<Intervention?> {
-            return arrayOfNulls(size)
-        }
     }
 
 

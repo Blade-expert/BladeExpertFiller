@@ -38,4 +38,12 @@ interface BladeExpertService {
 
     @POST(value = "api/mobile/drainhole")
     fun saveDrainholeSpotCondition(@Query("key") key:String = API_KEY, @Body drainholeSpotConditionWrapper: DrainholeSpotConditionWrapper): Call<DrainholeSpotConditionWrapper>
+
+    @Multipart
+    @PUT(value = "api/mobile/intervention/{id}/turbineImage")
+    fun updateTurbinePicture(@Path("id") interventionId: Int, @Query("key") key:String = API_KEY, @Part filePart: MultipartBody.Part): Call<ResponseBody>
+
+    @Multipart
+    @PUT(value = "api/mobile/intervention/{interventionId}/blade/{bladeId}/bladeImage")
+    fun updateBladePicture(@Path("interventionId") interventionId: Int,@Path("bladeId") bladeId: Int, @Query("key") key:String = API_KEY, @Part filePart: MultipartBody.Part): Call<ResponseBody>
 }

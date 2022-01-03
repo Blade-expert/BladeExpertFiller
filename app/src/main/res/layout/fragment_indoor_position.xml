@@ -14,7 +14,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginVertical="20sp"
-        android:text="Position du défaut"
+        android:text="Position"
         android:textColor="@color/bulma_black"
         android:textSize="40sp"/>
 
