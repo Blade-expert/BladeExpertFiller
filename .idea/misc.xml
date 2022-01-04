@@ -49,6 +49,7 @@
         <entry key="..\:/Users/Colin/StudioProjects/BladeExpertFiller/app/src/main/res/layout/activity_gallery.xml" value="0.36666666666666664" />
         <entry key="..\:/Users/Colin/StudioProjects/BladeExpertFiller/app/src/main/res/layout/activity_intervention_details.xml" value="0.36666666666666664" />
         <entry key="..\:/Users/Colin/StudioProjects/BladeExpertFiller/app/src/main/res/layout/activity_intervention_list.xml" value="0.36666666666666664" />
+        <entry key="..\:/Users/Colin/StudioProjects/BladeExpertFiller/app/src/main/res/layout/activity_lightning.xml" value="0.36666666666666664" />
         <entry key="..\:/Users/Colin/StudioProjects/BladeExpertFiller/app/src/main/res/layout/fragment_damage_basics.xml" value="0.36102564102564105" />
         <entry key="..\:/Users/Colin/StudioProjects/BladeExpertFiller/app/src/main/res/layout/fragment_damage_type.xml" value="0.36666666666666664" />
         <entry key="..\:/Users/Colin/StudioProjects/BladeExpertFiller/app/src/main/res/layout/fragment_drain_basics.xml" value="0.36666666666666664" />
@@ -62,6 +63,7 @@
         <entry key="..\:/Users/Colin/StudioProjects/BladeExpertFiller/app/src/main/res/layout/item_damage_type.xml" value="0.19791666666666666" />
         <entry key="..\:/Users/Colin/StudioProjects/BladeExpertFiller/app/src/main/res/layout/item_damage_type_category.xml" value="0.19791666666666666" />
         <entry key="..\:/Users/Colin/StudioProjects/BladeExpertFiller/app/src/main/res/layout/item_intervention.xml" value="0.36666666666666664" />
+        <entry key="..\:/Users/Colin/StudioProjects/BladeExpertFiller/app/src/main/res/layout/item_receptor.xml" value="0.36666666666666664" />
         <entry key="..\:/Users/Colin/StudioProjects/BladeExpertFiller/app/src/main/res/layout/item_spinner.xml" value="0.1578125" />
         <entry key="..\:/Users/Colin/StudioProjects/BladeExpertFiller/app/src/main/res/layout/link_cursor.xml" value="0.35260416666666666" />
         <entry key="..\:/Users/Colin/StudioProjects/BladeExpertFiller/app/src/main/res/layout/menu_switch.xml" value="0.36666666666666664" />

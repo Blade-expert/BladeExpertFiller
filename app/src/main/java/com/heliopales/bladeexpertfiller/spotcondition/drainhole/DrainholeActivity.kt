@@ -29,21 +29,23 @@ class DrainholeActivity : AppCompatActivity() {
 
     lateinit var pager: ViewPager2
 
-    var drain: DrainholeSpotCondition? = null
+    lateinit var drain: DrainholeSpotCondition
 
     override fun onCreate(savedInstanceState: Bundle?) {
         Log.d(TAG, "onCreate()")
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_drainhole)
-
         val bladeId = intent.getIntExtra(EXTRA_BLADE_ID, -1)
         val interventionId = intent.getIntExtra(EXTRA_INTERVENTION_ID, -1)
-        drain = App.database.drainholeDao().getByBladeAndIntervention(bladeId,interventionId)
+
+        drain = App.database.drainholeDao().getByBladeAndIntervention(bladeId,interventionId)!!
+
         Log.d(TAG, "Drain form database : $drain")
+
         if(drain == null){
             drain = DrainholeSpotCondition(interventionId, bladeId)
             val newId = App.database.drainholeDao().upsertDrainhole(drain!!)
-            drain!!.localId = newId.toInt();
+            drain!!.localId = newId.toInt()
         }
 
         pager = findViewById(R.id.drain_view_pager)

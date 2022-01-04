@@ -16,6 +16,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.BladeExpertFiller">
         <activity
+            android:name=".spotcondition.lightning.LightningActivity"
+            android:exported="false" />
+        <activity
             android:name=".spotcondition.drainhole.DrainholeActivity"
             android:exported="false"
             android:screenOrientation="portrait"

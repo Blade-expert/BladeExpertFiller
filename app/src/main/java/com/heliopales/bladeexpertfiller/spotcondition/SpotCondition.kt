@@ -2,6 +2,7 @@ package com.heliopales.bladeexpertfiller.spotcondition
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.heliopales.bladeexpertfiller.spotcondition.lightning.MeasureMethod
 
 const val INHERIT_TYPE_DAMAGE_IN = "IDC"
 const val INHERIT_TYPE_DAMAGE_OUT = "ODC"
@@ -37,4 +38,5 @@ data class LightningSpotCondition(val interventionId: Int, val bladeId: Int) {
     @PrimaryKey(autoGenerate = true)var localId: Int = 0
     var id: Int? = null
     var description: String? = null
+    var measureMethod: MeasureMethod? = null
 }

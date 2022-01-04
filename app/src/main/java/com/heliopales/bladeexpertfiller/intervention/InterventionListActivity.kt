@@ -1,6 +1,5 @@
 package com.heliopales.bladeexpertfiller.intervention
 
-import android.content.DialogInterface
 import android.content.Intent
 import android.graphics.Canvas
 import android.media.MediaScannerConnection
@@ -195,9 +194,8 @@ class InterventionListActivity : AppCompatActivity(), InterventionAdapter.Interv
 
     private fun updateInterventionList() {
         if (snackBarActive) {
-            if (refreshLayout.isRefreshing) {
+            if (refreshLayout.isRefreshing)
                 refreshLayout.isRefreshing = false
-            }
             return
         }
         if (!refreshLayout.isRefreshing) {
@@ -221,6 +219,19 @@ class InterventionListActivity : AppCompatActivity(), InterventionAdapter.Interv
                             App.database.bladeDao().insertNonExistingBlades(
                                 itvw.blades!!.map { bw -> mapBladeExpertBlade(bw) }
                             )
+                            itvw.blades?.forEach { blaw ->
+                                App.database.receptorDao()
+                                    .upsertLightningReceptors(
+                                        blaw.receptors!!.map { ltrw ->
+                                            mapBladeExpertLightningReceptor(ltrw)
+                                        })
+                                blaw.receptors!!.forEach {ltrw ->
+                                    Log.d(TAG,"Receptor added $ltrw")
+                                }
+
+                            }
+
+
                         }
                     }
                     interventions.forEach { it.expired = !newInterventions.contains(it) }
@@ -290,7 +301,7 @@ class InterventionListActivity : AppCompatActivity(), InterventionAdapter.Interv
         intervention: Intervention
     ) {
         if (intervention.exporting) return
-        
+
         if (exportPreCheck(intervention)) {
             uploadIntervention(intervention)
         } else {
@@ -793,7 +804,6 @@ class InterventionListActivity : AppCompatActivity(), InterventionAdapter.Interv
     }
 
     private fun updateSeverities() {
-        Log.d(TAG, "updateSeverities()")
         App.bladeExpertService.getSeverities()
             .enqueue(object : retrofit2.Callback<Array<SeverityWrapper>> {
                 override fun onResponse(
@@ -809,8 +819,6 @@ class InterventionListActivity : AppCompatActivity(), InterventionAdapter.Interv
                         }
                     }
 
-                    App.database.severityDao().getAll()
-                        .forEach { Log.d(TAG, "Severity in database : $it") }
                 }
 
                 override fun onFailure(call: Call<Array<SeverityWrapper>>, t: Throwable) {
@@ -835,11 +843,6 @@ class InterventionListActivity : AppCompatActivity(), InterventionAdapter.Interv
                             App.database.damageTypeDao().deleteWhereIdsNotIn(dmtIds)
                         }
                     }
-                    Log.d(TAG, "DamageType Insert done, retrieving task")
-                    App.database.damageTypeDao().getAllInner()
-                        .forEach { Log.d(TAG, "Inner DamageType in database : $it") }
-                    App.database.damageTypeDao().getAllOuter()
-                        .forEach { Log.d(TAG, "Outer DamageType in database : $it") }
                 }
 
                 override fun onFailure(call: Call<Array<DamageTypeWrapper>>, t: Throwable) {

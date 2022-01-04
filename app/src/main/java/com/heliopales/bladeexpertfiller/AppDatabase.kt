@@ -10,10 +10,14 @@ import com.heliopales.bladeexpertfiller.picture.Picture
 import com.heliopales.bladeexpertfiller.secondaryentities.DamageType
 import com.heliopales.bladeexpertfiller.secondaryentities.Severity
 import com.heliopales.bladeexpertfiller.spotcondition.DrainholeSpotCondition
+import com.heliopales.bladeexpertfiller.spotcondition.LightningSpotCondition
+import com.heliopales.bladeexpertfiller.spotcondition.lightning.LightningReceptor
+import com.heliopales.bladeexpertfiller.spotcondition.lightning.ReceptorMeasure
 
 @Database(
     entities = [Intervention::class, Blade::class, Severity::class, DamageType::class,
-        DamageSpotCondition::class, DrainholeSpotCondition::class, Picture::class],
+        DamageSpotCondition::class, DrainholeSpotCondition::class, LightningSpotCondition::class,
+        LightningReceptor::class, ReceptorMeasure::class,Picture::class],
     version = 1
 )
 abstract class AppDatabase : RoomDatabase() {
@@ -24,4 +28,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun damageDao(): DamageDao
     abstract fun drainholeDao(): DrainholeDao
     abstract fun pictureDao(): PictureDao
+    abstract fun receptorDao(): ReceptorDao
+    abstract fun lightningDao(): LightningDao
+    abstract fun receptorMeasureDao(): ReceptorMeasureDao
 }

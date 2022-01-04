@@ -16,14 +16,15 @@ import com.heliopales.bladeexpertfiller.spotcondition.INHERIT_TYPE_DAMAGE_IN
 import com.heliopales.bladeexpertfiller.spotcondition.INHERIT_TYPE_DAMAGE_OUT
 import com.heliopales.bladeexpertfiller.intervention.Intervention
 import com.heliopales.bladeexpertfiller.spotcondition.drainhole.DrainholeActivity
+import com.heliopales.bladeexpertfiller.spotcondition.lightning.LightningActivity
 
 
 class BladeActivity : AppCompatActivity(), View.OnClickListener {
-    val TAG = this.javaClass.simpleName
+    val TAG = BladeActivity.javaClass.simpleName
 
     companion object {
-        val EXTRA_INTERVENTION = "intervention"
-        val EXTRA_BLADE = "blade"
+        const val EXTRA_INTERVENTION = "intervention"
+        const val EXTRA_BLADE = "blade"
     }
 
     private lateinit var intervention: Intervention;
@@ -72,10 +73,10 @@ class BladeActivity : AppCompatActivity(), View.OnClickListener {
     }
 
     private fun startLightningActivity() {
-        AlertDialog.Builder(this)
-            .setMessage("Not yet implemented !")
-            .create()
-            .show()
+        val intent = Intent(this, LightningActivity::class.java)
+        intent.putExtra(LightningActivity.EXTRA_INTERVENTION_ID, intervention.id)
+        intent.putExtra(LightningActivity.EXTRA_BLADE_ID, blade.id)
+        startActivity(intent)
     }
 
     private fun startDrainholeActivity() {
@@ -117,7 +118,6 @@ class BladeActivity : AppCompatActivity(), View.OnClickListener {
             override fun onDialogPositiveClick(serial: String) {
                 updateBladeSerialNumber(serial)
             }
-
             override fun onDialogNegativeClick() {
             }
         }

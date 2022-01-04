@@ -7,6 +7,7 @@ import com.heliopales.bladeexpertfiller.intervention.Intervention
 import com.heliopales.bladeexpertfiller.secondaryentities.DamageType
 import com.heliopales.bladeexpertfiller.secondaryentities.Severity
 import com.heliopales.bladeexpertfiller.spotcondition.DrainholeSpotCondition
+import com.heliopales.bladeexpertfiller.spotcondition.lightning.LightningReceptor
 
 fun mapBladeExpertIntervention(interventionWrapper: InterventionWrapper): Intervention {
     return Intervention(
@@ -47,9 +48,31 @@ fun mapToBladeExpertBlade(blade: Blade): BladeWrapper {
         serial = blade.serial,
         position = blade.position,
         changeSerialAllowed = blade.changeSerialAllowed,
-        changePictureAllowed = blade.changePictureAllowed
+        changePictureAllowed = blade.changePictureAllowed,
+        receptors = null
     )
 }
+
+fun mapBladeExpertLightningReceptor(lightningReceptorWrapper: LightningReceptorWrapper): LightningReceptor {
+    return LightningReceptor(
+        id = lightningReceptorWrapper.id,
+        bladeId = lightningReceptorWrapper.bladeId,
+        radius = lightningReceptorWrapper.radius,
+        position = lightningReceptorWrapper.position
+    )
+}
+
+/*
+fun mapToBladeExpertLightningReceptor(lightningReceptor: LightningReceptor): LightningReceptorWrapper {
+    return LightningReceptorWrapper(
+        id = lightningReceptor.id,
+        bladeId = lightningReceptor.bladeId,
+        radius = lightningReceptor.radius,
+        position = lightningReceptor.position
+    )
+}
+*/
+
 
 fun mapBladeExpertSeverity(severityWrapper: SeverityWrapper): Severity {
     return Severity(
@@ -69,7 +92,7 @@ fun mapBladeExpertDamageType(damageTypeWrapper: DamageTypeWrapper): DamageType {
     )
 }
 
-fun mapToBladeExpertDamageSpotCondition(dsc: DamageSpotCondition): DamageSpotConditionWrapper{
+fun mapToBladeExpertDamageSpotCondition(dsc: DamageSpotCondition): DamageSpotConditionWrapper {
     return DamageSpotConditionWrapper(
         id = dsc.id,
         fieldCode = dsc.fieldCode,
@@ -87,7 +110,7 @@ fun mapToBladeExpertDamageSpotCondition(dsc: DamageSpotCondition): DamageSpotCon
     )
 }
 
-fun mapToBladeExpertDrainholeSpotCondition(dhs: DrainholeSpotCondition): DrainholeSpotConditionWrapper{
+fun mapToBladeExpertDrainholeSpotCondition(dhs: DrainholeSpotCondition): DrainholeSpotConditionWrapper {
     return DrainholeSpotConditionWrapper(
         id = dhs.id,
         interventionId = dhs.interventionId,

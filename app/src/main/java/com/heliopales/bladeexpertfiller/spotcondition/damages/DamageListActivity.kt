@@ -42,7 +42,7 @@ class DamageListActivity : AppCompatActivity(), DamageAdapter.DamageItemListener
 
         setContentView(R.layout.activity_damage_list)
 
-        recyclerView = findViewById<RecyclerView>(R.id.damages_recycler_view)
+        recyclerView = findViewById(R.id.damages_recycler_view)
         recyclerView.layoutManager = LinearLayoutManager(this)
 
         bladeId = intent.getIntExtra(EXTRA_BLADE_ID, -1)
@@ -50,13 +50,10 @@ class DamageListActivity : AppCompatActivity(), DamageAdapter.DamageItemListener
 
         damageInheritType = intent.getStringExtra(EXTRA_DAMAGE_INOUT)!!
 
-
-        if (damageInheritType == INHERIT_TYPE_DAMAGE_IN) {
-            findViewById<TextView>(R.id.damage_list_label).text = "Indoor damages"
-        } else if (damageInheritType == INHERIT_TYPE_DAMAGE_OUT) {
-            findViewById<TextView>(R.id.damage_list_label).text = "Outdoor damages"
-        } else {
-            findViewById<TextView>(R.id.damage_list_label).text = "Error - extra value missing"
+        when(damageInheritType){
+            INHERIT_TYPE_DAMAGE_IN -> findViewById<TextView>(R.id.damage_list_label).text = "Indoor damages"
+            INHERIT_TYPE_DAMAGE_OUT ->  findViewById<TextView>(R.id.damage_list_label).text = "Outdoor damages"
+            else -> findViewById<TextView>(R.id.damage_list_label).text = "Error - extra value missing"
         }
 
         findViewById<ImageButton>(R.id.add_damage_button).setOnClickListener(this)
