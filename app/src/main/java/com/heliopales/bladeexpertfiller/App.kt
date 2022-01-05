@@ -136,7 +136,16 @@ class App : Application() {
 
         }
 
-        var printWriter: PrintWriter? = null;
+        fun getLPSPath(
+            interventionId: Int,
+            bladeId: Int
+        ): String {
+            val intervention = database.interventionDao().getById(interventionId)
+            val blade = database.bladeDao().getById(bladeId)
+            return "${getBladePath(intervention, blade)}/lightning"
+
+        }
+
 
         fun writeOnInterventionLogFile(intervention: Intervention, message: String) {
             val path = File(getInterventionPath(intervention))

@@ -8,21 +8,40 @@
     tools:context=".spotcondition.drainhole.DrainholeActivity">
 
 
-    <TextView
-        android:id="@+id/drainhole_label"
+    <LinearLayout
+        android:id="@+id/drainhole_label_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center"
-        android:layout_marginVertical="16dp"
-        android:textColor="@color/bulma_black"
-        android:textSize="30sp"
-        android:text="Drain hole state" />
+        android:orientation="vertical"
+        android:gravity="center">
+
+        <TextView
+            android:id="@+id/drainhole_blade_label"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:layout_marginTop="16dp"
+            android:textColor="@color/bulma_black"
+            android:textSize="18sp"
+            android:text="BLADE A - 123456789" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:layout_marginBottom="16dp"
+            android:textColor="@color/bulma_black"
+            android:textSize="30sp"
+            android:text="DRAIN" />
+    </LinearLayout>
+
+
 
     <com.google.android.material.tabs.TabLayout
         android:id="@+id/drain_tab_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/drainhole_label"
+        android:layout_below="@id/drainhole_label_layout"
         app:tabIndicatorColor="@color/bulma_link"
         app:tabTextColor="@color/bulma_black"
         />

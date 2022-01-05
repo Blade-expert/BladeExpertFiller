@@ -30,6 +30,7 @@ class BladeActivity : AppCompatActivity(), View.OnClickListener {
     private lateinit var intervention: Intervention;
     private lateinit var blade: Blade;
     private lateinit var database: AppDatabase;
+    private lateinit var turbineNameView: TextView;
     private lateinit var bladeNameView: TextView;
     private lateinit var bladeSerialView: TextView;
 
@@ -41,6 +42,9 @@ class BladeActivity : AppCompatActivity(), View.OnClickListener {
 
         intervention = intent.getParcelableExtra<Intervention>(BladeActivity.EXTRA_INTERVENTION)!!
         blade = intent.getParcelableExtra<Blade>(BladeActivity.EXTRA_BLADE)!!
+
+        turbineNameView = findViewById(R.id.bla_turbine_name)
+        turbineNameView.text = intervention.turbineName
 
         bladeNameView = findViewById(R.id.blade_name)
         bladeNameView.text = blade.position
@@ -89,7 +93,7 @@ class BladeActivity : AppCompatActivity(), View.OnClickListener {
     private fun startIndoorActivity() {
         val intent = Intent(this, DamageListActivity::class.java)
         intent.putExtra(DamageListActivity.EXTRA_INTERVENTION_ID, intervention.id)
-        intent.putExtra(DamageListActivity.EXTRA_BLADE_ID, blade.id)
+        intent.putExtra(DamageListActivity.EXTRA_BLADE, blade)
         intent.putExtra(DamageListActivity.EXTRA_DAMAGE_INOUT, INHERIT_TYPE_DAMAGE_IN)
         startActivity(intent)
     }
@@ -97,7 +101,7 @@ class BladeActivity : AppCompatActivity(), View.OnClickListener {
     private fun startOutdoorActivity() {
         val intent = Intent(this, DamageListActivity::class.java)
         intent.putExtra(DamageListActivity.EXTRA_INTERVENTION_ID, intervention.id)
-        intent.putExtra(DamageListActivity.EXTRA_BLADE_ID, blade.id)
+        intent.putExtra(DamageListActivity.EXTRA_BLADE, blade)
         intent.putExtra(DamageListActivity.EXTRA_DAMAGE_INOUT, INHERIT_TYPE_DAMAGE_OUT)
         startActivity(intent)
     }

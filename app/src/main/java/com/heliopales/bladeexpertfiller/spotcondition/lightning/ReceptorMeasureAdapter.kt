@@ -44,7 +44,8 @@ class ReceptorMeasureAdapter(
             cardView.tag = lrm
             cardView.setOnClickListener(this@ReceptorMeasureAdapter)
             receptorName.text = lrm.receptorLabel
-            receptorValue.text = lrm.value?:"--"+" \\u03A9"
+            receptorValue.text = lrm.value?:"--"+" \u03A9"
+
 
             cardView.setCardBackgroundColor(
                 ContextCompat.getColor(

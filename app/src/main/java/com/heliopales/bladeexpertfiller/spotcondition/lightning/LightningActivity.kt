@@ -13,6 +13,7 @@ import com.heliopales.bladeexpertfiller.App
 import com.heliopales.bladeexpertfiller.R
 import com.heliopales.bladeexpertfiller.spotcondition.LightningSpotCondition
 import android.widget.ArrayAdapter
+import com.heliopales.bladeexpertfiller.intervention.ChangeTurbineSerialDialogFragment
 
 
 class LightningActivity : AppCompatActivity(), View.OnClickListener,
@@ -25,7 +26,7 @@ class LightningActivity : AppCompatActivity(), View.OnClickListener,
         const val EXTRA_INTERVENTION_ID = "InterventionId"
     }
 
-    private var lightning: LightningSpotCondition? = null
+    var lightning: LightningSpotCondition? = null
 
     private val measures: MutableList<ReceptorMeasure> = mutableListOf()
 
@@ -45,8 +46,6 @@ class LightningActivity : AppCompatActivity(), View.OnClickListener,
             .sortedWith(compareBy({ it.radius }, { it.position }))
 
         lightning = App.database.lightningDao().getByBladeAndIntervention(bladeId, interventionId)
-
-
 
         if (lightning == null) {
             lightning = LightningSpotCondition(interventionId, bladeId)
@@ -92,16 +91,27 @@ class LightningActivity : AppCompatActivity(), View.OnClickListener,
 
     }
 
+    override fun onPause() {
+        Log.d(TAG, "onPause()")
+        super.onPause()
+        App.database.lightningDao().upsert(lightning!!)
+    }
+
     override fun onClick(v: View) {
         when (v.id) {
-            R.id.lps_description_button -> {}
+            R.id.lps_description_button -> showChangeDescriptionDialog()
             R.id.lps_picture_button -> {}
         }
     }
 
+    private fun showChangeDescriptionDialog() {
+        val dialog = LightningDescriptionFragment(lightning?.description)
+        dialog.show(supportFragmentManager, "LightningDescriptionFragment")
+    }
+
     override fun onMearureSelected(measure: ReceptorMeasure) {
         AlertDialog.Builder(this)
-            .setMessage("Not yet implemented !")
+            .setMessage("Not yet implemented...")
             .create()
             .show()
     }

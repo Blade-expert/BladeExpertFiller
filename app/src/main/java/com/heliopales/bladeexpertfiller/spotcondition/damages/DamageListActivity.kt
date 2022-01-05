@@ -12,6 +12,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.heliopales.bladeexpertfiller.App
 import com.heliopales.bladeexpertfiller.PICTURE_TYPE_DAMAGE
 import com.heliopales.bladeexpertfiller.R
+import com.heliopales.bladeexpertfiller.blade.Blade
+import com.heliopales.bladeexpertfiller.blade.BladeActivity
 import com.heliopales.bladeexpertfiller.camera.CameraActivity
 import com.heliopales.bladeexpertfiller.spotcondition.DamageSpotCondition
 import com.heliopales.bladeexpertfiller.spotcondition.INHERIT_TYPE_DAMAGE_IN
@@ -23,13 +25,13 @@ class DamageListActivity : AppCompatActivity(), DamageAdapter.DamageItemListener
 
     companion object {
         val EXTRA_INTERVENTION_ID = "intervention_id";
-        val EXTRA_BLADE_ID = "blade_id";
+        val EXTRA_BLADE = "blade";
         val EXTRA_DAMAGE_INOUT = "damage_inout";
     }
 
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: DamageAdapter
-    private var bladeId: Int = -1
+    private lateinit var blade: Blade;
     private var interventionId: Int = -1
 
     private lateinit var damages: MutableList<DamageSpotCondition>
@@ -45,15 +47,17 @@ class DamageListActivity : AppCompatActivity(), DamageAdapter.DamageItemListener
         recyclerView = findViewById(R.id.damages_recycler_view)
         recyclerView.layoutManager = LinearLayoutManager(this)
 
-        bladeId = intent.getIntExtra(EXTRA_BLADE_ID, -1)
+        blade = intent.getParcelableExtra<Blade>(EXTRA_BLADE)!!
         interventionId = intent.getIntExtra(EXTRA_INTERVENTION_ID, -1)
 
         damageInheritType = intent.getStringExtra(EXTRA_DAMAGE_INOUT)!!
 
+        findViewById<TextView>(R.id.damage_blade_title).text = "${blade.position} - ${blade.serial?:"na"}"
+
         when(damageInheritType){
-            INHERIT_TYPE_DAMAGE_IN -> findViewById<TextView>(R.id.damage_list_label).text = "Indoor damages"
-            INHERIT_TYPE_DAMAGE_OUT ->  findViewById<TextView>(R.id.damage_list_label).text = "Outdoor damages"
-            else -> findViewById<TextView>(R.id.damage_list_label).text = "Error - extra value missing"
+            INHERIT_TYPE_DAMAGE_IN -> findViewById<TextView>(R.id.damage_list_label).text = "INTERIOR"
+            INHERIT_TYPE_DAMAGE_OUT ->  findViewById<TextView>(R.id.damage_list_label).text = "EXTERIOR"
+            else -> findViewById<TextView>(R.id.damage_list_label).text = "ERROR"
         }
 
         findViewById<ImageButton>(R.id.add_damage_button).setOnClickListener(this)
@@ -63,7 +67,7 @@ class DamageListActivity : AppCompatActivity(), DamageAdapter.DamageItemListener
         Log.i(TAG, "onResume()")
         super.onResume()
         damages = App.database.damageDao().getDamagesByBladeAndInterventionAndInheritType(
-            bladeId,
+            blade.id,
             interventionId,
             damageInheritType
         )
@@ -79,7 +83,7 @@ class DamageListActivity : AppCompatActivity(), DamageAdapter.DamageItemListener
 
     override fun onCameraButtonClicked(damage: DamageSpotCondition) {
         val intent = Intent(this, CameraActivity::class.java)
-        var path = "${App.getDamagePath(interventionId, bladeId, damage.localId)}"
+        var path = "${App.getDamagePath(interventionId, blade.id, damage.localId)}"
         intent.putExtra(CameraActivity.EXTRA_PICTURE_TYPE, PICTURE_TYPE_DAMAGE)
         intent.putExtra(CameraActivity.EXTRA_RELATED_ID, damage.localId)
         intent.putExtra(CameraActivity.EXTRA_INTERVENTION_ID, interventionId)
@@ -102,7 +106,7 @@ class DamageListActivity : AppCompatActivity(), DamageAdapter.DamageItemListener
             damageInheritType,
             "D${adapter.itemCount + 1}",
             interventionId,
-            bladeId
+            blade.id
         )
         val newId = App.database.damageDao().insertDamage(damage).toInt()
         damage.localId = newId

@@ -3,6 +3,7 @@ package com.heliopales.bladeexpertfiller.spotcondition.drainhole
 import android.os.Bundle
 import android.util.Log
 import android.view.inputmethod.InputMethodManager
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
@@ -14,6 +15,7 @@ import com.heliopales.bladeexpertfiller.App
 import com.heliopales.bladeexpertfiller.INDEX_DRAIN_LOOP_BASE
 import com.heliopales.bladeexpertfiller.INDEX_DRAIN_LOOP_SEVE
 import com.heliopales.bladeexpertfiller.R
+import com.heliopales.bladeexpertfiller.blade.Blade
 import com.heliopales.bladeexpertfiller.spotcondition.DrainholeSpotCondition
 import com.heliopales.bladeexpertfiller.spotcondition.drainhole.editloop.DrainBasicsFragment
 import com.heliopales.bladeexpertfiller.spotcondition.drainhole.editloop.DrainSeverityFragment
@@ -21,7 +23,7 @@ import com.heliopales.bladeexpertfiller.spotcondition.drainhole.editloop.DrainSe
 class DrainholeActivity : AppCompatActivity() {
 
     companion object {
-        const val EXTRA_BLADE_ID = "BladeId"
+        const val EXTRA_BLADE = "blade"
         const val EXTRA_INTERVENTION_ID = "InterventionId"
     }
 
@@ -29,21 +31,23 @@ class DrainholeActivity : AppCompatActivity() {
 
     lateinit var pager: ViewPager2
 
-    lateinit var drain: DrainholeSpotCondition
+    var drain: DrainholeSpotCondition? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         Log.d(TAG, "onCreate()")
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_drainhole)
-        val bladeId = intent.getIntExtra(EXTRA_BLADE_ID, -1)
+        val blade = intent.getParcelableExtra<Blade>(EXTRA_BLADE)!!
         val interventionId = intent.getIntExtra(EXTRA_INTERVENTION_ID, -1)
 
-        drain = App.database.drainholeDao().getByBladeAndIntervention(bladeId,interventionId)!!
+        findViewById<TextView>(R.id.drainhole_blade_label).text =  "${blade.position} - ${blade.serial?:"na"}"
+
+        drain = App.database.drainholeDao().getByBladeAndIntervention(blade.id,interventionId)
 
         Log.d(TAG, "Drain form database : $drain")
 
         if(drain == null){
-            drain = DrainholeSpotCondition(interventionId, bladeId)
+            drain = DrainholeSpotCondition(interventionId, blade.id)
             val newId = App.database.drainholeDao().upsertDrainhole(drain!!)
             drain!!.localId = newId.toInt()
         }

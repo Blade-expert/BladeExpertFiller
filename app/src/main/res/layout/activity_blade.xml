@@ -6,18 +6,42 @@
     android:layout_height="match_parent"
     tools:context=".blade.BladeActivity">
 
-    <TextView
-        android:id="@+id/blade_name"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:id="@+id/blade_title_layout"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textAlignment="center"
-        android:textColor="@color/bulma_dark"
-        android:textSize="30sp"
+        android:orientation="vertical"
         app:layout_constraintBottom_toTopOf="@id/blade_serial_layout"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:text="PALE A" app:layout_constraintVertical_chainStyle="spread"/>
+        app:layout_constraintVertical_chainStyle="spread"
+        android:gravity="center">
+
+        <TextView
+            android:id="@+id/bla_turbine_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAlignment="center"
+            android:textColor="@color/bulma_dark"
+            android:textSize="22sp"
+            android:maxLines="1"
+            android:ellipsize="middle"
+            tools:text="Chemin des Haguenets E12"
+            android:layout_marginBottom="5dp"
+            />
+
+        <TextView
+            android:id="@+id/blade_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAlignment="center"
+            android:textColor="@color/bulma_dark"
+            android:textSize="30sp"
+            tools:text="BLADE A"
+            app:layout_constraintVertical_chainStyle="spread"/>
+    </LinearLayout>
+
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/blade_serial_layout"
@@ -26,13 +50,13 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintBottom_toTopOf="@id/blade_buttons_layout"
-        app:layout_constraintTop_toBottomOf="@id/blade_name">
+        app:layout_constraintTop_toBottomOf="@id/blade_title_layout">
 
         <TextView
             android:id="@+id/blade_serial_label"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Serial number : "
+            android:text="S/N : "
             android:textColor="@color/bulma_dark"
             android:textSize="17sp"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -60,29 +84,33 @@
 
         <ImageButton
             android:id="@+id/edit_blade_serial"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:backgroundTint="@color/bulma_success_light"
-            android:padding="17dp"
-            android:src="@drawable/ic_baseline_edit_24"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintLeft_toRightOf="@id/blade_serial_number"
             app:layout_constraintRight_toLeftOf="@id/take_blade_serial_picture"
             app:layout_constraintTop_toTopOf="parent"
-            app:tint="@color/bulma_success_dark" />
+            android:background="@drawable/ic_square_24"
+            android:backgroundTint="@color/bulma_link"
+            android:src="@drawable/ic_baseline_edit_24"
+            app:tint="@color/bulma_white"
+            android:padding="15dp"
+            android:scaleType="fitCenter" />
 
         <ImageButton
             android:id="@+id/take_blade_serial_picture"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:backgroundTint="@color/bulma_light"
-            android:padding="17dp"
-            android:src="@drawable/ic_round_camera_alt_24"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintLeft_toRightOf="@id/edit_blade_serial"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:tint="@color/bulma_dark" />
+            android:background="@drawable/ic_square_24"
+            android:backgroundTint="@color/bulma_link"
+            android:src="@drawable/ic_round_camera_alt_24"
+            app:tint="@color/bulma_white"
+            android:padding="15dp"
+            android:scaleType="fitCenter" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
