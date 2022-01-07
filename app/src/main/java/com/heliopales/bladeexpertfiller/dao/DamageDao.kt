@@ -21,6 +21,9 @@ interface DamageDao {
     @Query("SELECT * FROM DamageSpotCondition WHERE interventionId = :interventionId")
     fun getDamagesByInterventionId(interventionId: Int): List<DamageSpotCondition>
 
+    @Query("SELECT COUNT(localId) FROM DamageSpotCondition WHERE bladeId = :bladeId AND interventionId = :interventionId AND inheritType = :inheritType")
+    fun countDamageByBladeId(bladeId: Int, interventionId: Int, inheritType: String): Int
+
     @Delete
     fun delete(damage: DamageSpotCondition)
 

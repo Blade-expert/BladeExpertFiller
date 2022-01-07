@@ -12,6 +12,9 @@ interface ReceptorMeasureDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun upsert(measure: ReceptorMeasure)
 
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun upsert(measures: List<ReceptorMeasure>)
+
     @Query("SELECT * FROM ReceptorMeasure WHERE receptorId=:receptorId AND lightningSpotConditionId=:lightningId")
     fun getByReceptorIdAndLightningId(receptorId: Int, lightningId: Int): ReceptorMeasure
 

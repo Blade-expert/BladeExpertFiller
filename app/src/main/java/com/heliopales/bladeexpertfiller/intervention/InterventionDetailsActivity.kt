@@ -2,22 +2,25 @@ package com.heliopales.bladeexpertfiller.intervention
 
 import android.app.Activity
 import android.content.Intent
+import android.content.res.ColorStateList
 import android.graphics.Camera
+import android.graphics.Color
+import android.graphics.Typeface
 import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.ImageButton
-import android.widget.LinearLayout
-import android.widget.TextView
+import android.widget.*
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.res.ResourcesCompat
 import androidx.core.view.setMargins
 import com.heliopales.bladeexpertfiller.*
 import com.heliopales.bladeexpertfiller.blade.Blade
 import com.heliopales.bladeexpertfiller.blade.BladeActivity
 import com.heliopales.bladeexpertfiller.camera.CameraActivity
+import com.heliopales.bladeexpertfiller.spotcondition.INHERIT_TYPE_DAMAGE_IN
+import com.heliopales.bladeexpertfiller.spotcondition.INHERIT_TYPE_DAMAGE_OUT
 import com.heliopales.bladeexpertfiller.utils.dpToPx
 import com.heliopales.bladeexpertfiller.utils.spToPx
 import com.heliopales.bladeexpertfiller.utils.toast
@@ -32,7 +35,7 @@ class InterventionDetailsActivity : AppCompatActivity(), View.OnClickListener {
     private lateinit var intervention: Intervention;
     private lateinit var turbineNameView: TextView;
     private lateinit var turbineSerialView: TextView;
-    private val bladeButtons = mutableListOf<Button>();
+    private val bladeLayouts = mutableListOf<LinearLayout>();
 
     val TAG = InterventionDetailsActivity::class.java.simpleName
 
@@ -61,7 +64,6 @@ class InterventionDetailsActivity : AppCompatActivity(), View.OnClickListener {
 
     private fun addBladeButtons() {
         findViewById<LinearLayout>(R.id.bladeButtonLayout).let {
-            val resources = applicationContext.resources
             val layoutParams = LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.WRAP_CONTENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT
@@ -70,20 +72,18 @@ class InterventionDetailsActivity : AppCompatActivity(), View.OnClickListener {
 
             App.database.bladeDao().getBladesByInterventionId(intervention.id)
                 .sortedBy { bla -> bla.position }.forEach { bla ->
-                    val button = Button(this)
-                    button.tag = bla.id
-                    button.text =
-                        "${bla.position}" + if (bla.serial == null) "" else " - ${bla.serial}"
-                    button.setPadding(dpToPx(24f), dpToPx(32f), dpToPx(24f), dpToPx(32f))
-                    button.textSize = spToPx(8f)
-                    button.layoutParams = layoutParams
-                    button.setBackgroundColor(getColor(R.color.bulma_link))
-                    button.setTextColor(getColor(R.color.bulma_white))
-                    button.setOnClickListener {
+
+                    val bladeLayout: LinearLayout =
+                        View.inflate(this, R.layout.pattern_blade_button, null) as LinearLayout
+                    bladeLayout.tag = bla.id
+
+                    bladeLayout.findViewById<Button>(R.id.blade_button).setOnClickListener {
                         startBladeActivity(bla)
                     }
-                    bladeButtons.add(button)
-                    it.addView(button)
+
+
+                    bladeLayouts.add(bladeLayout)
+                    it.addView(bladeLayout)
                 }
         }
     }
@@ -97,10 +97,58 @@ class InterventionDetailsActivity : AppCompatActivity(), View.OnClickListener {
 
     override fun onResume() {
         super.onResume()
-        bladeButtons.forEach { but ->
-            val dbBla = App.database.bladeDao().getById(but.tag as Int)
-            but.text =
+        bladeLayouts.forEach { lay ->
+            val dbBla = App.database.bladeDao().getById(lay.tag as Int)
+            lay.findViewById<Button>(R.id.blade_button).text =
                 "${dbBla?.position}" + if (dbBla?.serial == null) "" else " - ${dbBla?.serial}";
+
+            var count = App.database.damageDao()
+                .countDamageByBladeId(dbBla.id, intervention.id, INHERIT_TYPE_DAMAGE_OUT)
+            if (count > 0) {
+                lay.findViewWithTag<TextView>("outer_count")
+                    .setTextColor(getColor(R.color.bulma_dark))
+                lay.findViewWithTag<TextView>("outer_count").text = "O: $count"
+                lay.findViewWithTag<TextView>("outer_count").setTypeface(null,Typeface.BOLD)
+            } else {
+                lay.findViewWithTag<TextView>("outer_count")
+                    .setTextColor(getColor(R.color.bulma_gray_light))
+                lay.findViewWithTag<TextView>("outer_count").text = "O: --"
+                lay.findViewWithTag<TextView>("outer_count").setTypeface(null,Typeface.NORMAL)
+            }
+
+            count = App.database.damageDao()
+                .countDamageByBladeId(dbBla.id, intervention.id, INHERIT_TYPE_DAMAGE_IN)
+            if (count > 0) {
+                lay.findViewWithTag<TextView>("inner_count")
+                    .setTextColor(getColor(R.color.bulma_dark))
+                lay.findViewWithTag<TextView>("inner_count").text = "I: $count"
+                lay.findViewWithTag<TextView>("inner_count").setTypeface(null,Typeface.BOLD)
+            } else {
+                lay.findViewWithTag<TextView>("inner_count")
+                    .setTextColor(getColor(R.color.bulma_gray_light))
+                lay.findViewWithTag<TextView>("inner_count").text = "I: --"
+                lay.findViewWithTag<TextView>("inner_count").setTypeface(null,Typeface.NORMAL)
+            }
+
+            count = App.database.drainholeDao()
+                .countByBladeId(dbBla.id, intervention.id)
+            if (count > 0) {
+                lay.findViewWithTag<ImageView>("drain_count")
+                    .imageTintList = ColorStateList.valueOf(getColor(R.color.bulma_success))
+            } else {
+                lay.findViewWithTag<ImageView>("drain_count")
+                    .imageTintList = ColorStateList.valueOf(getColor(R.color.bulma_gray_light))
+            }
+
+            count = App.database.lightningDao()
+                .countByBladeId(dbBla.id, intervention.id)
+            if (count > 0) {
+                lay.findViewWithTag<ImageView>("lps_count")
+                    .imageTintList = ColorStateList.valueOf(getColor(R.color.bulma_success))
+            } else {
+                lay.findViewWithTag<ImageView>("lps_count")
+                    .imageTintList = ColorStateList.valueOf(getColor(R.color.bulma_gray_light))
+            }
         }
     }
 
@@ -109,7 +157,6 @@ class InterventionDetailsActivity : AppCompatActivity(), View.OnClickListener {
             R.id.editTurbineSerialNumber -> showChangeTurbineSerialDialog()
             R.id.take_turbine_serial_picture -> takeTurbineSerialPicture()
         }
-
     }
 
     private fun takeTurbineSerialPicture() {
@@ -157,6 +204,5 @@ class InterventionDetailsActivity : AppCompatActivity(), View.OnClickListener {
     override fun onRestart() {
         Log.d(TAG, "onRestart()")
         super.onRestart()
-
     }
 }

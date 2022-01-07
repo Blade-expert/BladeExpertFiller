@@ -7,9 +7,10 @@ import androidx.room.Ignore
 data class ReceptorMeasure(
     val receptorId: Int,
     val lightningSpotConditionId: Int,
-    val severityId:Int? = null,
-    val value: String? = null
+    var value: String? = null,
+    var severityId: Int? = null
 ) {
 
-    @Ignore var receptorLabel: String? = null
+    @Ignore
+    var receptorLabel: String? = null
 }

@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="horizontal"
+    android:layout_gravity="center_horizontal">
+
+<androidx.constraintlayout.widget.ConstraintLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_marginHorizontal="10dp">
+
+    <Button
+        android:id="@+id/blade_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toLeftOf="@+id/blade_button_companion"
+        app:layout_constraintHorizontal_chainStyle="packed"
+        android:layout_margin="10dp"
+        android:backgroundTint="@color/bulma_link"
+        android:textColor="@color/bulma_white"
+        android:paddingVertical="24dp"
+        android:paddingHorizontal="32dp"
+        android:maxLines="2"
+        android:ellipsize="end"
+        android:textSize="20sp"
+        tools:text="BLADE A - 123456789"
+      />
+
+    <GridLayout
+        android:id="@+id/blade_button_companion"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintLeft_toRightOf="@id/blade_button"
+        android:columnCount="2">
+
+        <TextView
+            android:tag="outer_count"
+            android:layout_gravity="center"
+            android:textColor="@color/bulma_gray_light"
+            android:textSize="18sp"
+            android:text="O: 12"/>
+
+        <TextView
+            android:tag="inner_count"
+            android:layout_gravity="center"
+            android:layout_marginLeft="10dp"
+            android:textColor="@color/bulma_gray_light"
+            android:textSize="18sp"
+            android:text="I: 99"/>
+
+
+        <ImageView
+            android:tag="drain_count"
+            android:layout_gravity="center"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:paddingTop="10dp"
+            android:paddingBottom="2dp"
+            android:src="@drawable/ic_tint_solid"
+            app:tint="@color/bulma_gray_light"
+            />
+
+        <ImageView
+            android:tag="lps_count"
+            android:layout_gravity="center"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:paddingTop="10dp"
+            android:paddingBottom="2dp"
+            android:src="@drawable/ic_bolt_solid"
+            app:tint="@color/bulma_gray_light"
+            />
+
+    </GridLayout>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
+
+</LinearLayout>

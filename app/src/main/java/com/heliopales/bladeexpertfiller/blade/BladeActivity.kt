@@ -79,14 +79,14 @@ class BladeActivity : AppCompatActivity(), View.OnClickListener {
     private fun startLightningActivity() {
         val intent = Intent(this, LightningActivity::class.java)
         intent.putExtra(LightningActivity.EXTRA_INTERVENTION_ID, intervention.id)
-        intent.putExtra(LightningActivity.EXTRA_BLADE_ID, blade.id)
+        intent.putExtra(LightningActivity.EXTRA_BLADE, blade)
         startActivity(intent)
     }
 
     private fun startDrainholeActivity() {
         val intent = Intent(this, DrainholeActivity::class.java)
         intent.putExtra(DrainholeActivity.EXTRA_INTERVENTION_ID, intervention.id)
-        intent.putExtra(DrainholeActivity.EXTRA_BLADE_ID, blade.id)
+        intent.putExtra(DrainholeActivity.EXTRA_BLADE, blade)
         startActivity(intent)
     }
 

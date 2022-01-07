@@ -16,5 +16,8 @@ interface LightningDao {
     @Delete
     fun delete(lightning: LightningSpotCondition)
 
+    @Query("SELECT count(localId) FROM LightningSpotCondition WHERE bladeId = :bladeId AND interventionId = :interventionId")
+    fun countByBladeId(bladeId: Int, interventionId: Int): Int
+
 
 }

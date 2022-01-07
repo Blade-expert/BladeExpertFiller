@@ -2,34 +2,40 @@ package com.heliopales.bladeexpertfiller.spotcondition.lightning
 
 import android.content.res.ColorStateList
 import android.graphics.Color
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.TextView
 import androidx.cardview.widget.CardView
 import androidx.core.content.ContextCompat
+import androidx.core.widget.addTextChangedListener
 import androidx.recyclerview.widget.RecyclerView
 import com.heliopales.bladeexpertfiller.App
+import com.heliopales.bladeexpertfiller.EXPORTATION_STATE_NOT_EXPORTED
 import com.heliopales.bladeexpertfiller.R
 import com.heliopales.bladeexpertfiller.spotcondition.DamageSpotCondition
 
 class ReceptorMeasureAdapter(
     private val measures: List<ReceptorMeasure>,
-    private val measureListener: MeasureItemListener
-) : RecyclerView.Adapter<ReceptorMeasureAdapter.ViewHolder>(), View.OnClickListener {
+    private val listener: MeasureChangeListener
+) : RecyclerView.Adapter<ReceptorMeasureAdapter.ViewHolder>(){
 
     private val TAG = ReceptorMeasureAdapter::class.java.simpleName
 
-    interface MeasureItemListener {
-        fun onMearureSelected(measure: ReceptorMeasure)
+
+    interface MeasureChangeListener{
+        fun OnMeasureChanged(position: Int, receptorValue: String)
     }
 
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val cardView: CardView = itemView.findViewById<CardView>(R.id.receptor_card_view)
         val receptorName: TextView = itemView.findViewById<TextView>(R.id.receptor_name)
-        val receptorValue: TextView = itemView.findViewById<TextView>(R.id.receptor_value)
+        val receptorValue: EditText = itemView.findViewById<EditText>(R.id.receptor_value)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -41,12 +47,20 @@ class ReceptorMeasureAdapter(
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val lrm = measures[position]
         with(holder) {
-            cardView.tag = lrm
-            cardView.setOnClickListener(this@ReceptorMeasureAdapter)
             receptorName.text = lrm.receptorLabel
-            receptorValue.text = lrm.value?:"--"+" \u03A9"
 
-
+            lrm.value?.let{
+                receptorValue.setText(it)
+            }
+            receptorValue.addTextChangedListener(object : TextWatcher {
+                override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+                override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+                override fun afterTextChanged(s: Editable?) {
+                    Log.d(TAG,"absolutePosition ${holder.absoluteAdapterPosition}")
+                    Log.d(TAG,"bindingPosition ${holder.bindingAdapterPosition}")
+                    listener.OnMeasureChanged(holder.bindingAdapterPosition, receptorValue.text.toString())
+                }
+            })
             cardView.setCardBackgroundColor(
                 ContextCompat.getColor(
                     cardView.context,
@@ -66,23 +80,10 @@ class ReceptorMeasureAdapter(
                 )
             )
 
-            if (lrm.severityId != null) {
-                val sev = App.database.severityDao().getById(lrm.severityId!!)
-                if (sev != null) {
-                    cardView.setCardBackgroundColor(Color.parseColor(sev.color))
-                    receptorName.setTextColor(Color.parseColor(sev.fontColor))
-                    receptorValue.setTextColor(Color.parseColor(sev.fontColor))
-                }
-            }
+
         }
     }
 
     override fun getItemCount(): Int = measures.size
 
-    override fun onClick(view: View) {
-        when(view.id){
-            R.id.receptor_card_view -> measureListener.onMearureSelected(view.tag as ReceptorMeasure)
-        }
-
-    }
 }

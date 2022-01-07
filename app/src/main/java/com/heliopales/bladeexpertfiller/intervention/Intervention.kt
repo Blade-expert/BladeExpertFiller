@@ -25,12 +25,16 @@ data class Intervention(
 
     @Ignore
     var exporting: Boolean = false
+
     @Ignore
     var progress = MutableLiveData<Int>(0)
+
     @Ignore
     var exportCount = 0;
+
     @Ignore
     val exportNumberOfOperations = MutableLiveData<Int>(0)
+
     @Ignore
     val exportRealizedOperations = MutableLiveData<Int>(0)
 

@@ -14,6 +14,8 @@
         android:textAlignment="center"
         android:textColor="@color/bulma_dark"
         android:textSize="30sp"
+        android:maxLines="1"
+        android:ellipsize="middle"
         app:layout_constraintBottom_toTopOf="@id/turbine_serial_layout"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
@@ -33,7 +35,7 @@
             android:id="@+id/turbineSerialLabel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Serial number : "
+            android:text="S/N : "
             android:textColor="@color/bulma_dark"
             android:textSize="17sp"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -61,29 +63,33 @@
 
         <ImageButton
             android:id="@+id/editTurbineSerialNumber"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:backgroundTint="@color/bulma_success_light"
-            android:padding="17dp"
-            android:src="@drawable/ic_baseline_edit_24"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintLeft_toRightOf="@id/turbineSerialNumber"
             app:layout_constraintRight_toLeftOf="@id/take_turbine_serial_picture"
             app:layout_constraintTop_toTopOf="parent"
-            app:tint="@color/bulma_success_dark" />
+            android:background="@drawable/ic_square_24"
+            android:backgroundTint="@color/bulma_link"
+            android:src="@drawable/ic_baseline_edit_24"
+            app:tint="@color/bulma_white"
+            android:padding="15dp"
+            android:scaleType="fitCenter"  />
 
         <ImageButton
             android:id="@+id/take_turbine_serial_picture"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:backgroundTint="@color/bulma_light"
-            android:padding="17dp"
-            android:src="@drawable/ic_round_camera_alt_24"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintLeft_toRightOf="@id/editTurbineSerialNumber"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:tint="@color/bulma_dark" />
+            android:background="@drawable/ic_square_24"
+            android:backgroundTint="@color/bulma_link"
+            android:src="@drawable/ic_round_camera_alt_24"
+            app:tint="@color/bulma_white"
+            android:padding="15dp"
+            android:scaleType="fitCenter"  />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

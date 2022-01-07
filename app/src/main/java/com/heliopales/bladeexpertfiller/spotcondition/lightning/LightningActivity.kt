@@ -1,54 +1,58 @@
 package com.heliopales.bladeexpertfiller.spotcondition.lightning
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.ImageButton
-import android.widget.Spinner
-import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import com.heliopales.bladeexpertfiller.App
-import com.heliopales.bladeexpertfiller.R
 import com.heliopales.bladeexpertfiller.spotcondition.LightningSpotCondition
-import android.widget.ArrayAdapter
-import com.heliopales.bladeexpertfiller.intervention.ChangeTurbineSerialDialogFragment
+import android.widget.TextView
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentActivity
+import androidx.viewpager2.adapter.FragmentStateAdapter
+import androidx.viewpager2.widget.ViewPager2
+import com.google.android.material.tabs.TabLayout
+import com.google.android.material.tabs.TabLayoutMediator
+import com.heliopales.bladeexpertfiller.*
+import com.heliopales.bladeexpertfiller.blade.Blade
+import com.heliopales.bladeexpertfiller.camera.CameraActivity
+import com.heliopales.bladeexpertfiller.spotcondition.lightning.editloop.LightningDescriptionFragment
+import com.heliopales.bladeexpertfiller.spotcondition.lightning.editloop.LightningMeasureFragment
 
 
-class LightningActivity : AppCompatActivity(), View.OnClickListener,
-    ReceptorMeasureAdapter.MeasureItemListener {
+class LightningActivity : AppCompatActivity(), View.OnClickListener {
 
     private val TAG = LightningActivity::class.java.simpleName
 
     companion object {
-        const val EXTRA_BLADE_ID = "BladeId"
+        const val EXTRA_BLADE = "Blade"
         const val EXTRA_INTERVENTION_ID = "InterventionId"
     }
 
-    var lightning: LightningSpotCondition? = null
+    lateinit var lightning: LightningSpotCondition
 
-    private val measures: MutableList<ReceptorMeasure> = mutableListOf()
+    val measures: MutableList<ReceptorMeasure> = mutableListOf()
 
-    private lateinit var recyclerView: RecyclerView
-    private lateinit var adapter: ReceptorMeasureAdapter
-
-    private lateinit var measureMethodSpinner: Spinner
+    lateinit var pager: ViewPager2
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_lightning)
 
-        val bladeId = intent.getIntExtra(LightningActivity.EXTRA_BLADE_ID, -1)
-        val interventionId = intent.getIntExtra(LightningActivity.EXTRA_INTERVENTION_ID, -1)
+        val blade = intent.getParcelableExtra<Blade>(EXTRA_BLADE)!!
+        val interventionId = intent.getIntExtra(EXTRA_INTERVENTION_ID, -1)
 
-        val receptors = App.database.receptorDao().getByBladeId(bladeId)
+        findViewById<TextView>(R.id.lps_blade_label).text =
+            "${blade.position} - ${blade.serial ?: "na"}"
+
+        val receptors = App.database.receptorDao().getByBladeId(blade.id)
             .sortedWith(compareBy({ it.radius }, { it.position }))
 
-        lightning = App.database.lightningDao().getByBladeAndIntervention(bladeId, interventionId)
+        val lps = App.database.lightningDao().getByBladeAndIntervention(blade.id, interventionId)
 
-        if (lightning == null) {
-            lightning = LightningSpotCondition(interventionId, bladeId)
+        if (lps == null) {
+            lightning = LightningSpotCondition(interventionId, blade.id)
             val newId = App.database.lightningDao().upsert(lightning!!)
             lightning!!.localId = newId.toInt()
 
@@ -62,6 +66,7 @@ class LightningActivity : AppCompatActivity(), View.OnClickListener,
                 measures.add(measure)
             }
         } else {
+            lightning = lps
             receptors.forEach {
                 val measure = App.database.receptorMeasureDao()
                     .getByReceptorIdAndLightningId(it.id, lightning!!.localId)
@@ -73,21 +78,19 @@ class LightningActivity : AppCompatActivity(), View.OnClickListener,
         measures.forEach {
             Log.d(TAG, it.toString())
         }
-        adapter = ReceptorMeasureAdapter(measures, this)
-        recyclerView = findViewById(R.id.receptors_recycler_view)
-        recyclerView.layoutManager = LinearLayoutManager(this)
-        recyclerView.adapter = adapter
 
-        measureMethodSpinner = findViewById(R.id.measure_method_spinner)
-        measureMethodSpinner.adapter =
-            ArrayAdapter<MeasureMethod>(
-                this,
-                R.layout.item_spinner,
-                MeasureMethod.values()
-            )
-
-        findViewById<ImageButton>(R.id.lps_description_button).setOnClickListener(this)
         findViewById<ImageButton>(R.id.lps_picture_button).setOnClickListener(this)
+
+        pager = findViewById(R.id.lps_view_pager)
+        pager.adapter = LightningPagerAdapter(this)
+
+        val tabLayout = findViewById<TabLayout>(R.id.lps_tab_layout)
+        TabLayoutMediator(tabLayout, pager) { tab, position ->
+            when (position) {
+                INDEX_LIGHTNING_LOOP_MEAS -> tab.text = "Measures"
+                INDEX_LIGHTNING_LOOP_DESC -> tab.text = "Remark"
+            }
+        }.attach()
 
     }
 
@@ -95,24 +98,36 @@ class LightningActivity : AppCompatActivity(), View.OnClickListener,
         Log.d(TAG, "onPause()")
         super.onPause()
         App.database.lightningDao().upsert(lightning!!)
+        App.database.receptorMeasureDao().upsert(measures)
     }
 
     override fun onClick(v: View) {
         when (v.id) {
-            R.id.lps_description_button -> showChangeDescriptionDialog()
-            R.id.lps_picture_button -> {}
+            R.id.lps_picture_button -> {
+                val intent = Intent(this, CameraActivity::class.java)
+                var path =
+                    "${App.getLPSPath(lightning.interventionId, lightning.bladeId)}"
+                intent.putExtra(CameraActivity.EXTRA_OUTPUT_PATH, path)
+                intent.putExtra(CameraActivity.EXTRA_INTERVENTION_ID, lightning.interventionId)
+                intent.putExtra(CameraActivity.EXTRA_RELATED_ID, lightning.localId)
+                intent.putExtra(CameraActivity.EXTRA_PICTURE_TYPE, PICTURE_TYPE_LPS)
+                startActivity(intent)
+            }
         }
     }
 
-    private fun showChangeDescriptionDialog() {
-        val dialog = LightningDescriptionFragment(lightning?.description)
-        dialog.show(supportFragmentManager, "LightningDescriptionFragment")
-    }
+}
 
-    override fun onMearureSelected(measure: ReceptorMeasure) {
-        AlertDialog.Builder(this)
-            .setMessage("Not yet implemented...")
-            .create()
-            .show()
+class LightningPagerAdapter(fa: FragmentActivity) :
+    FragmentStateAdapter(fa) {
+    override fun getItemCount(): Int = 2
+
+    override fun createFragment(position: Int): Fragment {
+        when (position) {
+            INDEX_LIGHTNING_LOOP_MEAS -> return LightningMeasureFragment()
+            INDEX_LIGHTNING_LOOP_DESC -> return LightningDescriptionFragment()
+        }
+        return LightningMeasureFragment()
+
     }
 }

@@ -14,9 +14,7 @@
         android:layout_marginVertical="4dp"
         android:focusable="true"
         android:foreground="?android:selectableItemBackground"
-        app:cardCornerRadius="8dp"
-        app:cardBackgroundColor="@color/bulma_success"
-        tools:backgroundTint="@color/bulma_success">
+        app:cardCornerRadius="8dp">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
@@ -33,23 +31,45 @@
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintRight_toLeftOf="@id/receptor_value"
+                app:layout_constraintRight_toLeftOf="@id/lps_measure_layout"
                 app:layout_constraintHorizontal_chainStyle="spread_inside"
                 android:textColor="@color/bulma_black"
                 android:textSize="20sp"
                 tools:text="37 m  |  SS/LE"/>
 
-            <TextView
-                android:id="@+id/receptor_value"
+            <LinearLayout
+                android:id="@+id/lps_measure_layout"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:orientation="horizontal"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintLeft_toRightOf="@id/receptor_name"
-                android:textColor="@color/bulma_black"
-                android:textSize="20sp"
-                tools:text="0.0001 &#937;"/>
+                app:layout_constraintLeft_toRightOf="@id/receptor_name">
+
+
+                <EditText
+                    android:id="@+id/receptor_value"
+                    android:layout_width="80dp"
+                    android:layout_height="wrap_content"
+                    android:inputType="textShortMessage"
+                    android:textCursorDrawable="@drawable/link_cursor"
+                    android:backgroundTint="@color/bulma_link"
+                    android:textAlignment="textEnd"
+                    android:textColor="@color/bulma_black"
+                    android:textSize="20sp"
+                    tools:text="0.0001" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/bulma_black"
+                    android:textSize="20sp"
+                    android:text="&#937;"/>
+
+            </LinearLayout>
+
+
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
