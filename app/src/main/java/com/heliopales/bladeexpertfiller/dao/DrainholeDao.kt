@@ -13,9 +13,13 @@ interface DrainholeDao {
     @Query("SELECT * FROM DrainholeSpotCondition WHERE bladeId = :bladeId AND interventionId = :interventionId")
     fun getByBladeAndIntervention(bladeId: Int, interventionId: Int): DrainholeSpotCondition?
 
+    @Query("SELECT * FROM DrainholeSpotCondition WHERE interventionId = :interventionId")
+    fun getByInterventionId(interventionId: Int): List<DrainholeSpotCondition>
+
     @Delete
     fun delete(drain: DrainholeSpotCondition)
 
     @Query("SELECT count(localId) FROM DrainholeSpotCondition WHERE bladeId = :bladeId AND interventionId = :interventionId")
     fun countByBladeId(bladeId: Int, interventionId: Int): Int
+
 }

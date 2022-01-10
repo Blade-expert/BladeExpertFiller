@@ -11,8 +11,10 @@ import android.widget.Button
 import androidx.fragment.app.Fragment
 import com.heliopales.bladeexpertfiller.App
 import com.heliopales.bladeexpertfiller.EXPORTATION_STATE_NOT_EXPORTED
+import com.heliopales.bladeexpertfiller.INDEX_DRAIN_LOOP_BASE
 import com.heliopales.bladeexpertfiller.R
 import com.heliopales.bladeexpertfiller.spotcondition.DrainholeSpotCondition
+import com.heliopales.bladeexpertfiller.spotcondition.damages.DamageViewPagerActivity
 import com.heliopales.bladeexpertfiller.spotcondition.drainhole.DrainholeActivity
 
 class DrainSeverityFragment : Fragment(), View.OnClickListener {
@@ -24,7 +26,7 @@ class DrainSeverityFragment : Fragment(), View.OnClickListener {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        drain = (activity as DrainholeActivity).drain!!
+        drain = (activity as DrainholeActivity).drain
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -35,8 +37,7 @@ class DrainSeverityFragment : Fragment(), View.OnClickListener {
                 it.setOnClickListener(this)
             }
         }
-        val severities =
-            App.database.severityDao().getAll().sortedBy { it.id }.forEachIndexed { i, sev ->
+        App.database.severityDao().getAll().sortedBy { it.id }.forEachIndexed { i, sev ->
                 buttons[i].backgroundTintList = ColorStateList.valueOf(Color.parseColor(sev.color))
                 buttons[i].setTextColor(Color.parseColor(sev.fontColor))
                 buttons[i].tag = sev.id
@@ -92,7 +93,7 @@ class DrainSeverityFragment : Fragment(), View.OnClickListener {
 
             Log.d(TAG, "Severity id selected : ${drain.severityId}")
         }
-        activity?.finish()
+        (activity as DrainholeActivity).pager.currentItem = INDEX_DRAIN_LOOP_BASE
     }
 
 

@@ -43,9 +43,17 @@ interface PictureDao {
     @Query("DELETE FROM picture WHERE type = $PICTURE_TYPE_DAMAGE and relatedId = :damageLocalId")
     fun deleteDamagePictures(damageLocalId: Int)
 
+    @Query("DELETE FROM picture WHERE type = $PICTURE_TYPE_DRAIN and relatedId = :drainLocalId")
+    fun deleteDrainholePictures(drainLocalId: Int)
+
+    @Query("DELETE FROM picture WHERE type = $PICTURE_TYPE_LPS and relatedId = :lightningLocalId")
+    fun deleteLightningPictures(lightningLocalId: Int)
+
     @Query("DELETE FROM picture WHERE type = $PICTURE_TYPE_BLADE and relatedId = :bladeId")
     fun deleteBladePictures(bladeId: Int)
 
     @Query("DELETE FROM picture WHERE type = $PICTURE_TYPE_TURBINE and relatedId = :interventionId")
     fun deleteTurbinePictures(interventionId: Int)
+
+
 }

@@ -24,7 +24,6 @@ class DrainBasicsFragment : Fragment() {
     private lateinit var drain: DrainholeSpotCondition
 
     private lateinit var description: EditText
-    private lateinit var pictureButton: ImageButton
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -36,7 +35,6 @@ class DrainBasicsFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         description = view.findViewById(R.id.drain_description)
-        pictureButton = view.findViewById(R.id.drain_picture_button)
         attachListeners()
     }
 
@@ -51,19 +49,10 @@ class DrainBasicsFragment : Fragment() {
                 else
                     drain.description = description.text.toString()
                 App.database.interventionDao().updateExportationState(drain.interventionId, EXPORTATION_STATE_NOT_EXPORTED)
+
             }
         })
 
-        pictureButton.setOnClickListener {
-            val intent = Intent(requireContext(), CameraActivity::class.java)
-            var path =
-                "${App.getDrainPath(drain.interventionId, drain.bladeId)}"
-            intent.putExtra(CameraActivity.EXTRA_OUTPUT_PATH, path)
-            intent.putExtra(CameraActivity.EXTRA_INTERVENTION_ID, drain.interventionId)
-            intent.putExtra(CameraActivity.EXTRA_RELATED_ID, drain.localId)
-            intent.putExtra(CameraActivity.EXTRA_PICTURE_TYPE, PICTURE_TYPE_DRAIN)
-            startActivity(intent)
-        }
     }
 
     override fun onResume() {

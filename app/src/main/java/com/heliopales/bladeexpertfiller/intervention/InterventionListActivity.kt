@@ -1,8 +1,11 @@
 package com.heliopales.bladeexpertfiller.intervention
 
+import android.content.Context
 import android.content.Intent
 import android.graphics.Canvas
 import android.media.MediaScannerConnection
+import android.net.ConnectivityManager
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.Menu
@@ -11,6 +14,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -23,11 +27,8 @@ import com.heliopales.bladeexpertfiller.EXPORTATION_STATE_NOT_EXPORTED
 import com.heliopales.bladeexpertfiller.R
 import com.heliopales.bladeexpertfiller.blade.Blade
 import com.heliopales.bladeexpertfiller.bladeexpert.*
-import com.heliopales.bladeexpertfiller.spotcondition.DamageSpotCondition
-import com.heliopales.bladeexpertfiller.spotcondition.INHERIT_TYPE_DAMAGE_IN
-import com.heliopales.bladeexpertfiller.spotcondition.INHERIT_TYPE_DAMAGE_OUT
 import com.heliopales.bladeexpertfiller.picture.Picture
-import com.heliopales.bladeexpertfiller.spotcondition.DrainholeSpotCondition
+import com.heliopales.bladeexpertfiller.spotcondition.*
 import com.heliopales.bladeexpertfiller.utils.toast
 import it.xabaras.android.recyclerview.swipedecorator.RecyclerViewSwipeDecorator
 import kotlinx.android.synthetic.main.activity_gallery.*
@@ -170,6 +171,21 @@ class InterventionListActivity : AppCompatActivity(), InterventionAdapter.Interv
                 App.database.pictureDao().deleteDamagePictures(damageLocalId = it.localId)
                 App.database.damageDao().delete(it)
             }
+        //Delete drainhole, related pictures
+        App.database.drainholeDao().getByInterventionId(interventionId = deletedIntervention.id)
+            .forEach {
+                App.database.pictureDao().deleteDrainholePictures(drainLocalId = it.localId)
+                App.database.drainholeDao().delete(it)
+            }
+
+        //Delete lightning, related pictures and related measures
+        App.database.lightningDao().getByInterventionId(interventionId = deletedIntervention.id)
+            .forEach {
+                App.database.pictureDao().deleteLightningPictures(lightningLocalId = it.localId)
+                App.database.receptorMeasureDao().deleteByLightningLocalId(lightningLocalId = it.localId)
+                App.database.lightningDao().delete(it)
+            }
+
         //delete blade and related pictures
         App.database.bladeDao().getBladesByInterventionId(deletedIntervention.id).forEach {
             App.database.pictureDao().deleteBladePictures(bladeId = it.id)
@@ -225,8 +241,8 @@ class InterventionListActivity : AppCompatActivity(), InterventionAdapter.Interv
                                         blaw.receptors!!.map { ltrw ->
                                             mapBladeExpertLightningReceptor(ltrw)
                                         })
-                                blaw.receptors!!.forEach {ltrw ->
-                                    Log.d(TAG,"Receptor added $ltrw")
+                                blaw.receptors!!.forEach { ltrw ->
+                                    Log.d(TAG, "Receptor added $ltrw")
                                 }
 
                             }
@@ -409,6 +425,11 @@ class InterventionListActivity : AppCompatActivity(), InterventionAdapter.Interv
                 App.database.drainholeDao().getByBladeAndIntervention(bla.id, bla.interventionId)
                     ?.let { dhs ->
                         saveDrainhole(dhs, intervention)
+                    }
+
+                App.database.lightningDao().getByBladeAndIntervention(bla.id, bla.interventionId)
+                    ?.let { lps ->
+                        saveLightning(lps, intervention)
                     }
             }
         }
@@ -594,6 +615,8 @@ class InterventionListActivity : AppCompatActivity(), InterventionAdapter.Interv
                 ) {
                     App.writeOnInterventionLogFile(intervention, "Failure while exporting $dsc")
                     App.writeOnInterventionLogFile(intervention, t.stackTraceToString())
+                    intervention.exportCount += App.database.pictureDao()
+                        .getNonExportedDamageSpotPicturesByDamageId(dsc.localId).size
                     intervention.exportRealizedOperations.postValue(++intervention.exportCount)
                     intervention.exportErrorsInLastExport = true
                 }
@@ -639,6 +662,8 @@ class InterventionListActivity : AppCompatActivity(), InterventionAdapter.Interv
                 override fun onFailure(call: Call<DamageSpotConditionWrapper>, t: Throwable) {
                     App.writeOnInterventionLogFile(intervention, "Failure while exporting $dsc")
                     App.writeOnInterventionLogFile(intervention, t.stackTraceToString())
+                    intervention.exportCount += App.database.pictureDao()
+                        .getNonExportedDamageSpotPicturesByDamageId(dsc.localId).size
                     intervention.exportRealizedOperations.postValue(++intervention.exportCount)
                     intervention.exportErrorsInLastExport = true
                 }
@@ -686,6 +711,64 @@ class InterventionListActivity : AppCompatActivity(), InterventionAdapter.Interv
                 override fun onFailure(call: Call<DrainholeSpotConditionWrapper>, t: Throwable) {
                     App.writeOnInterventionLogFile(intervention, "Failure while exporting $dhs")
                     App.writeOnInterventionLogFile(intervention, t.stackTraceToString())
+                    intervention.exportCount += App.database.pictureDao()
+                        .getNonExportedDrainholeSpotPicturesByDrainId(dhs.localId).size
+                    intervention.exportRealizedOperations.postValue(++intervention.exportCount)
+                    intervention.exportErrorsInLastExport = true
+                }
+            })
+    }
+
+    private fun saveLightning(lps: LightningSpotCondition, intervention: Intervention) {
+        Log.d(TAG, "will send $lps")
+
+        val measures =
+            App.database.receptorMeasureDao().getByLightningSpotConditionLocalId(lps.localId)
+
+        val wrapper = mapToBladeExpertLightningSpotCondition(
+            lps,
+            measures.map { lrm -> mapToBladeExpertLightningMeasure(lrm) })
+
+        App.bladeExpertService.saveLightningSpotCondition(
+            lightningSpotConditionWrapper = wrapper
+        )
+            .enqueue(object : retrofit2.Callback<LightningSpotConditionWrapper> {
+                override fun onResponse(
+                    call: Call<LightningSpotConditionWrapper>,
+                    response: Response<LightningSpotConditionWrapper>
+                ) {
+                    intervention.exportRealizedOperations.postValue(++intervention.exportCount)
+                    if (response.isSuccessful) {
+                        //Récupération de l'id de bladeExpert et sauvegarde
+                        lps.id = response.body()?.id
+                        Log.d(TAG, "LPS envoyé avec succés, id récupéré = ${lps.id}")
+                        App.database.lightningDao().upsert(lps)
+                        App.database.pictureDao()
+                            .getNonExportedLightningSpotPicturesByLightningId(lps.localId)
+                            .forEach { pic ->
+                                sendSpotConditionPicture(
+                                    pic,
+                                    intervention,
+                                    spotConditionId = lps.id!!
+                                )
+                            }
+                    } else {
+                        App.writeOnInterventionLogFile(
+                            intervention,
+                            "Error while saving Drainhole $lps | Http response code = ${response.code()} | ${response.message()}"
+                        )
+                        intervention.exportErrorsInLastExport = true
+                        intervention.exportCount += App.database.pictureDao()
+                            .getNonExportedDrainholeSpotPicturesByDrainId(lps.localId).size
+                        intervention.exportRealizedOperations.postValue(intervention.exportCount)
+                    }
+                }
+
+                override fun onFailure(call: Call<LightningSpotConditionWrapper>, t: Throwable) {
+                    App.writeOnInterventionLogFile(intervention, "Failure while exporting $lps")
+                    App.writeOnInterventionLogFile(intervention, t.stackTraceToString())
+                    intervention.exportCount += App.database.pictureDao()
+                        .getNonExportedDrainholeSpotPicturesByDrainId(lps.localId).size
                     intervention.exportRealizedOperations.postValue(++intervention.exportCount)
                     intervention.exportErrorsInLastExport = true
                 }
@@ -746,10 +829,7 @@ class InterventionListActivity : AppCompatActivity(), InterventionAdapter.Interv
         count++ //turbineSerial
         Log.d(TAG, " - 1 turbine")
 
-
-
         if (App.database.pictureDao().getTurbinePictures(intervention.id).isNotEmpty()) count++;
-
 
         App.database.bladeDao().getBladesByInterventionId(intervention.id).forEach { bla ->
             count++ // BladeSerial
@@ -792,6 +872,18 @@ class InterventionListActivity : AppCompatActivity(), InterventionAdapter.Interv
                     Log.d(TAG, "     - drainhole")
                     App.database.pictureDao()
                         .getNonExportedDrainholeSpotPicturesByDrainId(it.localId)
+                        .forEach { pic ->
+                            count++ //picture
+                            Log.d(TAG, "       - pic : ${pic.fileName}")
+                        }
+                }
+
+            App.database.lightningDao().getByBladeAndIntervention(bla.id, bla.interventionId)
+                ?.let {
+                    count++ //lightningSpotCondition
+                    Log.d(TAG, "     - lightning")
+                    App.database.pictureDao()
+                        .getNonExportedLightningSpotPicturesByLightningId(it.localId)
                         .forEach { pic ->
                             count++ //picture
                             Log.d(TAG, "       - pic : ${pic.fileName}")
@@ -850,5 +942,6 @@ class InterventionListActivity : AppCompatActivity(), InterventionAdapter.Interv
                 }
             })
     }
+
 
 }

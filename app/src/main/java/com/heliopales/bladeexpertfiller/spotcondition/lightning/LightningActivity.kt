@@ -53,12 +53,13 @@ class LightningActivity : AppCompatActivity(), View.OnClickListener {
 
         if (lps == null) {
             lightning = LightningSpotCondition(interventionId, blade.id)
+            lightning.measureMethod = MeasureMethod.RCPT_TO_NAC_200MA
             val newId = App.database.lightningDao().upsert(lightning!!)
-            lightning!!.localId = newId.toInt()
+            lightning.localId = newId.toInt()
 
             receptors.forEach {
                 val measure = ReceptorMeasure(
-                    lightningSpotConditionId = lightning!!.localId,
+                    lightningSpotConditionLocalId = lightning!!.localId,
                     receptorId = it.id
                 )
                 App.database.receptorMeasureDao().upsert(measure)

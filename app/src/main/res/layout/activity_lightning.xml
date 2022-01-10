@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -16,32 +15,31 @@
             android:id="@+id/lps_label_linear_layout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:gravity="center"
             android:orientation="vertical"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toLeftOf="@id/lps_picture_button"
-            app:layout_constraintTop_toTopOf="parent"
-            android:gravity="center">
+            app:layout_constraintTop_toTopOf="parent">
 
             <TextView
                 android:id="@+id/lps_blade_label"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:ellipsize="middle"
+                android:maxLines="1"
                 android:textColor="@color/bulma_black"
                 android:textSize="18sp"
-                android:maxLines="1"
-                android:ellipsize="middle"
                 tools:text="BLADE A - 123456789" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:text="LPS"
                 android:textColor="@color/bulma_black"
-                android:textSize="30sp"
-                android:text="LPS" />
+                android:textSize="30sp" />
 
         </LinearLayout>
-
 
 
         <ImageButton
@@ -51,14 +49,14 @@
             android:layout_marginVertical="16dp"
             android:background="@drawable/ic_square_24"
             android:backgroundTint="@color/bulma_link"
-            android:src="@drawable/ic_round_camera_alt_24"
-            android:scaleType="fitCenter"
             android:padding="20dp"
-            app:tint="@color/bulma_white"
+            android:scaleType="fitCenter"
+            android:src="@drawable/ic_round_camera_alt_24"
             app:layout_constraintBottom_toBottomOf="@id/lps_label_linear_layout"
             app:layout_constraintLeft_toRightOf="@id/lps_label_linear_layout"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toTopOf="@id/lps_label_linear_layout" />
+            app:layout_constraintTop_toTopOf="@id/lps_label_linear_layout"
+            app:tint="@color/bulma_white" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -68,15 +66,13 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/lps_label_constraint_layout"
         app:tabIndicatorColor="@color/bulma_link"
-        app:tabTextColor="@color/bulma_black"
-        />
+        app:tabTextColor="@color/bulma_black" />
 
     <androidx.viewpager2.widget.ViewPager2
         android:id="@+id/lps_view_pager"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@id/lps_tab_layout"
-        android:layout_weight="1"
-        />
+        android:layout_weight="1" />
 
 </RelativeLayout>

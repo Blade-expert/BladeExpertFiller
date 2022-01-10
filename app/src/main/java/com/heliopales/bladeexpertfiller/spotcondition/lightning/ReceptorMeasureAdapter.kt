@@ -49,15 +49,12 @@ class ReceptorMeasureAdapter(
         with(holder) {
             receptorName.text = lrm.receptorLabel
 
-            lrm.value?.let{
-                receptorValue.setText(it)
-            }
+            receptorValue.setText(lrm.value)
+
             receptorValue.addTextChangedListener(object : TextWatcher {
                 override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
                 override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
                 override fun afterTextChanged(s: Editable?) {
-                    Log.d(TAG,"absolutePosition ${holder.absoluteAdapterPosition}")
-                    Log.d(TAG,"bindingPosition ${holder.bindingAdapterPosition}")
                     listener.OnMeasureChanged(holder.bindingAdapterPosition, receptorValue.text.toString())
                 }
             })

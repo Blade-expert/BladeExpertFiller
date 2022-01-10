@@ -1,6 +1,7 @@
 package com.heliopales.bladeexpertfiller.bladeexpert
 
 import com.google.gson.annotations.SerializedName
+import com.heliopales.bladeexpertfiller.spotcondition.lightning.MeasureMethod
 
 data class InterventionWrapper(
     val id: Int,
@@ -48,21 +49,36 @@ data class DamageSpotConditionWrapper(
     val fieldCode: String,
     val interventionId: Int,
     val bladeId: Int,
-    var severityId: Int?,
-    var description: String?,
-    var damageTypeId: Int?,
-    var radialPosition: Float?,
-    var radialLength: Int?, //Width
-    var longitudinalLength: Int?, //Length
-    var repetition: Int?,
-    var position: String?,
-    var profileDepth: String?
+    val severityId: Int?,
+    val description: String?,
+    val damageTypeId: Int?,
+    val radialPosition: Float?,
+    val radialLength: Int?, //Width
+    val longitudinalLength: Int?, //Length
+    val repetition: Int?,
+    val position: String?,
+    val profileDepth: String?
 )
 
 data class DrainholeSpotConditionWrapper(
     val id: Int?,
     val interventionId: Int,
     val bladeId: Int,
-    var severityId: Int?,
-    var description: String?,
+    val severityId: Int?,
+    val description: String?,
+)
+
+data class LightningSpotConditionWrapper(
+    val id: Int?,
+    val interventionId: Int,
+    val bladeId: Int,
+    val description: String?,
+    val measureMethod: MeasureMethod?,
+    val measures: List<LightningReceptorMeasureWrapper>
+)
+
+data class LightningReceptorMeasureWrapper(
+    val receptorId: Int,
+    val value: String?,
+    val severityId: Int?
 )

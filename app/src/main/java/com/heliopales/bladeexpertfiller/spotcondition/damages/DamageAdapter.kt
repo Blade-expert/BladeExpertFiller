@@ -28,11 +28,12 @@ class DamageAdapter(
     }
 
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val cardView: CardView = itemView.findViewById<CardView>(R.id.damage_card_view)
-        val textView1: TextView = itemView.findViewById<TextView>(R.id.damage_text_1)
-        val textView2: TextView = itemView.findViewById<TextView>(R.id.damage_text_2)
-        val fieldCode: TextView = itemView.findViewById<TextView>(R.id.damage_field_code)
-        val cameraButton: ImageButton = itemView.findViewById<ImageButton>(R.id.damage_camera_button)
+        val cardView: CardView = itemView.findViewById(R.id.damage_card_view)
+        val textView1: TextView = itemView.findViewById(R.id.damage_text_1)
+        val textView2: TextView = itemView.findViewById(R.id.damage_text_2)
+        val fieldCode: TextView = itemView.findViewById(R.id.damage_field_code)
+        val cameraButton: ImageButton = itemView.findViewById(R.id.damage_camera_button)
+        val photoCount: TextView = itemView.findViewById(R.id.photo_count)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -68,40 +69,37 @@ class DamageAdapter(
                     R.color.bulma_light
                 )
             )
-            textView1.setTextColor(
-                ContextCompat.getColor(
+            val textViews = listOf(textView1, textView2, fieldCode, photoCount )
+
+            textViews.forEach {
+                it.setTextColor(ContextCompat.getColor(
                     cardView.context,
                     R.color.bulma_black
-                )
-            )
-            textView2.setTextColor(
-                ContextCompat.getColor(
-                    cardView.context,
-                    R.color.bulma_black
-                )
-            )
-            fieldCode.setTextColor(
-                ContextCompat.getColor(
-                    cardView.context,
-                    R.color.bulma_black
-                )
-            )
+                ))
+            }
+
             cameraButton.foregroundTintList = ColorStateList.valueOf(
                 ContextCompat.getColor(
                     cardView.context,
                     R.color.bulma_black
                 )
             )
-
             if (dsc.severityId != null) {
                 val sev = App.database.severityDao().getById(dsc.severityId!!)
                 if (sev != null) {
                     cardView.setCardBackgroundColor(Color.parseColor(sev.color))
-                    textView1.setTextColor(Color.parseColor(sev.fontColor))
-                    textView2.setTextColor(Color.parseColor(sev.fontColor))
-                    fieldCode.setTextColor(Color.parseColor(sev.fontColor))
+                    textViews.forEach {
+                        it.setTextColor(Color.parseColor(sev.fontColor))
+                    }
                     cameraButton.foregroundTintList = ColorStateList.valueOf(Color.parseColor(sev.fontColor))
                 }
+            }
+            val count = App.database.pictureDao().getDamageSpotPicturesByDamageId(dsc.localId).size
+            if(count > 0){
+                photoCount.text = "$count"
+                photoCount.visibility = View.VISIBLE
+            }else{
+                photoCount.visibility = View.GONE
             }
         }
     }

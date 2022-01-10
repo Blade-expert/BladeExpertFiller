@@ -1,7 +1,9 @@
 package com.heliopales.bladeexpertfiller
 
 import android.app.Application
+import android.content.Context
 import android.util.Log
+import androidx.core.content.ContextCompat
 import androidx.room.Room
 import com.heliopales.bladeexpertfiller.blade.Blade
 import com.heliopales.bladeexpertfiller.bladeexpert.*
@@ -146,7 +148,6 @@ class App : Application() {
 
         }
 
-
         fun writeOnInterventionLogFile(intervention: Intervention, message: String) {
             val path = File(getInterventionPath(intervention))
             if (!path.exists()) path.mkdirs()
@@ -156,9 +157,7 @@ class App : Application() {
             }
             val toWrite = "[${Date()}] $message\n"
             logFile.appendText(toWrite)
-
         }
-
 
     }
 

@@ -94,7 +94,6 @@ class DamageListActivity : AppCompatActivity(), DamageAdapter.DamageItemListener
     override fun onClick(v: View) {
         when (v.id) {
             R.id.add_damage_button -> launchDamagePager(addNewDamage())
-
         }
     }
 
@@ -102,12 +101,15 @@ class DamageListActivity : AppCompatActivity(), DamageAdapter.DamageItemListener
     private fun addNewDamage(): Int {
         Log.d(TAG, "addNewDamage()")
 
+        val prefix = if(damageInheritType == INHERIT_TYPE_DAMAGE_OUT) "D" else "i"
+
         var damage = DamageSpotCondition(
             damageInheritType,
-            "D${adapter.itemCount + 1}",
+            "$prefix${adapter.itemCount + 1}",
             interventionId,
             blade.id
         )
+
         val newId = App.database.damageDao().insertDamage(damage).toInt()
         damage.localId = newId
         damages.add(damage)

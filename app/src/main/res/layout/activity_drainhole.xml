@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -8,51 +7,75 @@
     tools:context=".spotcondition.drainhole.DrainholeActivity">
 
 
-    <LinearLayout
-        android:id="@+id/drainhole_label_layout"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/drainhole_label_constraint_layout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:gravity="center">
+        android:layout_height="wrap_content">
 
-        <TextView
-            android:id="@+id/drainhole_blade_label"
-            android:layout_width="match_parent"
+
+        <LinearLayout
+            android:id="@+id/drainhole_label_linear_layout"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:layout_marginTop="16dp"
-            android:textColor="@color/bulma_black"
-            android:textSize="18sp"
-            android:text="BLADE A - 123456789" />
+            android:orientation="vertical"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toLeftOf="@id/drainhole_picture_button"
+            app:layout_constraintTop_toTopOf="parent">
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:layout_marginBottom="16dp"
-            android:textColor="@color/bulma_black"
-            android:textSize="30sp"
-            android:text="DRAIN" />
-    </LinearLayout>
+            <TextView
+                android:id="@+id/drainhole_blade_label"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:gravity="center"
+                android:text="BLADE A - 123456789"
+                android:textColor="@color/bulma_black"
+                android:textSize="18sp" />
 
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:gravity="center"
+                android:text="DRAIN"
+                android:textColor="@color/bulma_black"
+                android:textSize="30sp" />
+        </LinearLayout>
 
+        <ImageButton
+            android:id="@+id/drainhole_picture_button"
+            android:layout_width="90dp"
+            android:layout_height="90dp"
+            android:layout_marginVertical="16dp"
+            android:background="@drawable/ic_square_24"
+            android:backgroundTint="@color/bulma_link"
+            android:padding="20dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/ic_round_camera_alt_24"
+            app:layout_constraintBottom_toBottomOf="@id/drainhole_label_linear_layout"
+            app:layout_constraintLeft_toRightOf="@id/drainhole_label_linear_layout"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="@id/drainhole_label_linear_layout"
+            app:tint="@color/bulma_white" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <com.google.android.material.tabs.TabLayout
         android:id="@+id/drain_tab_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/drainhole_label_layout"
+        android:layout_below="@id/drainhole_label_constraint_layout"
         app:tabIndicatorColor="@color/bulma_link"
-        app:tabTextColor="@color/bulma_black"
-        />
+        app:tabTextColor="@color/bulma_black" />
 
     <androidx.viewpager2.widget.ViewPager2
         android:id="@+id/drain_view_pager"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@id/drain_tab_layout"
-        android:layout_weight="1"
-        />
+        android:layout_weight="1" />
 
 
 </RelativeLayout>

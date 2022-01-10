@@ -20,7 +20,7 @@ import com.heliopales.bladeexpertfiller.spotcondition.INHERIT_TYPE_DAMAGE_OUT
 class DamageViewPagerActivity : AppCompatActivity() {
 
     companion object {
-        val EXTRA_DAMAGE_SPOT_CONDITION_LOCAL_ID = "DamageSpotConditionLocalId"
+        const val EXTRA_DAMAGE_SPOT_CONDITION_LOCAL_ID = "DamageSpotConditionLocalId"
     }
 
     private val TAG = DamageViewPagerActivity::class.java.simpleName
@@ -50,7 +50,7 @@ class DamageViewPagerActivity : AppCompatActivity() {
                 INDEX_DAMAGE_LOOP_POSI -> tab.text = "Pos."
                 INDEX_DAMAGE_LOOP_DEPT -> tab.text = "Prof."
                 INDEX_DAMAGE_LOOP_TYPE -> tab.text = "Type."
-                INDEX_DAMAGE_LOOP_SEVE -> tab.text = "Grav."
+                INDEX_DAMAGE_LOOP_SEVE -> tab.text = "Sev."
             }
         }.attach()
     }

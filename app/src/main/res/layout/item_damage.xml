@@ -65,11 +65,24 @@
                 android:layout_height="35dp"
                 app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintBottom_toTopOf="@id/photo_count"
+                app:layout_constraintVertical_chainStyle="packed"
                 android:foreground="@drawable/ic_round_camera_alt_24"
                 android:foregroundTint="@color/bulma_black"
                 android:background="@null"
+                />
 
+
+            <TextView
+                android:id="@+id/photo_count"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/damage_camera_button"
+                app:layout_constraintLeft_toLeftOf="@id/damage_camera_button"
+                app:layout_constraintRight_toRightOf="@id/damage_camera_button"
+                tools:text="22"
                 />
 
 

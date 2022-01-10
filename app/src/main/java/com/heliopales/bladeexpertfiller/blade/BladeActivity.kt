@@ -136,5 +136,34 @@ class BladeActivity : AppCompatActivity(), View.OnClickListener {
             .updateExportationState(intervention.id, EXPORTATION_STATE_NOT_EXPORTED)
     }
 
+    override fun onResume() {
+        super.onResume()
+
+        var count = 0;
+        count = App.database.damageDao().getDamagesByBladeAndInterventionAndInheritType(blade.id, intervention.id, INHERIT_TYPE_DAMAGE_IN).size
+        if(count > 0)
+            findViewById<Button>(R.id.see_indoor_damages_button).text = "INT\n($count)"
+        else
+            findViewById<Button>(R.id.see_indoor_damages_button).text = "INT"
+
+        count = App.database.damageDao().getDamagesByBladeAndInterventionAndInheritType(blade.id, intervention.id, INHERIT_TYPE_DAMAGE_OUT).size
+        if(count > 0)
+            findViewById<Button>(R.id.see_outdoor_damages_button).text = "EXT\n($count)"
+        else
+            findViewById<Button>(R.id.see_outdoor_damages_button).text = "EXT"
+
+        if(App.database.drainholeDao().getByBladeAndIntervention(blade.id, intervention.id)!=null)
+            findViewById<Button>(R.id.see_drainhole_button).text = "DRAIN\n(done)"
+        else
+            findViewById<Button>(R.id.see_drainhole_button).text = "DRAIN"
+
+        if(App.database.lightningDao().getByBladeAndIntervention(blade.id, intervention.id)!=null)
+            findViewById<Button>(R.id.see_lightning_button).text = "LPS\n(done)"
+        else
+            findViewById<Button>(R.id.see_lightning_button).text = "LPS"
+
+
+    }
+
 
 }

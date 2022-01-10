@@ -12,7 +12,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginVertical="20dp"
-        android:text="Depth on profile"
+        android:text="Profile"
         android:textColor="@color/bulma_black"
         android:textSize="40sp"/>
     <androidx.constraintlayout.widget.ConstraintLayout

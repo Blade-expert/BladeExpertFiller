@@ -7,7 +7,9 @@ import com.heliopales.bladeexpertfiller.intervention.Intervention
 import com.heliopales.bladeexpertfiller.secondaryentities.DamageType
 import com.heliopales.bladeexpertfiller.secondaryentities.Severity
 import com.heliopales.bladeexpertfiller.spotcondition.DrainholeSpotCondition
+import com.heliopales.bladeexpertfiller.spotcondition.LightningSpotCondition
 import com.heliopales.bladeexpertfiller.spotcondition.lightning.LightningReceptor
+import com.heliopales.bladeexpertfiller.spotcondition.lightning.ReceptorMeasure
 
 fun mapBladeExpertIntervention(interventionWrapper: InterventionWrapper): Intervention {
     return Intervention(
@@ -119,3 +121,23 @@ fun mapToBladeExpertDrainholeSpotCondition(dhs: DrainholeSpotCondition): Drainho
         description = dhs.description,
     )
 }
+
+fun mapToBladeExpertLightningSpotCondition(lsc: LightningSpotCondition, measures: List<LightningReceptorMeasureWrapper>): LightningSpotConditionWrapper {
+    return LightningSpotConditionWrapper(
+        id = lsc.id,
+        interventionId = lsc.interventionId,
+        bladeId = lsc.bladeId,
+        description = lsc.description,
+        measures = measures,
+        measureMethod = lsc.measureMethod
+    )
+}
+
+fun mapToBladeExpertLightningMeasure(lrm: ReceptorMeasure): LightningReceptorMeasureWrapper {
+    return LightningReceptorMeasureWrapper(
+        receptorId = lrm.receptorId,
+        value = lrm.value,
+        severityId = lrm.severityId
+    )
+}
+

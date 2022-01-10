@@ -15,8 +15,14 @@ interface ReceptorMeasureDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun upsert(measures: List<ReceptorMeasure>)
 
-    @Query("SELECT * FROM ReceptorMeasure WHERE receptorId=:receptorId AND lightningSpotConditionId=:lightningId")
+    @Query("DELETE FROM ReceptorMeasure WHERE lightningSpotConditionLocalId=:lightningLocalId")
+    fun deleteByLightningLocalId(lightningLocalId: Int)
+
+    @Query("SELECT * FROM ReceptorMeasure WHERE receptorId=:receptorId AND lightningSpotConditionLocalId=:lightningId")
     fun getByReceptorIdAndLightningId(receptorId: Int, lightningId: Int): ReceptorMeasure
+
+    @Query("SELECT * FROM ReceptorMeasure WHERE lightningSpotConditionLocalId=:lightningLocalId")
+    fun getByLightningSpotConditionLocalId(lightningLocalId: Int): List<ReceptorMeasure>
 
 
 }

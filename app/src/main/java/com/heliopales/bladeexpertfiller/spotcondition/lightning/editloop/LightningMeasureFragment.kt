@@ -25,11 +25,9 @@ import android.widget.AdapterView
 import android.widget.Toast
 
 
-
-
 class LightningMeasureFragment : Fragment(), ReceptorMeasureAdapter.MeasureChangeListener {
 
-    private val TAG =LightningMeasureFragment::class.java.simpleName
+    private val TAG = LightningMeasureFragment::class.java.simpleName
 
     private lateinit var lightning: LightningSpotCondition
     private lateinit var measures: List<ReceptorMeasure>
@@ -69,21 +67,37 @@ class LightningMeasureFragment : Fragment(), ReceptorMeasureAdapter.MeasureChang
             R.layout.item_spinner,
             MeasureMethod.values()
         )
-        measureMethodSpinner.adapter =arrayAdapter
+        measureMethodSpinner.adapter = arrayAdapter
 
         measureMethodSpinner.setSelection(arrayAdapter.getPosition(lightning.measureMethod))
 
-        measureMethodSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener{
+        measureMethodSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onNothingSelected(parent: AdapterView<*>?) {
             }
 
-            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-                if(!spinnerInitialized){
+            override fun onItemSelected(
+                parent: AdapterView<*>?,
+                view: View?,
+                position: Int,
+                id: Long
+            ) {
+                if (!spinnerInitialized) {
                     spinnerInitialized = true;
                     return
                 }
-                Log.d(TAG,"selected item $position ${measureMethodSpinner.adapter.getItem(position)}")
-               lightning.measureMethod = measureMethodSpinner.adapter.getItem(position) as MeasureMethod
+                Log.d(
+                    TAG,
+                    "selected item $position ${measureMethodSpinner.adapter.getItem(position)}"
+                )
+                val measureMethod = measureMethodSpinner.adapter.getItem(position) as MeasureMethod
+                if (lightning.measureMethod != measureMethod) {
+                    lightning.measureMethod = measureMethod
+                    App.database.interventionDao().updateExportationState(
+                        lightning.interventionId,
+                        EXPORTATION_STATE_NOT_EXPORTED
+                    )
+                }
+
             }
 
         }
@@ -94,7 +108,8 @@ class LightningMeasureFragment : Fragment(), ReceptorMeasureAdapter.MeasureChang
             measures[position].value = null;
         else
             measures[position].value = receptorValue
-        App.database.interventionDao().updateExportationState(lightning.interventionId, EXPORTATION_STATE_NOT_EXPORTED)
+        App.database.interventionDao()
+            .updateExportationState(lightning.interventionId, EXPORTATION_STATE_NOT_EXPORTED)
     }
 
 
