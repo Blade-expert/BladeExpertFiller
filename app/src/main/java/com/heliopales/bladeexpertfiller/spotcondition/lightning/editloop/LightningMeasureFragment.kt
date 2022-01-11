@@ -103,7 +103,7 @@ class LightningMeasureFragment : Fragment(), ReceptorMeasureAdapter.MeasureChang
         }
     }
 
-    override fun OnMeasureChanged(position: Int, receptorValue: String) {
+    override fun onMeasureChanged(position: Int, receptorValue: String) {
         if (receptorValue.isBlank())
             measures[position].value = null;
         else

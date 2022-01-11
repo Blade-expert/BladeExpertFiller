@@ -43,21 +43,23 @@
         app:layout_constraintLeft_toRightOf="@id/blade_button"
         android:columnCount="2">
 
-        <TextView
-            android:tag="outer_count"
-            android:layout_gravity="center"
-            android:textColor="@color/bulma_gray_light"
-            android:textSize="18sp"
-            android:text="O: 12"/>
+
 
         <TextView
             android:tag="inner_count"
             android:layout_gravity="center"
-            android:layout_marginLeft="10dp"
+
             android:textColor="@color/bulma_gray_light"
             android:textSize="18sp"
             android:text="I: 99"/>
 
+        <TextView
+            android:tag="outer_count"
+            android:layout_gravity="center"
+            android:layout_marginLeft="10dp"
+            android:textColor="@color/bulma_gray_light"
+            android:textSize="18sp"
+            android:text="O: 12"/>
 
         <ImageView
             android:tag="drain_count"

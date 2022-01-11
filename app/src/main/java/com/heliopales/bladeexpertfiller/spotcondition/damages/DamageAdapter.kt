@@ -34,6 +34,7 @@ class DamageAdapter(
         val fieldCode: TextView = itemView.findViewById(R.id.damage_field_code)
         val cameraButton: ImageButton = itemView.findViewById(R.id.damage_camera_button)
         val photoCount: TextView = itemView.findViewById(R.id.photo_count)
+        val uncompleted: TextView = itemView.findViewById(R.id.damage_uncompleted)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -101,6 +102,11 @@ class DamageAdapter(
             }else{
                 photoCount.visibility = View.GONE
             }
+
+            if(dsc.radialPosition == null || dsc.position == null)
+                uncompleted.visibility = View.VISIBLE
+            else
+                uncompleted.visibility = View.GONE
         }
     }
 

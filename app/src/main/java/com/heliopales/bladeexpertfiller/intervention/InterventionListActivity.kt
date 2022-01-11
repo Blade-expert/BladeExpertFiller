@@ -1,11 +1,8 @@
 package com.heliopales.bladeexpertfiller.intervention
 
-import android.content.Context
 import android.content.Intent
 import android.graphics.Canvas
 import android.media.MediaScannerConnection
-import android.net.ConnectivityManager
-import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.Menu
@@ -14,7 +11,6 @@ import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
-import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -182,7 +178,8 @@ class InterventionListActivity : AppCompatActivity(), InterventionAdapter.Interv
         App.database.lightningDao().getByInterventionId(interventionId = deletedIntervention.id)
             .forEach {
                 App.database.pictureDao().deleteLightningPictures(lightningLocalId = it.localId)
-                App.database.receptorMeasureDao().deleteByLightningLocalId(lightningLocalId = it.localId)
+                App.database.receptorMeasureDao()
+                    .deleteByLightningLocalId(lightningLocalId = it.localId)
                 App.database.lightningDao().delete(it)
             }
 
@@ -318,13 +315,52 @@ class InterventionListActivity : AppCompatActivity(), InterventionAdapter.Interv
     ) {
         if (intervention.exporting) return
 
-        if (exportPreCheck(intervention)) {
-            uploadIntervention(intervention)
-        } else {
+        exportAfterMultiplePictureCheck(intervention)
+    }
+
+    private fun exportAfterMultiplePictureCheck(intervention: Intervention) {
+        var multiplePictures = false
+        val turbinePictures = App.database.pictureDao().getTurbinePictures(intervention.id)
+        if (turbinePictures.size > 1) {
+            multiplePictures = true
+        }
+        App.database.bladeDao().getBladesByInterventionId(intervention.id).forEach { bla ->
+            val bladePictures = App.database.pictureDao().getBladePictures(bla.id)
+            if (bladePictures.size > 1) {
+                multiplePictures = true
+            }
+        }
+
+        if (multiplePictures) {
             AlertDialog.Builder(this)
                 .setMessage(
                     "There is more than 1 picture for the turbine and/or for blade(s). " +
                             "Proceed exportation anyway ? Only the first picture of each entity will be sent."
+                )
+                .setPositiveButton("Yes") { _, _ ->
+                    exportAfterDamageUncompleteCheck(intervention)
+                }
+                .setNegativeButton("No") { _, _ -> }
+                .create()
+                .show()
+        } else {
+            exportAfterDamageUncompleteCheck(intervention)
+        }
+    }
+
+    private fun exportAfterDamageUncompleteCheck(intervention: Intervention) {
+        var damageUncomplete = false
+
+        App.database.damageDao().getDamagesByInterventionId(intervention.id).forEach { dsc ->
+            if (dsc.radialPosition == null || dsc.position == null)
+                damageUncomplete = true
+        }
+
+        if (damageUncomplete) {
+            AlertDialog.Builder(this)
+                .setMessage(
+                    "There is at least 1 uncompleted damage. " +
+                            "Proceed exportation anyway ? Uncompleted damage(s) will no be sent."
                 )
                 .setPositiveButton("Yes") { _, _ ->
                     uploadIntervention(intervention)
@@ -332,8 +368,12 @@ class InterventionListActivity : AppCompatActivity(), InterventionAdapter.Interv
                 .setNegativeButton("No") { _, _ -> }
                 .create()
                 .show()
+        } else {
+            uploadIntervention(intervention)
         }
+
     }
+
 
     private fun uploadIntervention(intervention: Intervention) {
         intervention.exportErrorsInLastExport = false
@@ -380,20 +420,6 @@ class InterventionListActivity : AppCompatActivity(), InterventionAdapter.Interv
         }.start()
     }
 
-    private fun exportPreCheck(intervention: Intervention): Boolean {
-        val turbinePictures = App.database.pictureDao().getTurbinePictures(intervention.id)
-        if (turbinePictures.size > 1) {
-            return false;
-        }
-        App.database.bladeDao().getBladesByInterventionId(intervention.id).forEach { bla ->
-            val bladePictures = App.database.pictureDao().getBladePictures(bla.id)
-            if (bladePictures.size > 1) {
-                return false;
-            }
-        }
-        return true;
-    }
-
 
     private fun exportTask(intervention: Intervention): Runnable {
         return Runnable {
@@ -409,8 +435,11 @@ class InterventionListActivity : AppCompatActivity(), InterventionAdapter.Interv
                     bla.interventionId,
                     INHERIT_TYPE_DAMAGE_IN
                 ).forEach { dsc ->
-                    Log.i(TAG, "saveDamage ${dsc.fieldCode}")
-                    saveIndoorDamage(dsc, intervention)
+                    if (dsc.radialPosition != null && dsc.position != null) {
+                        Log.d(TAG, "saveDamage ${dsc.fieldCode}")
+                        saveIndoorDamage(dsc, intervention)
+                    }
+
                 }
 
                 App.database.damageDao().getDamagesByBladeAndInterventionAndInheritType(
@@ -418,8 +447,11 @@ class InterventionListActivity : AppCompatActivity(), InterventionAdapter.Interv
                     bla.interventionId,
                     INHERIT_TYPE_DAMAGE_OUT
                 ).forEach { dsc ->
-                    Log.i(TAG, "saveDamage ${dsc.fieldCode}")
-                    saveOutdoorDamage(dsc, intervention)
+                    if (dsc.radialPosition != null && dsc.position != null) {
+                        Log.d(TAG, "saveDamage ${dsc.fieldCode}")
+                        saveOutdoorDamage(dsc, intervention)
+                    }
+
                 }
 
                 App.database.drainholeDao().getByBladeAndIntervention(bla.id, bla.interventionId)
@@ -843,26 +875,31 @@ class InterventionListActivity : AppCompatActivity(), InterventionAdapter.Interv
                 bla.interventionId,
                 INHERIT_TYPE_DAMAGE_IN
             ).forEach { dsc ->
-                count++ //IndoorDamageSpotCondition
-                Log.d(TAG, "     - indoor damage ${dsc.fieldCode}")
-                App.database.pictureDao()
-                    .getNonExportedDamageSpotPicturesByDamageId(dsc.localId).forEach { pic ->
-                        count++ //picture
-                        Log.d(TAG, "       - pic : ${pic.fileName}")
-                    }
+                if (dsc.radialPosition != null && dsc.position != null) {
+                    count++ //IndoorDamageSpotCondition
+                    Log.d(TAG, "     - indoor damage ${dsc.fieldCode}")
+                    App.database.pictureDao()
+                        .getNonExportedDamageSpotPicturesByDamageId(dsc.localId).forEach { pic ->
+                            count++ //picture
+                            Log.d(TAG, "       - pic : ${pic.fileName}")
+                        }
+                }
+
             }
             App.database.damageDao().getDamagesByBladeAndInterventionAndInheritType(
                 bla.id,
                 bla.interventionId,
                 INHERIT_TYPE_DAMAGE_OUT
             ).forEach { dsc ->
-                count++ //OutdoorDamageSpotCondition
-                Log.d(TAG, "     - outdoor damage ${dsc.fieldCode}")
-                App.database.pictureDao()
-                    .getNonExportedDamageSpotPicturesByDamageId(dsc.localId).forEach { pic ->
-                        count++ //picture
-                        Log.d(TAG, "       - pic : ${pic.fileName}")
-                    }
+                if (dsc.radialPosition != null && dsc.position != null) {
+                    count++ //OutdoorDamageSpotCondition
+                    Log.d(TAG, "     - outdoor damage ${dsc.fieldCode}")
+                    App.database.pictureDao()
+                        .getNonExportedDamageSpotPicturesByDamageId(dsc.localId).forEach { pic ->
+                            count++ //picture
+                            Log.d(TAG, "       - pic : ${pic.fileName}")
+                        }
+                }
 
             }
 

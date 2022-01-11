@@ -107,12 +107,12 @@ class InterventionDetailsActivity : AppCompatActivity(), View.OnClickListener {
             if (count > 0) {
                 lay.findViewWithTag<TextView>("outer_count")
                     .setTextColor(getColor(R.color.bulma_dark))
-                lay.findViewWithTag<TextView>("outer_count").text = "O: $count"
+                lay.findViewWithTag<TextView>("outer_count").text = "E: $count"
                 lay.findViewWithTag<TextView>("outer_count").setTypeface(null,Typeface.BOLD)
             } else {
                 lay.findViewWithTag<TextView>("outer_count")
                     .setTextColor(getColor(R.color.bulma_gray_light))
-                lay.findViewWithTag<TextView>("outer_count").text = "O: --"
+                lay.findViewWithTag<TextView>("outer_count").text = "E: --"
                 lay.findViewWithTag<TextView>("outer_count").setTypeface(null,Typeface.NORMAL)
             }
 
