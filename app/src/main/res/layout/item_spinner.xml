@@ -12,7 +12,7 @@
     android:backgroundTint="@color/bulma_light"
     android:textColor="@color/bulma_black"
     android:paddingHorizontal="10dp"
-    android:paddingVertical="24dp"
+    android:paddingVertical="10dp"
     android:maxLines="1"
     tools:text="Receptor to blade root - 200mA"
     />

@@ -53,13 +53,13 @@ class DamageAdapter(
             cameraButton.setOnClickListener(this@DamageAdapter)
 
             textView1.text =
-                "R = ${if (dsc.radialPosition != null) dsc.radialPosition else "--"} m${getDamagePosition(dsc)}${getDamageProfileDepth(dsc)}"
+                "R ${if (dsc.radialPosition != null) dsc.radialPosition else "--"}${getDamagePosition(dsc)}${getDamageProfileDepth(dsc)}"
 
             if (dsc.damageTypeId != null) {
                 val dmt = App.database.damageTypeDao().getById(dsc.damageTypeId!!)
                 textView2.text = "$dmt"
             } else {
-                textView2.text = "No damage type selected"
+                textView2.text = "No type selected"
             }
 
             fieldCode.text = dsc.fieldCode

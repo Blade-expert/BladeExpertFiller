@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -19,56 +18,80 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:minHeight="80dp"
-            android:paddingHorizontal="12dp"
-            android:paddingVertical="18dp"
-            android:padding="24dp">
+            android:paddingLeft="16dp"
+            android:paddingRight="10dp"
+            android:paddingVertical="5dp">
 
             <TextView
                 android:id="@+id/receptor_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintRight_toLeftOf="@id/lps_measure_layout"
-                app:layout_constraintHorizontal_chainStyle="spread_inside"
                 android:textColor="@color/bulma_black"
                 android:textSize="20sp"
-                tools:text="37 m  |  SS/LE"/>
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintHorizontal_chainStyle="spread_inside"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toLeftOf="@id/lps_measure_layout"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="37 m  |  SS/LE" />
 
             <LinearLayout
                 android:id="@+id/lps_measure_layout"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintLeft_toRightOf="@id/receptor_name"
                 app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintLeft_toRightOf="@id/receptor_name">
+                app:layout_constraintTop_toTopOf="parent">
 
 
                 <EditText
                     android:id="@+id/receptor_value"
-                    android:layout_width="80dp"
+                    android:layout_width="60dp"
                     android:layout_height="wrap_content"
-                    android:inputType="textShortMessage"
-                    android:textCursorDrawable="@drawable/link_cursor"
                     android:backgroundTint="@color/bulma_link"
+                    android:inputType="number|numberDecimal"
                     android:textAlignment="textEnd"
                     android:textColor="@color/bulma_black"
+                    android:textCursorDrawable="@drawable/link_cursor"
                     android:textSize="20sp"
                     tools:text="0.0001" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:text="&#937;"
                     android:textColor="@color/bulma_black"
-                    android:textSize="20sp"
-                    android:text="&#937;"/>
+                    android:textSize="20sp" />
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginLeft="10dp"
+                    android:gravity="center"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/lps_ol_switch_label"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="OL"
+                        android:textColor="@color/bulma_gray_light" />
+
+                    <Switch
+                        android:id="@+id/lps_ol_switch"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:checked="true"/>
+
+
+
+                </LinearLayout>
+
 
             </LinearLayout>
-
 
 
         </androidx.constraintlayout.widget.ConstraintLayout>

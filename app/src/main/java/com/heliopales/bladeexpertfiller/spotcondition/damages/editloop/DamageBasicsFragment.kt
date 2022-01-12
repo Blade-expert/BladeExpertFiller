@@ -68,7 +68,7 @@ class DamageBasicsFragment : Fragment() {
                 if (longitudinalLength.text.isEmpty())
                     damage.longitudinalLength = null
                 else
-                    damage.longitudinalLength = longitudinalLength.text.toString().toInt()
+                    damage.longitudinalLength = longitudinalLength.text.toString().toIntOrNull()
                 App.database.interventionDao().updateExportationState(damage.interventionId, EXPORTATION_STATE_NOT_EXPORTED)
             }
         })
@@ -80,7 +80,7 @@ class DamageBasicsFragment : Fragment() {
                 if (radialLength.text.isEmpty())
                     damage.radialLength = null
                 else
-                    damage.radialLength = radialLength.text.toString().toInt()
+                    damage.radialLength = radialLength.text.toString().toIntOrNull()
                 App.database.interventionDao().updateExportationState(damage.interventionId, EXPORTATION_STATE_NOT_EXPORTED)
             }
         })
@@ -92,7 +92,7 @@ class DamageBasicsFragment : Fragment() {
                 if (repetition.text.isEmpty())
                     damage.repetition = null
                 else
-                    damage.repetition = repetition.text.toString().toInt()
+                    damage.repetition = repetition.text.toString().toIntOrNull()
                 App.database.interventionDao().updateExportationState(damage.interventionId, EXPORTATION_STATE_NOT_EXPORTED)
             }
         })

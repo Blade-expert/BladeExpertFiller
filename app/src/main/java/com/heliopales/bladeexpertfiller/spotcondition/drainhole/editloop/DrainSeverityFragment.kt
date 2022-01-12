@@ -38,10 +38,12 @@ class DrainSeverityFragment : Fragment(), View.OnClickListener {
             }
         }
         App.database.severityDao().getAll().sortedBy { it.id }.forEachIndexed { i, sev ->
+            if (i < buttons.size && buttons[i].id != R.id.button_sev_na) {
                 buttons[i].backgroundTintList = ColorStateList.valueOf(Color.parseColor(sev.color))
                 buttons[i].setTextColor(Color.parseColor(sev.fontColor))
                 buttons[i].tag = sev.id
             }
+        }
     }
 
     override fun onResume() {
@@ -77,8 +79,11 @@ class DrainSeverityFragment : Fragment(), View.OnClickListener {
     override fun onClick(v: View) {
         buttons.forEach {
             if (it == v) {
-                if(it.foreground == null){
-                    App.database.interventionDao().updateExportationState(drain.interventionId, EXPORTATION_STATE_NOT_EXPORTED)
+                if (it.foreground == null) {
+                    App.database.interventionDao().updateExportationState(
+                        drain.interventionId,
+                        EXPORTATION_STATE_NOT_EXPORTED
+                    )
                 }
                 it.foreground = requireContext().getDrawable(R.drawable.ic_baseline_crop_din_24)
             } else {

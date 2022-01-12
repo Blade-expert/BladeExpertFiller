@@ -55,8 +55,8 @@ class DamageListActivity : AppCompatActivity(), DamageAdapter.DamageItemListener
         findViewById<TextView>(R.id.damage_blade_title).text = "${blade.position} - ${blade.serial?:"na"}"
 
         when(damageInheritType){
-            INHERIT_TYPE_DAMAGE_IN -> findViewById<TextView>(R.id.damage_list_label).text = "INTERIOR"
-            INHERIT_TYPE_DAMAGE_OUT ->  findViewById<TextView>(R.id.damage_list_label).text = "EXTERIOR"
+            INHERIT_TYPE_DAMAGE_IN -> findViewById<TextView>(R.id.damage_list_label).text = "INTERNAL"
+            INHERIT_TYPE_DAMAGE_OUT ->  findViewById<TextView>(R.id.damage_list_label).text = "EXTERNAL"
             else -> findViewById<TextView>(R.id.damage_list_label).text = "ERROR"
         }
 

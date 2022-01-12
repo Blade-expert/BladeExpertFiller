@@ -103,13 +103,38 @@ class LightningMeasureFragment : Fragment(), ReceptorMeasureAdapter.MeasureChang
         }
     }
 
-    override fun onMeasureChanged(position: Int, receptorValue: String) {
-        if (receptorValue.isBlank())
-            measures[position].value = null;
-        else
-            measures[position].value = receptorValue
+    override fun onMeasureChanged(position: Int, receptorValue: Float?) {
+        measures[position].value = receptorValue
+        updateMeasureSeverityId(measures[position])
         App.database.interventionDao()
             .updateExportationState(lightning.interventionId, EXPORTATION_STATE_NOT_EXPORTED)
+    }
+
+    override fun onOverLimitChanged(position: Int, isOverLimit: Boolean) {
+        measures[position].isOverLimit = isOverLimit
+        updateMeasureSeverityId(measures[position])
+        App.database.interventionDao()
+            .updateExportationState(lightning.interventionId, EXPORTATION_STATE_NOT_EXPORTED)
+    }
+
+    fun updateMeasureSeverityId(lrm: ReceptorMeasure) {
+        if (lrm.isOverLimit) {
+            lrm.severityId = 4
+        } else {
+            val value = lrm.value
+            if (value != null) {
+                if (value < 10) {
+                    lrm.severityId = 1
+                } else if (10 <= value && value < 100) {
+                    lrm.severityId = 2
+                }else{
+                    lrm.severityId = 3
+                }
+            } else {
+                lrm.severityId = null;
+            }
+        }
+
     }
 
 

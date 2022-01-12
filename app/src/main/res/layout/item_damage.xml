@@ -45,7 +45,7 @@
                 app:layout_constraintBottom_toTopOf="@id/damage_text_2"
                 app:layout_constraintLeft_toRightOf="@id/damage_field_code"
                 app:layout_constraintTop_toTopOf="parent"
-                tools:text="R = 14 m  -  PS  -  Spar Cap" />
+                tools:text="R 14.0  -  PS  -  Spar Cap" />
 
             <TextView
                 android:id="@+id/damage_text_2"

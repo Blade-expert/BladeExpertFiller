@@ -7,7 +7,8 @@ import androidx.room.Ignore
 data class ReceptorMeasure(
     val receptorId: Int,
     val lightningSpotConditionLocalId: Int,
-    var value: String? = null,
+    var value: Float? = null,
+    var isOverLimit: Boolean = false,
     var severityId: Int? = null
 ) {
 

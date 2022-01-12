@@ -64,23 +64,16 @@ class InterventionDetailsActivity : AppCompatActivity(), View.OnClickListener {
 
     private fun addBladeButtons() {
         findViewById<LinearLayout>(R.id.bladeButtonLayout).let {
-            val layoutParams = LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.WRAP_CONTENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT
-            )
-            layoutParams.setMargins(dpToPx(10f))
-
             App.database.bladeDao().getBladesByInterventionId(intervention.id)
                 .sortedBy { bla -> bla.position }.forEach { bla ->
 
                     val bladeLayout: LinearLayout =
                         View.inflate(this, R.layout.pattern_blade_button, null) as LinearLayout
-                    bladeLayout.tag = bla.id
 
+                    bladeLayout.tag = bla.id
                     bladeLayout.findViewById<Button>(R.id.blade_button).setOnClickListener {
                         startBladeActivity(bla)
                     }
-
 
                     bladeLayouts.add(bladeLayout)
                     it.addView(bladeLayout)
@@ -100,7 +93,7 @@ class InterventionDetailsActivity : AppCompatActivity(), View.OnClickListener {
         bladeLayouts.forEach { lay ->
             val dbBla = App.database.bladeDao().getById(lay.tag as Int)
             lay.findViewById<Button>(R.id.blade_button).text =
-                "${dbBla?.position}" + if (dbBla?.serial == null) "" else " - ${dbBla?.serial}";
+                "${dbBla?.position}${if (dbBla?.serial == null) "" else "\n${dbBla?.serial}"}";
 
             var count = App.database.damageDao()
                 .countDamageByBladeId(dbBla.id, intervention.id, INHERIT_TYPE_DAMAGE_OUT)

@@ -122,7 +122,10 @@ fun mapToBladeExpertDrainholeSpotCondition(dhs: DrainholeSpotCondition): Drainho
     )
 }
 
-fun mapToBladeExpertLightningSpotCondition(lsc: LightningSpotCondition, measures: List<LightningReceptorMeasureWrapper>): LightningSpotConditionWrapper {
+fun mapToBladeExpertLightningSpotCondition(
+    lsc: LightningSpotCondition,
+    measures: List<LightningReceptorMeasureWrapper>
+): LightningSpotConditionWrapper {
     return LightningSpotConditionWrapper(
         id = lsc.id,
         interventionId = lsc.interventionId,
@@ -136,7 +139,7 @@ fun mapToBladeExpertLightningSpotCondition(lsc: LightningSpotCondition, measures
 fun mapToBladeExpertLightningMeasure(lrm: ReceptorMeasure): LightningReceptorMeasureWrapper {
     return LightningReceptorMeasureWrapper(
         receptorId = lrm.receptorId,
-        value = lrm.value,
+        value = if (lrm.isOverLimit) "OL" else (if(lrm.value == null) null else lrm.value.toString()),
         severityId = lrm.severityId
     )
 }
