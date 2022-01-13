@@ -19,6 +19,11 @@ import java.util.*
 import java.util.concurrent.TimeUnit
 import kotlin.io.path.Path
 
+const val DATABASE_FILE_NAME = "bxpfil_db_1"
+
+//PRODUCTION
+//private const val BASE_URL = "https://www.blade-expert.com/"
+
 //RECETTE
 private const val BASE_URL = "https://bladeexpert-recette.herokuapp.com/bladeexpert/"
 
@@ -38,7 +43,7 @@ class App : Application() {
         val database: AppDatabase by lazy {
             Room.databaseBuilder(
                 instance.applicationContext,
-                AppDatabase::class.java, "database-bxp-filler"
+                AppDatabase::class.java, DATABASE_FILE_NAME
             )
                 .allowMainThreadQueries()
                 .build()
@@ -72,7 +77,7 @@ class App : Application() {
 
         private fun getOutputDirectory(): String {
             val mediaDir = instance.externalMediaDirs.firstOrNull()?.let {
-                File(it, instance.resources.getString(R.string.app_name)).apply { mkdirs() }
+                File(it, "${instance.resources.getString(R.string.app_name)}_$DATABASE_FILE_NAME").apply { mkdirs() }
             }
 
             var file = if (mediaDir != null && mediaDir.exists()) {
