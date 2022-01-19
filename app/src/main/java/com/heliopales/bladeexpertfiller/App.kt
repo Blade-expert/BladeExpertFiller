@@ -19,13 +19,17 @@ import java.util.*
 import java.util.concurrent.TimeUnit
 import kotlin.io.path.Path
 
-const val DATABASE_FILE_NAME = "bxpfil_db_1"
+const val VERSION = "1.0"
+
+const val DATABASE_FILE_NAME = "bxpfil_db_2"
+
+
 
 //PRODUCTION
-//private const val BASE_URL = "https://www.blade-expert.com/"
+private const val BASE_URL = "https://www.blade-expert.com/"
 
 //RECETTE
-private const val BASE_URL = "https://bladeexpert-recette.herokuapp.com/bladeexpert/"
+//private const val BASE_URL = "https://bladeexpert-recette.herokuapp.com/bladeexpert/"
 
 //LOCAL
 //private const val BASE_URL = "http://192.168.1.181/bladeexpert/"

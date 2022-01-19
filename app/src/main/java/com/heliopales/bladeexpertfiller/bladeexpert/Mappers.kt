@@ -15,9 +15,7 @@ fun mapBladeExpertIntervention(interventionWrapper: InterventionWrapper): Interv
     return Intervention(
         id = interventionWrapper.id,
         turbineName = interventionWrapper.turbineName,
-        turbineSerial = interventionWrapper.turbineSerial,
-        changeTurbineSerialAllowed = interventionWrapper.changeTurbineSerialAllowed,
-        changeTurbinePictureAllowed = interventionWrapper.changeTurbinePictureAllowed
+        turbineSerial = interventionWrapper.turbineSerial
     )
 }
 
@@ -26,9 +24,7 @@ fun mapToBladeExpertIntervention(intervention: Intervention): InterventionWrappe
         id = intervention.id,
         turbineName = intervention.turbineName,
         turbineSerial = intervention.turbineSerial,
-        blades = null,
-        changeTurbineSerialAllowed = intervention.changeTurbineSerialAllowed,
-        changeTurbinePictureAllowed = intervention.changeTurbinePictureAllowed
+        blades = null
     )
 }
 
@@ -37,9 +33,7 @@ fun mapBladeExpertBlade(bladeWrapper: BladeWrapper): Blade {
         id = bladeWrapper.id,
         interventionId = bladeWrapper.interventionId,
         position = bladeWrapper.position,
-        serial = bladeWrapper.serial,
-        changeSerialAllowed = bladeWrapper.changeSerialAllowed,
-        changePictureAllowed = bladeWrapper.changePictureAllowed
+        serial = bladeWrapper.serial
     )
 }
 
@@ -49,8 +43,6 @@ fun mapToBladeExpertBlade(blade: Blade): BladeWrapper {
         interventionId = blade.interventionId,
         serial = blade.serial,
         position = blade.position,
-        changeSerialAllowed = blade.changeSerialAllowed,
-        changePictureAllowed = blade.changePictureAllowed,
         receptors = null
     )
 }

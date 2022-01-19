@@ -7,19 +7,14 @@ data class InterventionWrapper(
     val id: Int,
     val turbineName: String?,
     val turbineSerial: String?,
-    val blades: Array<BladeWrapper>?,
-    val changeTurbineSerialAllowed: Boolean,
-    val changeTurbinePictureAllowed: Boolean,
+    val blades: Array<BladeWrapper>?
 )
-
 
 data class BladeWrapper(
     val id: Int,
     val interventionId: Int,
     val position: String?,
     @SerializedName("serialNumber") val serial: String?,
-    val changeSerialAllowed: Boolean,
-    val changePictureAllowed: Boolean,
     val receptors: Array<LightningReceptorWrapper>?
 )
 

@@ -17,10 +17,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.google.android.material.snackbar.Snackbar
-import com.heliopales.bladeexpertfiller.App
-import com.heliopales.bladeexpertfiller.EXPORTATION_STATE_EXPORTED
-import com.heliopales.bladeexpertfiller.EXPORTATION_STATE_NOT_EXPORTED
-import com.heliopales.bladeexpertfiller.R
+import com.heliopales.bladeexpertfiller.*
 import com.heliopales.bladeexpertfiller.blade.Blade
 import com.heliopales.bladeexpertfiller.bladeexpert.*
 import com.heliopales.bladeexpertfiller.picture.Picture
@@ -60,6 +57,7 @@ class InterventionListActivity : AppCompatActivity(), InterventionAdapter.Interv
         setContentView(R.layout.activity_intervention_list)
 
         var toolbar = findViewById<Toolbar>(R.id.toolbar)
+        toolbar.title = "BladeExpertFiller V$VERSION"
         setSupportActionBar(toolbar)
 
 
@@ -284,8 +282,8 @@ class InterventionListActivity : AppCompatActivity(), InterventionAdapter.Interv
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        Log.i(TAG, "onCreateOptionsMenu()")
         menuInflater.inflate(R.menu.activity_intervention_list, menu)
+
         val menuItem = menu?.findItem(R.id.toogler_delete_ongoing_intervention)
         menuItem?.setActionView(R.layout.menu_switch)
 

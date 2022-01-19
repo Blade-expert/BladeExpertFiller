@@ -51,11 +51,7 @@ class InterventionDetailsActivity : AppCompatActivity(), View.OnClickListener {
         turbineSerialView.text =
             if (intervention.turbineSerial == null) "-----" else intervention.turbineSerial;
 
-        if (intervention.changeTurbineSerialAllowed) {
-            findViewById<ImageButton>(R.id.editTurbineSerialNumber).setOnClickListener(this)
-        } else {
-            findViewById<ImageButton>(R.id.editTurbineSerialNumber).visibility = View.GONE
-        }
+        findViewById<ImageButton>(R.id.editTurbineSerialNumber).setOnClickListener(this)
 
         findViewById<ImageButton>(R.id.take_turbine_serial_picture).setOnClickListener(this)
 
@@ -101,12 +97,12 @@ class InterventionDetailsActivity : AppCompatActivity(), View.OnClickListener {
                 lay.findViewWithTag<TextView>("outer_count")
                     .setTextColor(getColor(R.color.bulma_dark))
                 lay.findViewWithTag<TextView>("outer_count").text = "E: $count"
-                lay.findViewWithTag<TextView>("outer_count").setTypeface(null,Typeface.BOLD)
+                lay.findViewWithTag<TextView>("outer_count").setTypeface(null, Typeface.BOLD)
             } else {
                 lay.findViewWithTag<TextView>("outer_count")
                     .setTextColor(getColor(R.color.bulma_gray_light))
                 lay.findViewWithTag<TextView>("outer_count").text = "E: --"
-                lay.findViewWithTag<TextView>("outer_count").setTypeface(null,Typeface.NORMAL)
+                lay.findViewWithTag<TextView>("outer_count").setTypeface(null, Typeface.NORMAL)
             }
 
             count = App.database.damageDao()
@@ -115,12 +111,12 @@ class InterventionDetailsActivity : AppCompatActivity(), View.OnClickListener {
                 lay.findViewWithTag<TextView>("inner_count")
                     .setTextColor(getColor(R.color.bulma_dark))
                 lay.findViewWithTag<TextView>("inner_count").text = "I: $count"
-                lay.findViewWithTag<TextView>("inner_count").setTypeface(null,Typeface.BOLD)
+                lay.findViewWithTag<TextView>("inner_count").setTypeface(null, Typeface.BOLD)
             } else {
                 lay.findViewWithTag<TextView>("inner_count")
                     .setTextColor(getColor(R.color.bulma_gray_light))
                 lay.findViewWithTag<TextView>("inner_count").text = "I: --"
-                lay.findViewWithTag<TextView>("inner_count").setTypeface(null,Typeface.NORMAL)
+                lay.findViewWithTag<TextView>("inner_count").setTypeface(null, Typeface.NORMAL)
             }
 
             count = App.database.drainholeDao()

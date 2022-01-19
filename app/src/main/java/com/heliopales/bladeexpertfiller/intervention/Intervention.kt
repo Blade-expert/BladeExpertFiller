@@ -16,9 +16,7 @@ data class Intervention(
     @PrimaryKey val id: Int,
     val turbineName: String?,
     var turbineSerial: String?,
-    var exportationState: Int = EXPORTATION_STATE_EMPTY,
-    val changeTurbineSerialAllowed: Boolean,
-    val changeTurbinePictureAllowed: Boolean
+    var exportationState: Int = EXPORTATION_STATE_EMPTY
 ) : Parcelable {
 
     var expired: Boolean = false

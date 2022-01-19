@@ -15,9 +15,7 @@ data class Blade (
     @PrimaryKey val id:Int,
     val interventionId: Int,
     val position:String?,
-    var serial: String?,
-    val changeSerialAllowed:Boolean,
-    val changePictureAllowed:Boolean): Parcelable{
+    var serial: String?): Parcelable{
 
 
 

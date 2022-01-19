@@ -9,6 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.ImageButton
+import androidx.core.text.isDigitsOnly
 import androidx.fragment.app.Fragment
 import com.heliopales.bladeexpertfiller.App
 import com.heliopales.bladeexpertfiller.EXPORTATION_STATE_NOT_EXPORTED
@@ -17,6 +18,7 @@ import com.heliopales.bladeexpertfiller.R
 import com.heliopales.bladeexpertfiller.camera.CameraActivity
 import com.heliopales.bladeexpertfiller.spotcondition.DamageSpotCondition
 import com.heliopales.bladeexpertfiller.spotcondition.damages.DamageViewPagerActivity
+import kotlin.math.roundToInt
 
 
 class DamageBasicsFragment : Fragment() {
@@ -56,8 +58,10 @@ class DamageBasicsFragment : Fragment() {
                 if (radialPosition.text.isEmpty())
                     damage.radialPosition = null
                 else
-                    damage.radialPosition = radialPosition.text.toString().toFloat()
-                App.database.interventionDao().updateExportationState(damage.interventionId, EXPORTATION_STATE_NOT_EXPORTED)
+                    damage.radialPosition =
+                        radialPosition.text.toString().replace(",", ".").toFloat()
+                App.database.interventionDao()
+                    .updateExportationState(damage.interventionId, EXPORTATION_STATE_NOT_EXPORTED)
             }
         })
 
@@ -68,8 +72,11 @@ class DamageBasicsFragment : Fragment() {
                 if (longitudinalLength.text.isEmpty())
                     damage.longitudinalLength = null
                 else
-                    damage.longitudinalLength = longitudinalLength.text.toString().toIntOrNull()
-                App.database.interventionDao().updateExportationState(damage.interventionId, EXPORTATION_STATE_NOT_EXPORTED)
+                    damage.longitudinalLength =
+                        longitudinalLength.text.toString().replace(",", ".")
+                            .toFloat().roundToInt()
+                App.database.interventionDao()
+                    .updateExportationState(damage.interventionId, EXPORTATION_STATE_NOT_EXPORTED)
             }
         })
 
@@ -80,8 +87,11 @@ class DamageBasicsFragment : Fragment() {
                 if (radialLength.text.isEmpty())
                     damage.radialLength = null
                 else
-                    damage.radialLength = radialLength.text.toString().toIntOrNull()
-                App.database.interventionDao().updateExportationState(damage.interventionId, EXPORTATION_STATE_NOT_EXPORTED)
+                    damage.radialLength =
+                        radialLength.text.toString().replace(",", ".")
+                            .toFloat().roundToInt()
+                App.database.interventionDao()
+                    .updateExportationState(damage.interventionId, EXPORTATION_STATE_NOT_EXPORTED)
             }
         })
 
@@ -93,7 +103,8 @@ class DamageBasicsFragment : Fragment() {
                     damage.repetition = null
                 else
                     damage.repetition = repetition.text.toString().toIntOrNull()
-                App.database.interventionDao().updateExportationState(damage.interventionId, EXPORTATION_STATE_NOT_EXPORTED)
+                App.database.interventionDao()
+                    .updateExportationState(damage.interventionId, EXPORTATION_STATE_NOT_EXPORTED)
             }
         })
 
@@ -105,7 +116,8 @@ class DamageBasicsFragment : Fragment() {
                     damage.description = null
                 else
                     damage.description = description.text.toString()
-                App.database.interventionDao().updateExportationState(damage.interventionId, EXPORTATION_STATE_NOT_EXPORTED)
+                App.database.interventionDao()
+                    .updateExportationState(damage.interventionId, EXPORTATION_STATE_NOT_EXPORTED)
             }
         })
 

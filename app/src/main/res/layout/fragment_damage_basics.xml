@@ -53,7 +53,7 @@
                 android:id="@+id/damage_longitudinal_length"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:inputType="number|numberSigned"
+                android:inputType="number"
                 android:textColor="@color/bulma_black"
                 android:textSize="40sp"
                 android:textCursorDrawable="@drawable/link_cursor"

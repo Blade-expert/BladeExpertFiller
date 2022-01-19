@@ -52,11 +52,7 @@ class BladeActivity : AppCompatActivity(), View.OnClickListener {
         bladeSerialView = findViewById(R.id.blade_serial_number)
         bladeSerialView.text = if (blade.serial == null) "-----" else blade.serial;
 
-        if (intervention.changeTurbineSerialAllowed) {
             findViewById<ImageButton>(R.id.edit_blade_serial).setOnClickListener(this)
-        } else {
-            findViewById<ImageButton>(R.id.edit_blade_serial).visibility = View.GONE
-        }
 
         findViewById<ImageButton>(R.id.take_blade_serial_picture).setOnClickListener(this)
         findViewById<Button>(R.id.see_indoor_damages_button).setOnClickListener(this)
