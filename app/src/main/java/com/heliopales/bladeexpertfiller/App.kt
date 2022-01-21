@@ -19,8 +19,6 @@ import java.util.*
 import java.util.concurrent.TimeUnit
 import kotlin.io.path.Path
 
-const val VERSION = "1.0"
-
 const val DATABASE_FILE_NAME = "bxpfil_db_2"
 
 const val API_KEY = "LdVx6Ur82mm9oQZT4zSzBLea2Xnmzh4M";

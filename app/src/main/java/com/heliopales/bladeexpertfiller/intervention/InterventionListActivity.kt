@@ -57,7 +57,7 @@ class InterventionListActivity : AppCompatActivity(), InterventionAdapter.Interv
         setContentView(R.layout.activity_intervention_list)
 
         var toolbar = findViewById<Toolbar>(R.id.toolbar)
-        toolbar.title = "BladeExpertFiller V$VERSION"
+        toolbar.title = "BladeExpertFiller V${BuildConfig.VERSION_NAME}"
         setSupportActionBar(toolbar)
 
 
