@@ -23,7 +23,7 @@ const val VERSION = "1.0"
 
 const val DATABASE_FILE_NAME = "bxpfil_db_2"
 
-
+const val API_KEY = "LdVx6Ur82mm9oQZT4zSzBLea2Xnmzh4M";
 
 //PRODUCTION
 private const val BASE_URL = "https://www.blade-expert.com/"

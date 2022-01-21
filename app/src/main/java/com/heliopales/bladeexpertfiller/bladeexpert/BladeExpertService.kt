@@ -1,12 +1,10 @@
 package com.heliopales.bladeexpertfiller.bladeexpert
 
-import com.heliopales.bladeexpertfiller.App
+import com.heliopales.bladeexpertfiller.API_KEY
 import okhttp3.MultipartBody
 import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.http.*
-
-private const val API_KEY = "4IwWjazZpqyJy7ISAsXNaS3HM346tlD2";
 
 
 interface BladeExpertService {
