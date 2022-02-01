@@ -1,67 +1,93 @@
 package com.heliopales.bladeexpertfiller.intervention
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
 import android.content.res.ColorStateList
-import android.graphics.Camera
-import android.graphics.Color
 import android.graphics.Typeface
 import android.os.Bundle
 import android.util.Log
+import android.view.GestureDetector
+import android.view.MotionEvent
 import android.view.View
-import android.view.ViewGroup
 import android.widget.*
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.res.ResourcesCompat
-import androidx.core.view.setMargins
-import com.heliopales.bladeexpertfiller.*
+import androidx.constraintlayout.widget.ConstraintLayout
+import com.heliopales.bladeexpertfiller.App
+import com.heliopales.bladeexpertfiller.EXPORTATION_STATE_NOT_EXPORTED
+import com.heliopales.bladeexpertfiller.PICTURE_TYPE_TURBINE
+import com.heliopales.bladeexpertfiller.R
 import com.heliopales.bladeexpertfiller.blade.Blade
 import com.heliopales.bladeexpertfiller.blade.BladeActivity
 import com.heliopales.bladeexpertfiller.camera.CameraActivity
 import com.heliopales.bladeexpertfiller.spotcondition.INHERIT_TYPE_DAMAGE_IN
 import com.heliopales.bladeexpertfiller.spotcondition.INHERIT_TYPE_DAMAGE_OUT
-import com.heliopales.bladeexpertfiller.utils.dpToPx
-import com.heliopales.bladeexpertfiller.utils.spToPx
+import com.heliopales.bladeexpertfiller.turbine.WindfarmActivity
+import com.heliopales.bladeexpertfiller.utils.OnSwipeListener
 import com.heliopales.bladeexpertfiller.utils.toast
-import kotlinx.android.synthetic.main.activity_intervention_details.*
 
-class InterventionDetailsActivity : AppCompatActivity(), View.OnClickListener {
+class InterventionDetailsActivity : AppCompatActivity(), View.OnClickListener,
+    View.OnTouchListener {
 
     companion object {
         const val EXTRA_INTERVENTION = "intervention"
     }
 
-    private lateinit var intervention: Intervention;
-    private lateinit var turbineNameView: TextView;
-    private lateinit var turbineSerialView: TextView;
-    private val bladeLayouts = mutableListOf<LinearLayout>();
+    private lateinit var intervention: Intervention
+    private lateinit var turbineNameView: TextView
+    private lateinit var turbineSerialView: TextView
+    private lateinit var gestureDetector: GestureDetector
+    private val bladeLayouts = mutableListOf<LinearLayout>()
 
-    val TAG = InterventionDetailsActivity::class.java.simpleName
+    val TAG: String = InterventionDetailsActivity::class.java.simpleName
 
+    @SuppressLint("ClickableViewAccessibility")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_intervention_details)
 
-        intervention = intent.getParcelableExtra<Intervention>(EXTRA_INTERVENTION)!!
+        intervention = intent.getParcelableExtra(EXTRA_INTERVENTION)!!
         turbineNameView = findViewById(R.id.turbineName)
-        turbineNameView.text = intervention.turbineName
+        turbineNameView.text = intervention.name
 
         turbineSerialView = findViewById(R.id.turbineSerialNumber)
         turbineSerialView.text =
-            if (intervention.turbineSerial == null) "-----" else intervention.turbineSerial;
+            if (intervention.turbineSerial == null) "-----" else intervention.turbineSerial
 
+        findViewById<ImageButton>(R.id.windfarm_button).setOnClickListener(this)
         findViewById<ImageButton>(R.id.editTurbineSerialNumber).setOnClickListener(this)
-
         findViewById<ImageButton>(R.id.take_turbine_serial_picture).setOnClickListener(this)
 
+        gestureDetector = GestureDetector(this, object : OnSwipeListener() {
+            override fun onSwipe(direction: Direction?): Boolean {
+                Log.d(TAG, "OnSwipe")
+                when (direction) {
+                    Direction.up -> startWindfarmActivity()
+                    Direction.down -> Log.d(TAG, "Swiped DOWN")
+                    Direction.left -> Log.d(TAG, "Swiped LEFT")
+                    Direction.right -> Log.d(TAG, "Swiped RIGHT")
+                    else -> Log.d(TAG, "No direction found for Swipe")
+                }
+                return true;
+            }
+        });
+
+        findViewById<ConstraintLayout>(R.id.intervention_detail_layout).setOnTouchListener(this)
+
+
         addBladeButtons()
+    }
+
+    override fun onTouch(v: View?, event: MotionEvent?): Boolean {
+        Log.d(TAG, "onTouch")
+        gestureDetector.onTouchEvent(event)
+        return true;
     }
 
     private fun addBladeButtons() {
         findViewById<LinearLayout>(R.id.bladeButtonLayout).let {
             App.database.bladeDao().getBladesByInterventionId(intervention.id)
-                .sortedBy { bla -> bla.position }.forEach { bla ->
+                .sortedBy { it.position }.forEach { bla ->
 
                     val bladeLayout: LinearLayout =
                         View.inflate(this, R.layout.pattern_blade_button, null) as LinearLayout
@@ -145,12 +171,22 @@ class InterventionDetailsActivity : AppCompatActivity(), View.OnClickListener {
         when (v?.id) {
             R.id.editTurbineSerialNumber -> showChangeTurbineSerialDialog()
             R.id.take_turbine_serial_picture -> takeTurbineSerialPicture()
+            R.id.windfarm_button -> startWindfarmActivity()
         }
+    }
+
+    private fun startWindfarmActivity() {
+        val intent = Intent(this, WindfarmActivity::class.java)
+        intent.putExtra(WindfarmActivity.EXTRA_INTERVENTION, intervention)
+
+        startActivity(intent)
+        overridePendingTransition(R.anim.slide_in_top, R.anim.slide_out_top);
     }
 
     private fun takeTurbineSerialPicture() {
         val intent = Intent(this, CameraActivity::class.java)
-        var path = "${App.getInterventionPath(intervention)}/turbineSerialPicture"
+        val turbine = App.database.turbineDao().getTurbinesById(intervention.turbineId)!!
+        var path = App.getTurbinePath(intervention, turbine)
         intent.putExtra(CameraActivity.EXTRA_PICTURE_TYPE, PICTURE_TYPE_TURBINE)
         intent.putExtra(CameraActivity.EXTRA_RELATED_ID, intervention.id)
         intent.putExtra(CameraActivity.EXTRA_OUTPUT_PATH, path)
@@ -194,4 +230,6 @@ class InterventionDetailsActivity : AppCompatActivity(), View.OnClickListener {
         Log.d(TAG, "onRestart()")
         super.onRestart()
     }
+
+
 }

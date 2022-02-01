@@ -44,7 +44,7 @@ class BladeActivity : AppCompatActivity(), View.OnClickListener {
         blade = intent.getParcelableExtra<Blade>(BladeActivity.EXTRA_BLADE)!!
 
         turbineNameView = findViewById(R.id.bla_turbine_name)
-        turbineNameView.text = intervention.turbineName
+        turbineNameView.text = intervention.name
 
         bladeNameView = findViewById(R.id.blade_name)
         bladeNameView.text = blade.position
@@ -104,7 +104,7 @@ class BladeActivity : AppCompatActivity(), View.OnClickListener {
 
     private fun takeBladeSerialPicture() {
         val intent = Intent(this, CameraActivity::class.java)
-        var path = "${App.getBladePath(intervention, blade)}/bladeSerialPicture"
+        var path = App.getBladePicturePath(intervention, blade)
         intent.putExtra(CameraActivity.EXTRA_PICTURE_TYPE, PICTURE_TYPE_BLADE)
         intent.putExtra(CameraActivity.EXTRA_RELATED_ID, blade.id)
         intent.putExtra(CameraActivity.EXTRA_INTERVENTION_ID, intervention.id)

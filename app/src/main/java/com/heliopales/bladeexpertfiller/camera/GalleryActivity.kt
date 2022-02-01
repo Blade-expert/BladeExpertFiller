@@ -32,7 +32,7 @@ class GalleryActivity : AppCompatActivity() {
         // We reverse the order of the list to present the last photos first
         mediaList = rootDirectory.listFiles { file ->
             arrayOf("JPG").contains(file.extension.uppercase(Locale.ROOT))
-        }?.sorted()?.toMutableList() ?: mutableListOf()
+        }?.sorted()?.reversed()?.toMutableList() ?: mutableListOf()
 
 
         println("====Il y a ${mediaList.size} fichiers")

@@ -14,8 +14,11 @@ import kotlinx.android.parcel.Parcelize
 @Parcelize
 data class Intervention(
     @PrimaryKey val id: Int,
-    val turbineName: String?,
+    val name: String,
+    val turbineId: Int,
     var turbineSerial: String?,
+    val windfarmId: Int,
+    val windfarmName: String,
     var exportationState: Int = EXPORTATION_STATE_EMPTY
 ) : Parcelable {
 

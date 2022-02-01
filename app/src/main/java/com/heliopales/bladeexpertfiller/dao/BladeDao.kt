@@ -11,7 +11,7 @@ interface BladeDao {
     fun insertNonExistingBlades(bla: List<Blade>)
 
     @Query("SELECT * FROM blade WHERE interventionId = :interventionId")
-    fun getBladesByInterventionId(interventionId: Int) : List<Blade>
+    fun getBladesByInterventionId(interventionId: Int): List<Blade>
 
     @Query("DELETE FROM blade WHERE interventionId = :interventionId")
     fun deleteBladesOfInterventionId(interventionId: Int)
@@ -22,6 +22,6 @@ interface BladeDao {
     @Query("SELECT * FROM blade WHERE id = :id")
     fun getById(id: Int): Blade
 
-@Delete
-fun delete(blade: Blade)
+    @Delete
+    fun delete(blade: Blade)
 }

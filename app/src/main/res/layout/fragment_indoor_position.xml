@@ -1,13 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:grid="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:gravity="center_horizontal">
+    android:gravity="center_horizontal"
+    android:orientation="vertical">
 
     <TextView
         android:id="@id/label_text_view"
@@ -16,153 +15,152 @@
         android:layout_marginVertical="20sp"
         android:text="Position"
         android:textColor="@color/bulma_black"
-        android:textSize="40sp"/>
+        android:textSize="40sp" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-    <GridLayout
-        android:id="@+id/grid_layout"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintVertical_chainStyle="packed"
-        android:columnCount="2"
-        android:alignmentMode="alignBounds"
-        android:useDefaultMargins="true">
 
-        <Button
-            android:id="@+id/button_ile"
-            android:layout_width="0dp"
+        <GridLayout
+            android:id="@+id/grid_layout"
+            android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:background="@drawable/ic_square_24"
-            android:backgroundTint="@color/bulma_link_light"
-            android:foregroundTint="@color/bulma_link"
-            android:textSize="30sp"
-            android:layout_gravity="fill"
-            android:layout_rowWeight="1"
-            android:layout_columnWeight="1"
-            android:tag="ILE"
-            android:text="LE"
-            />
+            android:alignmentMode="alignBounds"
+            android:columnCount="2"
+            android:useDefaultMargins="true"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_chainStyle="packed">
 
-        <Button
-            android:id="@+id/button_ite"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:background="@drawable/ic_square_24"
-            android:backgroundTint="@color/bulma_link_light"
-            android:foregroundTint="@color/bulma_link"
-            android:textSize="30sp"
-            android:layout_gravity="fill"
-            android:layout_rowWeight="1"
-            android:layout_columnWeight="1"
-            android:tag="ITE"
-            android:text="TE" />
+            <Button
+                android:id="@+id/button_ile"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_rowWeight="1"
+                android:layout_columnWeight="1"
+                android:layout_gravity="fill"
+                android:background="@drawable/ic_square_24"
+                android:backgroundTint="@color/bulma_link_light"
+                android:foregroundTint="@color/bulma_link"
+                android:tag="ILE"
+                android:text="LE"
+                android:textSize="30sp" />
 
-        <Button
-            android:id="@+id/button_ips"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:background="@drawable/ic_square_24"
-            android:backgroundTint="@color/bulma_link_light"
-            android:foregroundTint="@color/bulma_link"
-            android:textSize="30sp"
-            android:layout_gravity="fill"
-            android:layout_rowWeight="1"
-            android:layout_columnWeight="1"
-            android:tag="IPS"
-            android:text="PS" />
+            <Button
+                android:id="@+id/button_ite"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_rowWeight="1"
+                android:layout_columnWeight="1"
+                android:layout_gravity="fill"
+                android:background="@drawable/ic_square_24"
+                android:backgroundTint="@color/bulma_link_light"
+                android:foregroundTint="@color/bulma_link"
+                android:tag="ITE"
+                android:text="TE"
+                android:textSize="30sp" />
 
-        <Button
-            android:id="@+id/button_iss"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:background="@drawable/ic_square_24"
-            android:backgroundTint="@color/bulma_link_light"
-            android:foregroundTint="@color/bulma_link"
-            android:textSize="30sp"
-            android:layout_gravity="fill"
-            android:layout_rowWeight="1"
-            android:layout_columnWeight="1"
-            android:tag="ISS"
-            android:text="SS" />
+            <Button
+                android:id="@+id/button_ips"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_rowWeight="1"
+                android:layout_columnWeight="1"
+                android:layout_gravity="fill"
+                android:background="@drawable/ic_square_24"
+                android:backgroundTint="@color/bulma_link_light"
+                android:foregroundTint="@color/bulma_link"
+                android:tag="IPS"
+                android:text="PS"
+                android:textSize="30sp" />
 
-        <Button
-            android:id="@+id/button_iroot"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:background="@drawable/ic_square_24"
-            android:backgroundTint="@color/bulma_link_light"
-            android:foregroundTint="@color/bulma_link"
-            android:textSize="30sp"
-            android:layout_gravity="fill"
-            android:layout_rowWeight="1"
-            android:layout_columnWeight="1"
-            android:tag="IRT"
-            android:text="ROOT" />
+            <Button
+                android:id="@+id/button_iss"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_rowWeight="1"
+                android:layout_columnWeight="1"
+                android:layout_gravity="fill"
+                android:background="@drawable/ic_square_24"
+                android:backgroundTint="@color/bulma_link_light"
+                android:foregroundTint="@color/bulma_link"
+                android:tag="ISS"
+                android:text="SS"
+                android:textSize="30sp" />
 
-        <Button
-            android:id="@+id/button_itip"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:background="@drawable/ic_square_24"
-            android:backgroundTint="@color/bulma_link_light"
-            android:foregroundTint="@color/bulma_link"
-            android:textSize="30sp"
-            android:layout_gravity="fill"
-            android:layout_rowWeight="1"
-            android:layout_columnWeight="1"
-            android:tag="ITP"
-            android:text="TIP" />
+            <Button
+                android:id="@+id/button_iroot"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_rowWeight="1"
+                android:layout_columnWeight="1"
+                android:layout_gravity="fill"
+                android:background="@drawable/ic_square_24"
+                android:backgroundTint="@color/bulma_link_light"
+                android:foregroundTint="@color/bulma_link"
+                android:tag="IRT"
+                android:text="ROOT"
+                android:textSize="30sp" />
+
+            <Button
+                android:id="@+id/button_itip"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_rowWeight="1"
+                android:layout_columnWeight="1"
+                android:layout_gravity="fill"
+                android:background="@drawable/ic_square_24"
+                android:backgroundTint="@color/bulma_link_light"
+                android:foregroundTint="@color/bulma_link"
+                android:tag="ITP"
+                android:text="TIP"
+                android:textSize="30sp" />
 
 
+            <Button
+                android:id="@+id/button_iweb"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_rowWeight="1"
+                android:layout_columnWeight="1"
+                android:layout_gravity="fill"
+                android:background="@drawable/ic_square_24"
+                android:backgroundTint="@color/bulma_link_light"
+                android:foregroundTint="@color/bulma_link"
+                android:tag="IWB"
+                android:text="WEB"
+                android:textSize="30sp" />
 
-        <Button
-            android:id="@+id/button_iweb"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:background="@drawable/ic_square_24"
-            android:backgroundTint="@color/bulma_link_light"
-            android:foregroundTint="@color/bulma_link"
-            android:textSize="30sp"
-            android:layout_gravity="fill"
-            android:layout_rowWeight="1"
-            android:layout_columnWeight="1"
-            android:tag="IWB"
-            android:text="WEB" />
+            <Button
+                android:id="@+id/button_ihatch"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_rowWeight="1"
+                android:layout_columnWeight="1"
+                android:layout_gravity="fill"
+                android:background="@drawable/ic_square_24"
+                android:backgroundTint="@color/bulma_link_light"
+                android:foregroundTint="@color/bulma_link"
+                android:tag="IHA"
+                android:text="HATCH"
+                android:textSize="30sp" />
 
-        <Button
-            android:id="@+id/button_ihatch"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:background="@drawable/ic_square_24"
-            android:backgroundTint="@color/bulma_link_light"
-            android:foregroundTint="@color/bulma_link"
-            android:textSize="30sp"
-            android:layout_gravity="fill"
-            android:layout_rowWeight="1"
-            android:layout_columnWeight="1"
-            android:tag="IHA"
-            android:text="HATCH" />
+            <Button
+                android:id="@+id/button_ina"
+                android:layout_width="180dp"
+                android:layout_height="0dp"
+                android:layout_rowWeight="1"
+                android:layout_columnSpan="2"
+                android:layout_gravity="fill_vertical|center_horizontal"
+                android:background="@drawable/ic_square_24"
+                android:backgroundTint="@color/bulma_link_light"
+                android:foregroundTint="@color/bulma_link"
+                android:text="N/A"
+                android:textSize="30sp" />
 
-        <Button
-            android:id="@+id/button_ina"
-            android:layout_width="180dp"
-            android:layout_height="0dp"
-            android:background="@drawable/ic_square_24"
-            android:backgroundTint="@color/bulma_link_light"
-            android:foregroundTint="@color/bulma_link"
-            android:textSize="30sp"
-            android:layout_gravity="fill_vertical|center_horizontal"
-            android:layout_rowWeight="1"
-            android:layout_columnSpan="2"
-            android:text="N/A"/>
-
-    </GridLayout>
+        </GridLayout>
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>

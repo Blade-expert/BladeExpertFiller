@@ -21,6 +21,7 @@ import com.heliopales.bladeexpertfiller.*
 import com.heliopales.bladeexpertfiller.blade.Blade
 import com.heliopales.bladeexpertfiller.bladeexpert.*
 import com.heliopales.bladeexpertfiller.picture.Picture
+import com.heliopales.bladeexpertfiller.settings.UserSettings
 import com.heliopales.bladeexpertfiller.spotcondition.*
 import com.heliopales.bladeexpertfiller.utils.toast
 import it.xabaras.android.recyclerview.swipedecorator.RecyclerViewSwipeDecorator
@@ -59,7 +60,6 @@ class InterventionListActivity : AppCompatActivity(), InterventionAdapter.Interv
         var toolbar = findViewById<Toolbar>(R.id.toolbar)
         toolbar.title = "BladeExpertFiller V${BuildConfig.VERSION_NAME}"
         setSupportActionBar(toolbar)
-
 
         recyclerView = findViewById<RecyclerView>(R.id.interventions_recycler_view)
         recyclerView.layoutManager = LinearLayoutManager(this)
@@ -136,7 +136,7 @@ class InterventionListActivity : AppCompatActivity(), InterventionAdapter.Interv
         adapter.notifyItemRemoved(position)
         Snackbar.make(
             recyclerView,
-            "${deletedIntervention.turbineName} supprimé",
+            "${deletedIntervention.name} supprimée",
             Snackbar.LENGTH_SHORT
         )
             .setAction("Annuler") {
@@ -192,7 +192,7 @@ class InterventionListActivity : AppCompatActivity(), InterventionAdapter.Interv
         App.database.interventionDao().deleteIntervention(deletedIntervention)
 
         //delete interventionFolder
-        val file = File(App.getInterventionPath(deletedIntervention))
+        val file = File(App.getMainInterventionPath(deletedIntervention))
         if (file.exists() && file.isDirectory) {
             Log.w(TAG, "will delete directory ${file.absolutePath}")
             file.deleteRecursively()
@@ -214,7 +214,7 @@ class InterventionListActivity : AppCompatActivity(), InterventionAdapter.Interv
         }
         interventions.clear()
         interventions.addAll(
-            App.database.interventionDao().getAllInterventions().sortedBy { it.turbineName })
+            App.database.interventionDao().getAllInterventions().sortedBy { it.name })
 
         App.bladeExpertService.getInterventions()
             .enqueue(object : retrofit2.Callback<Array<InterventionWrapper>> {
@@ -222,35 +222,39 @@ class InterventionListActivity : AppCompatActivity(), InterventionAdapter.Interv
                     call: Call<Array<InterventionWrapper>>,
                     response: Response<Array<InterventionWrapper>>
                 ) {
+
                     val newInterventions: MutableList<Intervention> = mutableListOf()
 
-                    response?.body().let {
-                        newInterventions.addAll(it?.map { itv -> mapBladeExpertIntervention(itv) } as MutableList)
-                        it.forEach { itvw ->
-                            App.database.bladeDao().insertNonExistingBlades(
-                                itvw.blades!!.map { bw -> mapBladeExpertBlade(bw) }
-                            )
-                            itvw.blades?.forEach { blaw ->
-                                App.database.receptorDao()
-                                    .upsertLightningReceptors(
-                                        blaw.receptors!!.map { ltrw ->
-                                            mapBladeExpertLightningReceptor(ltrw)
-                                        })
-                                blaw.receptors!!.forEach { ltrw ->
-                                    Log.d(TAG, "Receptor added $ltrw")
+                    if (response.isSuccessful) {
+                        response?.body().let {
+                            newInterventions.addAll(it?.map { itv -> mapBladeExpertIntervention(itv) } as MutableList)
+                            it.forEach { itvw ->
+                                App.database.turbineDao().upsertTurbines(
+                                    itvw.turbines!!.map { tw -> mapBladeExpertTurbine(tw) }
+                                )
+                                App.database.bladeDao().insertNonExistingBlades(
+                                    itvw.blades!!.map { bw -> mapBladeExpertBlade(bw) }
+                                )
+                                itvw.blades?.forEach { blaw ->
+                                    App.database.receptorDao()
+                                        .upsertLightningReceptors(
+                                            blaw.receptors!!.map { ltrw ->
+                                                mapBladeExpertLightningReceptor(ltrw)
+                                            })
+                                    blaw.receptors!!.forEach { ltrw ->
+                                        Log.d(TAG, "Receptor added $ltrw")
+                                    }
                                 }
-
                             }
-
-
                         }
                     }
+
                     interventions.forEach { it.expired = !newInterventions.contains(it) }
                     newInterventions.forEach { if (!interventions.contains(it)) interventions.add(it) }
                     interventions.forEach {
                         App.database.interventionDao().insertNonExistingIntervention(it)
                     }
-                    interventions.sortBy { it.turbineName }
+                    interventions.sortBy { it.name }
                     adapter.notifyDataSetChanged()
                     toast("La liste d'interventions est à jour")
                     refreshLayout.isRefreshing = false
@@ -293,18 +297,45 @@ class InterventionListActivity : AppCompatActivity(), InterventionAdapter.Interv
             deleteAllowed = isChecked
             if (isChecked) {
                 toast(
-                    "La suppression de n'importe quelle intervention est maintenant permise",
+                    "You can now delete any intervention",
                     Toast.LENGTH_LONG
                 )
             } else {
                 toast(
-                    "La suppression est restreinte aux interventions qui ne sont plus 'ONGOING'",
+                    "You can now delete 'ONGOING' interventions only",
                     Toast.LENGTH_LONG
                 )
             }
         }
-        return true;
+
+        val editUserKeyButton = menu?.findItem(R.id.change_user_key)
+        editUserKeyButton?.setOnMenuItemClickListener {
+            showChangeUserKeyDialog()
+            true
+        }
+        return true
     }
+
+    private fun showChangeUserKeyDialog() {
+        var settings = App.database.userSettingsDao().getUserSettings()
+        val dialog = ChangeUserKeyDialogFragment(settings?.userApiKey)
+        dialog.listener =
+            object : ChangeUserKeyDialogFragment.ChangeUserKeyDialogListener {
+                override fun onDialogPositiveClick(key: String) {
+                    if (settings == null) {
+                        settings = UserSettings(userApiKey = key)
+                    } else {
+                        settings!!.userApiKey = key
+                    };
+                    App.database.userSettingsDao().upsert(settings!!)
+                }
+
+                override fun onDialogNegativeClick() {
+                }
+            }
+        dialog.show(supportFragmentManager, "ChangeTurbineSerialDialogFragment")
+    }
+
 
     private val executor: ExecutorService = Executors.newFixedThreadPool(1)
 
@@ -421,7 +452,9 @@ class InterventionListActivity : AppCompatActivity(), InterventionAdapter.Interv
 
     private fun exportTask(intervention: Intervention): Runnable {
         return Runnable {
-            Log.i(TAG, "saveTurbine ${intervention.turbineName}")
+            Log.i(TAG, "saveIntervention ${intervention.id} ${intervention.name}")
+
+
             saveTurbine(intervention)
 
             App.database.bladeDao().getBladesByInterventionId(intervention.id).forEach { bla ->

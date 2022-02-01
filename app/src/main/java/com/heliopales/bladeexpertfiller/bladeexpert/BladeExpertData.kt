@@ -5,9 +5,13 @@ import com.heliopales.bladeexpertfiller.spotcondition.lightning.MeasureMethod
 
 data class InterventionWrapper(
     val id: Int,
-    val turbineName: String?,
+    val name: String,
+    val turbineId: Int,
     val turbineSerial: String?,
-    val blades: Array<BladeWrapper>?
+    val windfarmId: Int,
+    val windfarmName: String,
+    val blades: Array<BladeWrapper>?,
+    val turbines: Array<TurbineWrapper>?
 )
 
 data class BladeWrapper(
@@ -16,6 +20,14 @@ data class BladeWrapper(
     val position: String?,
     @SerializedName("serialNumber") val serial: String?,
     val receptors: Array<LightningReceptorWrapper>?
+)
+
+data class TurbineWrapper(
+    val id: Int,
+    val alias: String,
+    val serial: String?,
+    val numInWindfarm: Int?,
+    val windfarmId: Int
 )
 
 data class LightningReceptorWrapper(

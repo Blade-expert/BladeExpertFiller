@@ -10,21 +10,29 @@ import com.heliopales.bladeexpertfiller.spotcondition.DrainholeSpotCondition
 import com.heliopales.bladeexpertfiller.spotcondition.LightningSpotCondition
 import com.heliopales.bladeexpertfiller.spotcondition.lightning.LightningReceptor
 import com.heliopales.bladeexpertfiller.spotcondition.lightning.ReceptorMeasure
+import com.heliopales.bladeexpertfiller.turbine.Turbine
 
 fun mapBladeExpertIntervention(interventionWrapper: InterventionWrapper): Intervention {
     return Intervention(
         id = interventionWrapper.id,
-        turbineName = interventionWrapper.turbineName,
-        turbineSerial = interventionWrapper.turbineSerial
+        name = interventionWrapper.name,
+        turbineId= interventionWrapper.turbineId,
+        turbineSerial = interventionWrapper.turbineSerial,
+        windfarmId = interventionWrapper.windfarmId,
+        windfarmName = interventionWrapper.windfarmName
     )
 }
 
 fun mapToBladeExpertIntervention(intervention: Intervention): InterventionWrapper {
     return InterventionWrapper(
         id = intervention.id,
-        turbineName = intervention.turbineName,
+        name = intervention.name,
+        turbineId = intervention.turbineId,
         turbineSerial = intervention.turbineSerial,
-        blades = null
+        windfarmId = intervention.windfarmId,
+        windfarmName = intervention.windfarmName,
+        blades = null,
+        turbines = null
     )
 }
 
@@ -37,6 +45,8 @@ fun mapBladeExpertBlade(bladeWrapper: BladeWrapper): Blade {
     )
 }
 
+
+
 fun mapToBladeExpertBlade(blade: Blade): BladeWrapper {
     return BladeWrapper(
         id = blade.id,
@@ -44,6 +54,16 @@ fun mapToBladeExpertBlade(blade: Blade): BladeWrapper {
         serial = blade.serial,
         position = blade.position,
         receptors = null
+    )
+}
+
+fun mapBladeExpertTurbine(turbineWrapper: TurbineWrapper): Turbine {
+    return Turbine(
+        id =turbineWrapper.id,
+        alias = turbineWrapper.alias,
+        serial = turbineWrapper.serial,
+        numInWindfarm = turbineWrapper.numInWindfarm,
+        windfarmId = turbineWrapper.windfarmId
     )
 }
 

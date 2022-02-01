@@ -1,33 +1,29 @@
 package com.heliopales.bladeexpertfiller
 
 import android.app.Application
-import android.content.Context
 import android.util.Log
-import androidx.core.content.ContextCompat
 import androidx.room.Room
 import com.heliopales.bladeexpertfiller.blade.Blade
 import com.heliopales.bladeexpertfiller.bladeexpert.*
 import com.heliopales.bladeexpertfiller.intervention.Intervention
-import okhttp3.Dispatcher
+import com.heliopales.bladeexpertfiller.turbine.Turbine
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.io.File
-import java.io.PrintWriter
 import java.util.*
 import java.util.concurrent.TimeUnit
-import kotlin.io.path.Path
 
 const val DATABASE_FILE_NAME = "bxpfil_db_2"
 
-const val API_KEY = "LdVx6Ur82mm9oQZT4zSzBLea2Xnmzh4M";
+const val API_KEY = "LdVx6Ur82mm9oQZT4zSzBLea2XnmzaP1";
 
 //PRODUCTION
-private const val BASE_URL = "https://www.blade-expert.com/"
+//private const val BASE_URL = "https://www.blade-expert.com/"
 
 //RECETTE
-//private const val BASE_URL = "https://bladeexpert-recette.herokuapp.com/bladeexpert/"
+private const val BASE_URL = "https://bladeexpert-recette.herokuapp.com/bladeexpert/"
 
 //LOCAL
 //private const val BASE_URL = "http://192.168.1.181/bladeexpert/"
@@ -91,22 +87,34 @@ class App : Application() {
             return file.absolutePath
         }
 
-        fun getInterventionPath(intervention: Intervention): String {
+        fun getMainInterventionPath(intervention: Intervention): String {
             return "${getOutputDirectory()}/intervention_${intervention.id}_${
-                intervention.turbineName?.replace(
+                intervention.name?.replace(
                     " ",
                     "-"
                 )
             }"
         }
 
-        fun getInterventionPath(interventionId: Int): String {
-            val intervention = database.interventionDao().getById(interventionId)
-            return getInterventionPath(intervention)
+        fun getInterventionPicturePath(intervention: Intervention): String {
+            return "${getMainInterventionPath(intervention)}/intervention_pictures"
+        }
+
+        fun getWindfarmPath(intervention: Intervention): String {
+            return "${getMainInterventionPath(intervention)}/windfarm"
+        }
+
+        fun getTurbinePath(intervention: Intervention, turbine: Turbine): String {
+            return "${getMainInterventionPath(intervention)}/turbine_${turbine.id}_${
+                turbine.alias?.replace(
+                    " ",
+                    "-"
+                )
+            }"
         }
 
         fun getBladePath(intervention: Intervention, blade: Blade): String {
-            return "${getInterventionPath(intervention)}/blade_${blade.id}_${
+            return "${getMainInterventionPath(intervention)}/blade_${blade.id}_${
                 blade.position?.replace(
                     " ",
                     "-"
@@ -114,10 +122,8 @@ class App : Application() {
             }"
         }
 
-        fun getBladePath(interventionId: Int, bladeId: Int): String {
-            val intervention = database.interventionDao().getById(interventionId)
-            val blade = database.bladeDao().getById(bladeId)
-            return getBladePath(intervention, blade)
+        fun getBladePicturePath(intervention: Intervention, blade: Blade): String {
+            return "${getBladePath(intervention, blade) }/blade_pictures"
         }
 
         fun getDamagePath(
@@ -156,7 +162,7 @@ class App : Application() {
         }
 
         fun writeOnInterventionLogFile(intervention: Intervention, message: String) {
-            val path = File(getInterventionPath(intervention))
+            val path = File(getMainInterventionPath(intervention))
             if (!path.exists()) path.mkdirs()
             val logFile = File(path, "log.txt")
             if (!logFile.exists()) {

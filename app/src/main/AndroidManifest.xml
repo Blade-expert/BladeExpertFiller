@@ -5,7 +5,7 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.CAMERA" />
 
     <application
@@ -17,9 +17,13 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.BladeExpertFiller">
         <activity
-            android:name=".spotcondition.lightning.LightningActivity"
+            android:name=".turbine.WindfarmActivity"
             android:exported="false"
             android:screenOrientation="portrait"/>
+        <activity
+            android:name=".spotcondition.lightning.LightningActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".spotcondition.drainhole.DrainholeActivity"
             android:exported="false"

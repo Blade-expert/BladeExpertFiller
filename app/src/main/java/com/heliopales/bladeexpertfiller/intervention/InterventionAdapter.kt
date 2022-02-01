@@ -46,7 +46,7 @@ private val lifecycleOwner: LifecycleOwner
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val itv = interventions[position];
         with(holder) {
-            turbineNameView.text = itv.turbineName
+            turbineNameView.text = itv.name
             cardView.tag = itv
             cardView.setOnClickListener(this@InterventionAdapter)
             progressBar.visibility = View.GONE
