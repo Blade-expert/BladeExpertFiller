@@ -1,25 +1,31 @@
 package com.heliopales.bladeexpertfiller.blade
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.view.GestureDetector
+import android.view.MotionEvent
 import android.view.View
 import android.widget.Button
 import android.widget.ImageButton
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.constraintlayout.widget.ConstraintLayout
 import com.heliopales.bladeexpertfiller.*
 import com.heliopales.bladeexpertfiller.camera.CameraActivity
 import com.heliopales.bladeexpertfiller.spotcondition.damages.DamageListActivity
 import com.heliopales.bladeexpertfiller.spotcondition.INHERIT_TYPE_DAMAGE_IN
 import com.heliopales.bladeexpertfiller.spotcondition.INHERIT_TYPE_DAMAGE_OUT
 import com.heliopales.bladeexpertfiller.intervention.Intervention
+import com.heliopales.bladeexpertfiller.intervention.InterventionActivity
 import com.heliopales.bladeexpertfiller.spotcondition.drainhole.DrainholeActivity
 import com.heliopales.bladeexpertfiller.spotcondition.lightning.LightningActivity
+import com.heliopales.bladeexpertfiller.utils.OnSwipeListener
 
 
-class BladeActivity : AppCompatActivity(), View.OnClickListener {
+class BladeActivity : AppCompatActivity(), View.OnClickListener, View.OnTouchListener {
     val TAG = BladeActivity.javaClass.simpleName
 
     companion object {
@@ -27,13 +33,15 @@ class BladeActivity : AppCompatActivity(), View.OnClickListener {
         const val EXTRA_BLADE = "blade"
     }
 
-    private lateinit var intervention: Intervention;
-    private lateinit var blade: Blade;
-    private lateinit var database: AppDatabase;
-    private lateinit var turbineNameView: TextView;
-    private lateinit var bladeNameView: TextView;
-    private lateinit var bladeSerialView: TextView;
+    private lateinit var intervention: Intervention
+    private lateinit var blade: Blade
+    private lateinit var database: AppDatabase
+    private lateinit var turbineNameView: TextView
+    private lateinit var bladeNameView: TextView
+    private lateinit var bladeSerialView: TextView
+    private lateinit var gestureDetector: GestureDetector
 
+    @SuppressLint("ClickableViewAccessibility")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_blade)
@@ -59,6 +67,35 @@ class BladeActivity : AppCompatActivity(), View.OnClickListener {
         findViewById<Button>(R.id.see_outdoor_damages_button).setOnClickListener(this)
         findViewById<Button>(R.id.see_drainhole_button).setOnClickListener(this)
         findViewById<Button>(R.id.see_lightning_button).setOnClickListener(this)
+
+        gestureDetector = GestureDetector(this, object : OnSwipeListener() {
+            override fun onSwipe(direction: Direction?): Boolean {
+                Log.d(TAG, "OnSwipe")
+                when (direction) {
+                    Direction.up -> Log.d(TAG, "Swiped UP")
+                    Direction.down -> startInterventionActivity()
+                    Direction.left -> Log.d(TAG, "Swiped LEFT")
+                    Direction.right -> Log.d(TAG, "Swiped RIGHT")
+                    else -> Log.d(TAG, "No direction found for Swipe")
+                }
+                return true;
+            }
+        });
+
+        findViewById<ConstraintLayout>(R.id.blade_main_layout).setOnTouchListener(this)
+    }
+
+    override fun onTouch(v: View?, event: MotionEvent?): Boolean {
+        Log.d(TAG, "onTouch")
+        gestureDetector.onTouchEvent(event)
+        return true;
+    }
+
+    fun startInterventionActivity(){
+        val intent = Intent(this, InterventionActivity::class.java)
+        intent.putExtra(InterventionActivity.EXTRA_INTERVENTION, intervention)
+        startActivity(intent)
+        overridePendingTransition(R.anim.in_from_top, R.anim.no_anim);
     }
 
     override fun onClick(v: View?) {
@@ -88,7 +125,7 @@ class BladeActivity : AppCompatActivity(), View.OnClickListener {
 
     private fun startIndoorActivity() {
         val intent = Intent(this, DamageListActivity::class.java)
-        intent.putExtra(DamageListActivity.EXTRA_INTERVENTION_ID, intervention.id)
+        intent.putExtra(DamageListActivity.EXTRA_INTERVENTION, intervention)
         intent.putExtra(DamageListActivity.EXTRA_BLADE, blade)
         intent.putExtra(DamageListActivity.EXTRA_DAMAGE_INOUT, INHERIT_TYPE_DAMAGE_IN)
         startActivity(intent)
@@ -96,7 +133,7 @@ class BladeActivity : AppCompatActivity(), View.OnClickListener {
 
     private fun startOutdoorActivity() {
         val intent = Intent(this, DamageListActivity::class.java)
-        intent.putExtra(DamageListActivity.EXTRA_INTERVENTION_ID, intervention.id)
+        intent.putExtra(DamageListActivity.EXTRA_INTERVENTION, intervention)
         intent.putExtra(DamageListActivity.EXTRA_BLADE, blade)
         intent.putExtra(DamageListActivity.EXTRA_DAMAGE_INOUT, INHERIT_TYPE_DAMAGE_OUT)
         startActivity(intent)

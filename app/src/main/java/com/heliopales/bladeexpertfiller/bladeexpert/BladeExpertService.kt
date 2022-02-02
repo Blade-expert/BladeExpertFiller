@@ -49,6 +49,7 @@ interface BladeExpertService {
         @Part filePart: MultipartBody.Part
     ): Call<ResponseBody>
 
+
     @POST(value = "api/mobile/indoorDamage")
     fun saveIndoorDamageSpotCondition(
         @Query("key") key: String = API_KEY,
@@ -82,9 +83,10 @@ interface BladeExpertService {
     ): Call<LightningSpotConditionWrapper>
 
     @Multipart
-    @PUT(value = "api/mobile/intervention/{id}/turbineImage")
-    fun updateTurbinePicture(
-        @Path("id") interventionId: Int,
+    @POST(value = "api/mobile/intervention/{interventionId}/turbine/{turbineId}/turbineImage")
+    fun addPictureToTurbine(
+        @Path("turbineId") turbineId: Int,
+        @Path("interventionId") interventionId: Int,
         @Query("key") key: String = API_KEY,
         @Query("userKey") userKey: String? = App.database.userSettingsDao()
             .getUserSettings()?.userApiKey,
@@ -92,15 +94,35 @@ interface BladeExpertService {
     ): Call<ResponseBody>
 
     @Multipart
-    @PUT(value = "api/mobile/intervention/{interventionId}/blade/{bladeId}/bladeImage")
-    fun updateBladePicture(
+    @POST(value = "api/mobile/intervention/{interventionId}/interventionImage")
+    fun addPictureToIntervention(
         @Path("interventionId") interventionId: Int,
-        @Path("bladeId") bladeId: Int,
         @Query("key") key: String = API_KEY,
         @Query("userKey") userKey: String? = App.database.userSettingsDao()
             .getUserSettings()?.userApiKey,
         @Part filePart: MultipartBody.Part
     ): Call<ResponseBody>
 
+    @Multipart
+    @POST(value = "api/mobile/intervention/{interventionId}/blade/{bladeId}/bladeImage")
+    fun addPictureToBlade(
+        @Path("bladeId") bladeId: Int,
+        @Path("interventionId") interventionId: Int,
+        @Query("key") key: String = API_KEY,
+        @Query("userKey") userKey: String? = App.database.userSettingsDao()
+            .getUserSettings()?.userApiKey,
+        @Part filePart: MultipartBody.Part
+    ): Call<ResponseBody>
+
+    @Multipart
+    @POST(value = "api/mobile/intervention/{interventionId}/windfarm/{windfarmId}/windfarmImage")
+    fun addPictureToWindfarm(
+        @Path("windfarmId") windfarmId: Int,
+        @Path("interventionId") interventionId: Int,
+        @Query("key") key: String = API_KEY,
+        @Query("userKey") userKey: String? = App.database.userSettingsDao()
+            .getUserSettings()?.userApiKey,
+        @Part filePart: MultipartBody.Part
+    ): Call<ResponseBody>
 
 }

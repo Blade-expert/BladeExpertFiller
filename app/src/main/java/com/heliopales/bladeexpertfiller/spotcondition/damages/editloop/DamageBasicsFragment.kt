@@ -15,16 +15,18 @@ import com.heliopales.bladeexpertfiller.App
 import com.heliopales.bladeexpertfiller.EXPORTATION_STATE_NOT_EXPORTED
 import com.heliopales.bladeexpertfiller.PICTURE_TYPE_DAMAGE
 import com.heliopales.bladeexpertfiller.R
+import com.heliopales.bladeexpertfiller.blade.Blade
 import com.heliopales.bladeexpertfiller.camera.CameraActivity
+import com.heliopales.bladeexpertfiller.intervention.Intervention
 import com.heliopales.bladeexpertfiller.spotcondition.DamageSpotCondition
 import com.heliopales.bladeexpertfiller.spotcondition.damages.DamageViewPagerActivity
+import kotlinx.android.synthetic.main.activity_intervention_details.*
 import kotlin.math.roundToInt
 
 
 class DamageBasicsFragment : Fragment() {
 
     private lateinit var damage: DamageSpotCondition
-
     private lateinit var radialPosition: EditText
     private lateinit var longitudinalLength: EditText
     private lateinit var radialLength: EditText

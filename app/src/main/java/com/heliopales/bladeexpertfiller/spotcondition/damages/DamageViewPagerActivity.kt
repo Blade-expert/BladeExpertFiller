@@ -1,8 +1,13 @@
 package com.heliopales.bladeexpertfiller.spotcondition.damages
 
+import android.annotation.SuppressLint
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.view.GestureDetector
+import android.view.MotionEvent
+import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.viewpager2.adapter.FragmentStateAdapter
@@ -12,9 +17,13 @@ import com.google.android.material.tabs.TabLayoutMediator
 import com.heliopales.bladeexpertfiller.*
 import com.heliopales.bladeexpertfiller.spotcondition.damages.editloop.*
 import android.view.inputmethod.InputMethodManager
+import android.widget.LinearLayout
+import androidx.constraintlayout.widget.ConstraintLayout
+import com.heliopales.bladeexpertfiller.intervention.InterventionActivity
 import com.heliopales.bladeexpertfiller.spotcondition.DamageSpotCondition
 import com.heliopales.bladeexpertfiller.spotcondition.INHERIT_TYPE_DAMAGE_IN
 import com.heliopales.bladeexpertfiller.spotcondition.INHERIT_TYPE_DAMAGE_OUT
+import com.heliopales.bladeexpertfiller.utils.OnSwipeListener
 
 
 class DamageViewPagerActivity : AppCompatActivity() {
@@ -26,7 +35,6 @@ class DamageViewPagerActivity : AppCompatActivity() {
     private val TAG = DamageViewPagerActivity::class.java.simpleName
 
     lateinit var pager: ViewPager2
-
     lateinit var damage: DamageSpotCondition
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -53,6 +61,7 @@ class DamageViewPagerActivity : AppCompatActivity() {
                 INDEX_DAMAGE_LOOP_SEVE -> tab.text = "Sev."
             }
         }.attach()
+
     }
 
     fun hideKeyboard(){

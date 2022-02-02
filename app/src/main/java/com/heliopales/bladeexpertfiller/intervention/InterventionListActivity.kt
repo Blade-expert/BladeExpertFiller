@@ -162,20 +162,17 @@ class InterventionListActivity : AppCompatActivity(), InterventionAdapter.Interv
         //delete damages and related pictures
         App.database.damageDao().getDamagesByInterventionId(interventionId = deletedIntervention.id)
             .forEach {
-                App.database.pictureDao().deleteDamagePictures(damageLocalId = it.localId)
                 App.database.damageDao().delete(it)
             }
         //Delete drainhole, related pictures
         App.database.drainholeDao().getByInterventionId(interventionId = deletedIntervention.id)
             .forEach {
-                App.database.pictureDao().deleteDrainholePictures(drainLocalId = it.localId)
                 App.database.drainholeDao().delete(it)
             }
 
         //Delete lightning, related pictures and related measures
         App.database.lightningDao().getByInterventionId(interventionId = deletedIntervention.id)
             .forEach {
-                App.database.pictureDao().deleteLightningPictures(lightningLocalId = it.localId)
                 App.database.receptorMeasureDao()
                     .deleteByLightningLocalId(lightningLocalId = it.localId)
                 App.database.lightningDao().delete(it)
@@ -183,12 +180,12 @@ class InterventionListActivity : AppCompatActivity(), InterventionAdapter.Interv
 
         //delete blade and related pictures
         App.database.bladeDao().getBladesByInterventionId(deletedIntervention.id).forEach {
-            App.database.pictureDao().deleteBladePictures(bladeId = it.id)
             App.database.bladeDao().delete(it)
         }
 
-        //Delete turbine picture and intervention
-        App.database.pictureDao().deleteTurbinePictures(interventionId = deletedIntervention.id)
+        //Delete pictures and intervention
+        App.database.pictureDao()
+            .deletePicturesLinkedToIntervention(interventionId = deletedIntervention.id)
         App.database.interventionDao().deleteIntervention(deletedIntervention)
 
         //delete interventionFolder
@@ -343,38 +340,7 @@ class InterventionListActivity : AppCompatActivity(), InterventionAdapter.Interv
         intervention: Intervention
     ) {
         if (intervention.exporting) return
-
-        exportAfterMultiplePictureCheck(intervention)
-    }
-
-    private fun exportAfterMultiplePictureCheck(intervention: Intervention) {
-        var multiplePictures = false
-        val turbinePictures = App.database.pictureDao().getTurbinePictures(intervention.id)
-        if (turbinePictures.size > 1) {
-            multiplePictures = true
-        }
-        App.database.bladeDao().getBladesByInterventionId(intervention.id).forEach { bla ->
-            val bladePictures = App.database.pictureDao().getBladePictures(bla.id)
-            if (bladePictures.size > 1) {
-                multiplePictures = true
-            }
-        }
-
-        if (multiplePictures) {
-            AlertDialog.Builder(this)
-                .setMessage(
-                    "There is more than 1 picture for the turbine and/or for blade(s). " +
-                            "Proceed exportation anyway ? Only the first picture of each entity will be sent."
-                )
-                .setPositiveButton("Yes") { _, _ ->
-                    exportAfterDamageUncompleteCheck(intervention)
-                }
-                .setNegativeButton("No") { _, _ -> }
-                .create()
-                .show()
-        } else {
-            exportAfterDamageUncompleteCheck(intervention)
-        }
+        exportAfterDamageUncompleteCheck(intervention)
     }
 
     private fun exportAfterDamageUncompleteCheck(intervention: Intervention) {
@@ -402,7 +368,6 @@ class InterventionListActivity : AppCompatActivity(), InterventionAdapter.Interv
         }
 
     }
-
 
     private fun uploadIntervention(intervention: Intervention) {
         intervention.exportErrorsInLastExport = false
@@ -454,12 +419,37 @@ class InterventionListActivity : AppCompatActivity(), InterventionAdapter.Interv
         return Runnable {
             Log.i(TAG, "saveIntervention ${intervention.id} ${intervention.name}")
 
+            //Intervention Pictures
+            App.database.pictureDao().getNonExportedPicturesByTypeAndInterventionId(
 
-            saveTurbine(intervention)
+                PICTURE_TYPE_INTERVENTION, intervention.id).forEach { pic ->
+                    Log.d(TAG,"exporting intervention picture $pic")
+                sendInterventionPicture(pic, intervention)
+            }
+
+            //Blade Pictures
+            App.database.pictureDao().getNonExportedPicturesByTypeAndInterventionId(
+                PICTURE_TYPE_BLADE, intervention.id).forEach { pic ->
+                sendBladePicture(pic, intervention)
+            }
+
+            //Turbine Pictures
+            App.database.pictureDao().getNonExportedPicturesByTypeAndInterventionId(
+                PICTURE_TYPE_TURBINE, intervention.id).forEach { pic ->
+                sendTurbinePicture(pic, intervention)
+            }
+
+            //Windfarm Pictures
+            App.database.pictureDao().getNonExportedPicturesByTypeAndInterventionId(
+                PICTURE_TYPE_WINDFARM, intervention.id).forEach { pic ->
+                sendWindfarmPicture(pic, intervention)
+            }
+
+            saveTurbineSerial(intervention)
 
             App.database.bladeDao().getBladesByInterventionId(intervention.id).forEach { bla ->
                 Log.i(TAG, "saveBlade ${bla.position}")
-                saveBlade(bla, intervention)
+                saveBladeSerial(bla, intervention)
 
                 App.database.damageDao().getDamagesByBladeAndInterventionAndInheritType(
                     bla.id,
@@ -470,7 +460,6 @@ class InterventionListActivity : AppCompatActivity(), InterventionAdapter.Interv
                         Log.d(TAG, "saveDamage ${dsc.fieldCode}")
                         saveIndoorDamage(dsc, intervention)
                     }
-
                 }
 
                 App.database.damageDao().getDamagesByBladeAndInterventionAndInheritType(
@@ -498,7 +487,7 @@ class InterventionListActivity : AppCompatActivity(), InterventionAdapter.Interv
         }
     }
 
-    private fun saveTurbine(intervention: Intervention) {
+    private fun saveTurbineSerial(intervention: Intervention) {
         App.bladeExpertService.updateTurbineSerial(
             interventionWrapper = mapToBladeExpertIntervention(
                 intervention
@@ -530,45 +519,9 @@ class InterventionListActivity : AppCompatActivity(), InterventionAdapter.Interv
                 }
             })
 
-        val turbinePictures = App.database.pictureDao().getTurbinePictures(intervention.id)
-        if (turbinePictures.isNotEmpty()) {
-            Log.d(TAG, "Attempt to send turbine picture")
-            val pic = turbinePictures.first()
-            val pictureFile = File(pic.absolutePath)
-            val filePart = MultipartBody.Part.createFormData(
-                "file",
-                pictureFile.name,
-                pictureFile.asRequestBody("image/jpeg".toMediaTypeOrNull())
-            )
-            App.bladeExpertService.updateTurbinePicture(
-                interventionId = intervention.id,
-                filePart = filePart
-            ).enqueue(object : retrofit2.Callback<ResponseBody> {
-                override fun onResponse(
-                    call: Call<ResponseBody>,
-                    response: Response<ResponseBody>
-                ) {
-                    intervention.exportRealizedOperations.postValue(++intervention.exportCount)
-                    if (!response.isSuccessful) {
-                        intervention.exportErrorsInLastExport = true
-                        App.writeOnInterventionLogFile(
-                            intervention,
-                            "Error while saving turbine picture $pic | Http response code = ${response.code()} | ${response.message()}"
-                        )
-                    }
-                }
-
-                override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
-                    App.writeOnInterventionLogFile(intervention, "Failure while exporting $pic")
-                    App.writeOnInterventionLogFile(intervention, t.stackTraceToString())
-                    intervention.exportRealizedOperations.postValue(++intervention.exportCount)
-                    intervention.exportErrorsInLastExport = true
-                }
-            })
-        }
     }
 
-    private fun saveBlade(bla: Blade, intervention: Intervention) {
+    private fun saveBladeSerial(bla: Blade, intervention: Intervention) {
         App.bladeExpertService.updateBladeSerial(bladeWrapper = mapToBladeExpertBlade(bla))
             .enqueue(object : retrofit2.Callback<Boolean> {
                 override fun onResponse(
@@ -592,44 +545,6 @@ class InterventionListActivity : AppCompatActivity(), InterventionAdapter.Interv
                     intervention.exportErrorsInLastExport = true
                 }
             })
-
-        val bladePictures = App.database.pictureDao().getBladePictures(bla.id)
-        if (bladePictures.isNotEmpty()) {
-            Log.d(TAG, "Attempt to send blade picture on blade $bla")
-            val pic = bladePictures.first()
-            val pictureFile = File(pic.absolutePath)
-            val filePart = MultipartBody.Part.createFormData(
-                "file",
-                pictureFile.name,
-                pictureFile.asRequestBody("image/jpeg".toMediaTypeOrNull())
-            )
-            App.bladeExpertService.updateBladePicture(
-                interventionId = intervention.id,
-                bladeId = bla.id,
-                filePart = filePart
-            ).enqueue(object : retrofit2.Callback<ResponseBody> {
-                override fun onResponse(
-                    call: Call<ResponseBody>,
-                    response: Response<ResponseBody>
-                ) {
-                    intervention.exportRealizedOperations.postValue(++intervention.exportCount)
-                    if (!response.isSuccessful) {
-                        intervention.exportErrorsInLastExport = true
-                        App.writeOnInterventionLogFile(
-                            intervention,
-                            "Error while saving blade $bla picture $pic | Http response code = ${response.code()} | ${response.message()}"
-                        )
-                    }
-                }
-
-                override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
-                    App.writeOnInterventionLogFile(intervention, "Failure while exporting $pic")
-                    App.writeOnInterventionLogFile(intervention, t.stackTraceToString())
-                    intervention.exportRealizedOperations.postValue(++intervention.exportCount)
-                    intervention.exportErrorsInLastExport = true
-                }
-            })
-        }
     }
 
     private fun saveIndoorDamage(dsc: DamageSpotCondition, intervention: Intervention) {
@@ -884,22 +799,204 @@ class InterventionListActivity : AppCompatActivity(), InterventionAdapter.Interv
         }
     }
 
+    private fun sendTurbinePicture(
+        pic: Picture,
+        intervention: Intervention,
+    ) {
+        if (pic.exportState == EXPORTATION_STATE_NOT_EXPORTED) {
+            val pictureFile = File(pic.absolutePath)
+            val filePart = MultipartBody.Part.createFormData(
+                "file",
+                pictureFile.name,
+                pictureFile.asRequestBody("image/jpeg".toMediaTypeOrNull())
+            )
+            App.bladeExpertService.addPictureToTurbine(
+                turbineId = pic.relatedId,
+                interventionId = intervention.id,
+                filePart = filePart
+            )
+                .enqueue(object : retrofit2.Callback<ResponseBody> {
+                    override fun onResponse(
+                        call: Call<ResponseBody>,
+                        response: Response<ResponseBody>
+                    ) {
+                        intervention.exportRealizedOperations.postValue(++intervention.exportCount)
+                        if (response.isSuccessful) {
+                            App.database.pictureDao()
+                                .updateExportationState(pic.fileName, EXPORTATION_STATE_EXPORTED)
+                        } else {
+                            intervention.exportErrorsInLastExport = true
+                            App.writeOnInterventionLogFile(
+                                intervention,
+                                "Error while saving picture $pic | Http response code = ${response.code()} | ${response.message()}"
+                            )
+                        }
+                    }
+
+                    override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
+                        App.writeOnInterventionLogFile(intervention, "Failure while exporting $pic")
+                        App.writeOnInterventionLogFile(intervention, t.stackTraceToString())
+                        intervention.exportRealizedOperations.postValue(++intervention.exportCount)
+                        intervention.exportErrorsInLastExport = true
+                    }
+                })
+        } else {
+            intervention.exportRealizedOperations.postValue(++intervention.exportCount)
+        }
+    }
+
+    private fun sendInterventionPicture(
+        pic: Picture,
+        intervention: Intervention,
+    ) {
+        if (pic.exportState == EXPORTATION_STATE_NOT_EXPORTED) {
+            val pictureFile = File(pic.absolutePath)
+            val filePart = MultipartBody.Part.createFormData(
+                "file",
+                pictureFile.name,
+                pictureFile.asRequestBody("image/jpeg".toMediaTypeOrNull())
+            )
+            App.bladeExpertService.addPictureToIntervention(
+                interventionId = intervention.id,
+                filePart = filePart
+            )
+                .enqueue(object : retrofit2.Callback<ResponseBody> {
+                    override fun onResponse(
+                        call: Call<ResponseBody>,
+                        response: Response<ResponseBody>
+                    ) {
+                        intervention.exportRealizedOperations.postValue(++intervention.exportCount)
+                        if (response.isSuccessful) {
+                            App.database.pictureDao()
+                                .updateExportationState(pic.fileName, EXPORTATION_STATE_EXPORTED)
+                        } else {
+                            intervention.exportErrorsInLastExport = true
+                            App.writeOnInterventionLogFile(
+                                intervention,
+                                "Error while saving picture $pic | Http response code = ${response.code()} | ${response.message()}"
+                            )
+                        }
+                    }
+
+                    override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
+                        App.writeOnInterventionLogFile(intervention, "Failure while exporting $pic")
+                        App.writeOnInterventionLogFile(intervention, t.stackTraceToString())
+                        intervention.exportRealizedOperations.postValue(++intervention.exportCount)
+                        intervention.exportErrorsInLastExport = true
+                    }
+                })
+        } else {
+            intervention.exportRealizedOperations.postValue(++intervention.exportCount)
+        }
+    }
+
+    private fun sendBladePicture(
+        pic: Picture,
+        intervention: Intervention,
+    ) {
+        if (pic.exportState == EXPORTATION_STATE_NOT_EXPORTED) {
+            val pictureFile = File(pic.absolutePath)
+            val filePart = MultipartBody.Part.createFormData(
+                "file",
+                pictureFile.name,
+                pictureFile.asRequestBody("image/jpeg".toMediaTypeOrNull())
+            )
+            App.bladeExpertService.addPictureToBlade(
+                bladeId = pic.relatedId,
+                interventionId = intervention.id,
+                filePart = filePart
+            )
+                .enqueue(object : retrofit2.Callback<ResponseBody> {
+                    override fun onResponse(
+                        call: Call<ResponseBody>,
+                        response: Response<ResponseBody>
+                    ) {
+                        intervention.exportRealizedOperations.postValue(++intervention.exportCount)
+                        if (response.isSuccessful) {
+                            App.database.pictureDao()
+                                .updateExportationState(pic.fileName, EXPORTATION_STATE_EXPORTED)
+                        } else {
+                            intervention.exportErrorsInLastExport = true
+                            App.writeOnInterventionLogFile(
+                                intervention,
+                                "Error while saving picture $pic | Http response code = ${response.code()} | ${response.message()}"
+                            )
+                        }
+                    }
+
+                    override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
+                        App.writeOnInterventionLogFile(intervention, "Failure while exporting $pic")
+                        App.writeOnInterventionLogFile(intervention, t.stackTraceToString())
+                        intervention.exportRealizedOperations.postValue(++intervention.exportCount)
+                        intervention.exportErrorsInLastExport = true
+                    }
+                })
+        } else {
+            intervention.exportRealizedOperations.postValue(++intervention.exportCount)
+        }
+    }
+
+    private fun sendWindfarmPicture(
+        pic: Picture,
+        intervention: Intervention,
+    ) {
+        if (pic.exportState == EXPORTATION_STATE_NOT_EXPORTED) {
+            val pictureFile = File(pic.absolutePath)
+            val filePart = MultipartBody.Part.createFormData(
+                "file",
+                pictureFile.name,
+                pictureFile.asRequestBody("image/jpeg".toMediaTypeOrNull())
+            )
+            App.bladeExpertService.addPictureToWindfarm(
+                windfarmId = pic.relatedId,
+                interventionId = intervention.id,
+                filePart = filePart
+            )
+                .enqueue(object : retrofit2.Callback<ResponseBody> {
+                    override fun onResponse(
+                        call: Call<ResponseBody>,
+                        response: Response<ResponseBody>
+                    ) {
+                        intervention.exportRealizedOperations.postValue(++intervention.exportCount)
+                        if (response.isSuccessful) {
+                            App.database.pictureDao()
+                                .updateExportationState(pic.fileName, EXPORTATION_STATE_EXPORTED)
+                        } else {
+                            intervention.exportErrorsInLastExport = true
+                            App.writeOnInterventionLogFile(
+                                intervention,
+                                "Error while saving picture $pic | Http response code = ${response.code()} | ${response.message()}"
+                            )
+                        }
+                    }
+
+                    override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
+                        App.writeOnInterventionLogFile(intervention, "Failure while exporting $pic")
+                        App.writeOnInterventionLogFile(intervention, t.stackTraceToString())
+                        intervention.exportRealizedOperations.postValue(++intervention.exportCount)
+                        intervention.exportErrorsInLastExport = true
+                    }
+                })
+        } else {
+            intervention.exportRealizedOperations.postValue(++intervention.exportCount)
+        }
+    }
+
     private fun countOperationsForExport(intervention: Intervention): Int {
         Log.d(TAG, "countOperationsForExport()")
         var count = 0;
-        var goAhead = true;
 
-        count++ //turbineSerial
+        //count pictures
+        count += App.database.pictureDao().countNonExportedPicturesByInterventionId(intervention.id)
+        Log.d(TAG, " - $count pictures")
+
+        //turbineSerial
+        count++
         Log.d(TAG, " - 1 turbine")
-
-        if (App.database.pictureDao().getTurbinePictures(intervention.id).isNotEmpty()) count++;
 
         App.database.bladeDao().getBladesByInterventionId(intervention.id).forEach { bla ->
             count++ // BladeSerial
             Log.d(TAG, "   - 1 blade")
-
-            if (App.database.pictureDao().getBladePictures(bla.id).isNotEmpty()) count++
-
 
             App.database.damageDao().getDamagesByBladeAndInterventionAndInheritType(
                 bla.id,
@@ -909,13 +1006,7 @@ class InterventionListActivity : AppCompatActivity(), InterventionAdapter.Interv
                 if (dsc.radialPosition != null && dsc.position != null) {
                     count++ //IndoorDamageSpotCondition
                     Log.d(TAG, "     - indoor damage ${dsc.fieldCode}")
-                    App.database.pictureDao()
-                        .getNonExportedDamageSpotPicturesByDamageId(dsc.localId).forEach { pic ->
-                            count++ //picture
-                            Log.d(TAG, "       - pic : ${pic.fileName}")
-                        }
                 }
-
             }
             App.database.damageDao().getDamagesByBladeAndInterventionAndInheritType(
                 bla.id,
@@ -925,37 +1016,17 @@ class InterventionListActivity : AppCompatActivity(), InterventionAdapter.Interv
                 if (dsc.radialPosition != null && dsc.position != null) {
                     count++ //OutdoorDamageSpotCondition
                     Log.d(TAG, "     - outdoor damage ${dsc.fieldCode}")
-                    App.database.pictureDao()
-                        .getNonExportedDamageSpotPicturesByDamageId(dsc.localId).forEach { pic ->
-                            count++ //picture
-                            Log.d(TAG, "       - pic : ${pic.fileName}")
-                        }
                 }
-
             }
-
             App.database.drainholeDao().getByBladeAndIntervention(bla.id, bla.interventionId)
                 ?.let {
                     count++ //drainholeSpotCondition
                     Log.d(TAG, "     - drainhole")
-                    App.database.pictureDao()
-                        .getNonExportedDrainholeSpotPicturesByDrainId(it.localId)
-                        .forEach { pic ->
-                            count++ //picture
-                            Log.d(TAG, "       - pic : ${pic.fileName}")
-                        }
                 }
-
             App.database.lightningDao().getByBladeAndIntervention(bla.id, bla.interventionId)
                 ?.let {
                     count++ //lightningSpotCondition
                     Log.d(TAG, "     - lightning")
-                    App.database.pictureDao()
-                        .getNonExportedLightningSpotPicturesByLightningId(it.localId)
-                        .forEach { pic ->
-                            count++ //picture
-                            Log.d(TAG, "       - pic : ${pic.fileName}")
-                        }
                 }
 
         }

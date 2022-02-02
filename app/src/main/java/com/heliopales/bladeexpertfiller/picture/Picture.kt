@@ -11,8 +11,8 @@ data class Picture(
     val absolutePath: String,
     val uri: String, //To Retrieve URI => Uri.parse(s);
     val type: Int,
-    val relatedId: Int?,
+    val relatedId: Int,
+    val interventionId: Int,
     val exportState: Int = EXPORTATION_STATE_NOT_EXPORTED,
-
     ) {
 }

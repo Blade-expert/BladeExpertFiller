@@ -17,9 +17,13 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.BladeExpertFiller">
         <activity
-            android:name=".turbine.WindfarmActivity"
+            android:name=".intervention.InterventionActivity"
             android:exported="false"
             android:screenOrientation="portrait"/>
+        <activity
+            android:name=".turbine.WindfarmActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".spotcondition.lightning.LightningActivity"
             android:exported="false"

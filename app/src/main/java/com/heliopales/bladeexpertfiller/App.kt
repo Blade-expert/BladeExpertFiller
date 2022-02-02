@@ -141,6 +141,19 @@ class App : Application() {
             }
         }
 
+        fun getDamagePath(
+            intervention: Intervention,
+            blade: Blade,
+            damageSpotConditionLocalId: Int?
+        ): String {
+            return if (damageSpotConditionLocalId != null) {
+                val damage = database.damageDao().getDamageByLocalId(damageSpotConditionLocalId)
+                "${getBladePath(intervention, blade)}/damage_${damage.localId}_${damage.fieldCode}"
+            } else {
+                "${getBladePath(intervention, blade)}/damage_unknown"
+            }
+        }
+
         fun getDrainPath(
             interventionId: Int,
             bladeId: Int
@@ -158,7 +171,6 @@ class App : Application() {
             val intervention = database.interventionDao().getById(interventionId)
             val blade = database.bladeDao().getById(bladeId)
             return "${getBladePath(intervention, blade)}/lightning"
-
         }
 
         fun writeOnInterventionLogFile(intervention: Intervention, message: String) {

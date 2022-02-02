@@ -1,12 +1,17 @@
 package com.heliopales.bladeexpertfiller.spotcondition.damages
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.view.GestureDetector
+import android.view.MotionEvent
 import android.view.View
 import android.widget.ImageButton
+import android.widget.RelativeLayout
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.heliopales.bladeexpertfiller.App
@@ -15,16 +20,19 @@ import com.heliopales.bladeexpertfiller.R
 import com.heliopales.bladeexpertfiller.blade.Blade
 import com.heliopales.bladeexpertfiller.blade.BladeActivity
 import com.heliopales.bladeexpertfiller.camera.CameraActivity
+import com.heliopales.bladeexpertfiller.intervention.Intervention
+import com.heliopales.bladeexpertfiller.intervention.InterventionActivity
 import com.heliopales.bladeexpertfiller.spotcondition.DamageSpotCondition
 import com.heliopales.bladeexpertfiller.spotcondition.INHERIT_TYPE_DAMAGE_IN
 import com.heliopales.bladeexpertfiller.spotcondition.INHERIT_TYPE_DAMAGE_OUT
+import com.heliopales.bladeexpertfiller.utils.OnSwipeListener
 
 class DamageListActivity : AppCompatActivity(), DamageAdapter.DamageItemListener,
-    View.OnClickListener {
+    View.OnClickListener, View.OnTouchListener {
     val TAG = DamageListActivity::class.java.simpleName
 
     companion object {
-        val EXTRA_INTERVENTION_ID = "intervention_id";
+        val EXTRA_INTERVENTION = "intervention";
         val EXTRA_BLADE = "blade";
         val EXTRA_DAMAGE_INOUT = "damage_inout";
     }
@@ -32,12 +40,13 @@ class DamageListActivity : AppCompatActivity(), DamageAdapter.DamageItemListener
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: DamageAdapter
     private lateinit var blade: Blade;
-    private var interventionId: Int = -1
-
+    private lateinit var intervention: Intervention
+    private lateinit var gestureDetector: GestureDetector
     private lateinit var damages: MutableList<DamageSpotCondition>
 
     private lateinit var damageInheritType: String
 
+    @SuppressLint("ClickableViewAccessibility")
     override fun onCreate(savedInstanceState: Bundle?) {
         Log.i(TAG, "onCreate()")
         super.onCreate(savedInstanceState)
@@ -47,8 +56,8 @@ class DamageListActivity : AppCompatActivity(), DamageAdapter.DamageItemListener
         recyclerView = findViewById(R.id.damages_recycler_view)
         recyclerView.layoutManager = LinearLayoutManager(this)
 
-        blade = intent.getParcelableExtra<Blade>(EXTRA_BLADE)!!
-        interventionId = intent.getIntExtra(EXTRA_INTERVENTION_ID, -1)
+        blade = intent.getParcelableExtra(EXTRA_BLADE)!!
+        intervention = intent.getParcelableExtra(EXTRA_INTERVENTION)!!
 
         damageInheritType = intent.getStringExtra(EXTRA_DAMAGE_INOUT)!!
 
@@ -61,6 +70,35 @@ class DamageListActivity : AppCompatActivity(), DamageAdapter.DamageItemListener
         }
 
         findViewById<ImageButton>(R.id.add_damage_button).setOnClickListener(this)
+
+        gestureDetector = GestureDetector(this, object : OnSwipeListener() {
+            override fun onSwipe(direction: Direction?): Boolean {
+                Log.d(TAG, "OnSwipe")
+                when (direction) {
+                    Direction.up -> Log.d(TAG, "Swiped UP")
+                    Direction.down -> startInterventionActivity()
+                    Direction.left -> Log.d(TAG, "Swiped LEFT")
+                    Direction.right -> Log.d(TAG, "Swiped RIGHT")
+                    else -> Log.d(TAG, "No direction found for Swipe")
+                }
+                return true;
+            }
+        });
+
+        findViewById<RelativeLayout>(R.id.damage_list_main_layout).setOnTouchListener(this)
+    }
+
+    override fun onTouch(v: View?, event: MotionEvent?): Boolean {
+        Log.d(TAG, "onTouch")
+        gestureDetector.onTouchEvent(event)
+        return true;
+    }
+
+    fun startInterventionActivity(){
+        val intent = Intent(this, InterventionActivity::class.java)
+        intent.putExtra(InterventionActivity.EXTRA_INTERVENTION, intervention)
+        startActivity(intent)
+        overridePendingTransition(R.anim.in_from_top, R.anim.no_anim);
     }
 
     override fun onResume() {
@@ -68,7 +106,7 @@ class DamageListActivity : AppCompatActivity(), DamageAdapter.DamageItemListener
         super.onResume()
         damages = App.database.damageDao().getDamagesByBladeAndInterventionAndInheritType(
             blade.id,
-            interventionId,
+            intervention.id,
             damageInheritType
         )
         damages.sortBy { it.radialPosition }
@@ -83,10 +121,10 @@ class DamageListActivity : AppCompatActivity(), DamageAdapter.DamageItemListener
 
     override fun onCameraButtonClicked(damage: DamageSpotCondition) {
         val intent = Intent(this, CameraActivity::class.java)
-        var path = "${App.getDamagePath(interventionId, blade.id, damage.localId)}"
+        var path = "${App.getDamagePath(intervention, blade, damage.localId)}"
         intent.putExtra(CameraActivity.EXTRA_PICTURE_TYPE, PICTURE_TYPE_DAMAGE)
         intent.putExtra(CameraActivity.EXTRA_RELATED_ID, damage.localId)
-        intent.putExtra(CameraActivity.EXTRA_INTERVENTION_ID, interventionId)
+        intent.putExtra(CameraActivity.EXTRA_INTERVENTION_ID, intervention.id)
         intent.putExtra(CameraActivity.EXTRA_OUTPUT_PATH, path)
         startActivity(intent)
     }
@@ -106,7 +144,7 @@ class DamageListActivity : AppCompatActivity(), DamageAdapter.DamageItemListener
         var damage = DamageSpotCondition(
             damageInheritType,
             "$prefix${adapter.itemCount + 1}",
-            interventionId,
+            intervention.id,
             blade.id
         )
 

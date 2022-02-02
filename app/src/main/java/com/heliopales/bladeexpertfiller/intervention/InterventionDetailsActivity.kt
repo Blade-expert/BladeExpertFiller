@@ -62,8 +62,8 @@ class InterventionDetailsActivity : AppCompatActivity(), View.OnClickListener,
             override fun onSwipe(direction: Direction?): Boolean {
                 Log.d(TAG, "OnSwipe")
                 when (direction) {
-                    Direction.up -> startWindfarmActivity()
-                    Direction.down -> Log.d(TAG, "Swiped DOWN")
+                    Direction.up -> Log.d(TAG, "Swiped UP")
+                    Direction.down -> startInterventionActivity()
                     Direction.left -> Log.d(TAG, "Swiped LEFT")
                     Direction.right -> Log.d(TAG, "Swiped RIGHT")
                     else -> Log.d(TAG, "No direction found for Swipe")
@@ -82,6 +82,13 @@ class InterventionDetailsActivity : AppCompatActivity(), View.OnClickListener,
         Log.d(TAG, "onTouch")
         gestureDetector.onTouchEvent(event)
         return true;
+    }
+
+    fun startInterventionActivity(){
+        val intent = Intent(this, InterventionActivity::class.java)
+        intent.putExtra(InterventionActivity.EXTRA_INTERVENTION, intervention)
+        startActivity(intent)
+        overridePendingTransition(R.anim.in_from_top, R.anim.no_anim);
     }
 
     private fun addBladeButtons() {
@@ -178,9 +185,7 @@ class InterventionDetailsActivity : AppCompatActivity(), View.OnClickListener,
     private fun startWindfarmActivity() {
         val intent = Intent(this, WindfarmActivity::class.java)
         intent.putExtra(WindfarmActivity.EXTRA_INTERVENTION, intervention)
-
         startActivity(intent)
-        overridePendingTransition(R.anim.slide_in_top, R.anim.slide_out_top);
     }
 
     private fun takeTurbineSerialPicture() {
@@ -188,7 +193,7 @@ class InterventionDetailsActivity : AppCompatActivity(), View.OnClickListener,
         val turbine = App.database.turbineDao().getTurbinesById(intervention.turbineId)!!
         var path = App.getTurbinePath(intervention, turbine)
         intent.putExtra(CameraActivity.EXTRA_PICTURE_TYPE, PICTURE_TYPE_TURBINE)
-        intent.putExtra(CameraActivity.EXTRA_RELATED_ID, intervention.id)
+        intent.putExtra(CameraActivity.EXTRA_RELATED_ID, turbine.id)
         intent.putExtra(CameraActivity.EXTRA_OUTPUT_PATH, path)
         intent.putExtra(CameraActivity.EXTRA_INTERVENTION_ID, intervention.id)
         startActivity(intent)

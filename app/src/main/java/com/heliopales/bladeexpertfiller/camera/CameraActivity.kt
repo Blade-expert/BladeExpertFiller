@@ -80,8 +80,6 @@ class CameraActivity : AppCompatActivity() {
         outputDirectory = File(outputDirectoryPath)
         outputDirectory.mkdirs()
 
-        Log.d(TAG, "onCreate -> relatedId=$relatedId, interventionId=$interventionId")
-
         // In the background, load latest photo taken (if any) for gallery thumbnail
         outputDirectory.listFiles { file ->
             arrayOf("JPG").contains(file.extension.uppercase(Locale.ROOT))
@@ -268,10 +266,7 @@ class CameraActivity : AppCompatActivity() {
                     Log.e(TAG, "Photo capture failed: ${exc.message}", exc)
                     toast("Can't take picture")
                 }
-
                 override fun onImageSaved(output: ImageCapture.OutputFileResults) {
-
-
                     cameraAvailable = true
                     val savedUri = Uri.fromFile(photoFile)
                     App.database.interventionDao()
@@ -282,7 +277,8 @@ class CameraActivity : AppCompatActivity() {
                             absolutePath = photoFile.absolutePath,
                             uri = savedUri.toString(),
                             type = pictureType,
-                            relatedId = relatedId
+                            relatedId = relatedId,
+                            interventionId = interventionId
                         )
                     )
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {

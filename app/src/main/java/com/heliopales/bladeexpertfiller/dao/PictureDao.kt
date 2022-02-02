@@ -20,40 +20,30 @@ interface PictureDao {
     fun updateExportationState(fileName: String, state: Int)
 
     @Query("SELECT * FROM picture WHERE type = $PICTURE_TYPE_DAMAGE and relatedId = :damageLocalId")
-    fun getDamageSpotPicturesByDamageId(damageLocalId: Int) : List<Picture>
+    fun getDamageSpotPicturesByDamageId(damageLocalId: Int): List<Picture>
 
     @Query("SELECT * FROM picture WHERE type = $PICTURE_TYPE_DAMAGE and relatedId = :damageLocalId and exportState=$EXPORTATION_STATE_NOT_EXPORTED")
-    fun getNonExportedDamageSpotPicturesByDamageId(damageLocalId: Int) : List<Picture>
+    fun getNonExportedDamageSpotPicturesByDamageId(damageLocalId: Int): List<Picture>
 
     @Query("SELECT * FROM picture WHERE type = $PICTURE_TYPE_DRAIN and relatedId = :drainLocalId and exportState=$EXPORTATION_STATE_NOT_EXPORTED")
-    fun getNonExportedDrainholeSpotPicturesByDrainId(drainLocalId: Int) : List<Picture>
+    fun getNonExportedDrainholeSpotPicturesByDrainId(drainLocalId: Int): List<Picture>
 
     @Query("SELECT * FROM picture WHERE type = $PICTURE_TYPE_LPS and relatedId = :lpsLocalId and exportState=$EXPORTATION_STATE_NOT_EXPORTED")
-    fun getNonExportedLightningSpotPicturesByLightningId(lpsLocalId: Int) : List<Picture>
+    fun getNonExportedLightningSpotPicturesByLightningId(lpsLocalId: Int): List<Picture>
 
-    @Query("SELECT * FROM picture WHERE type = $PICTURE_TYPE_TURBINE and relatedId = :interventionId")
-    fun getTurbinePictures(interventionId: Int) : List<Picture>
-
-    @Query("SELECT * FROM picture WHERE type = $PICTURE_TYPE_BLADE and relatedId = :bladeId")
-    fun getBladePictures(bladeId: Int) : List<Picture>
+    @Query("SELECT * FROM picture WHERE type = :type and interventionId = :interventionId and exportState=$EXPORTATION_STATE_NOT_EXPORTED")
+    fun getNonExportedPicturesByTypeAndInterventionId(
+        type: Int,
+        interventionId: Int
+    ): List<Picture>
 
     @Query("SELECT * FROM picture")
     fun getAll(): List<Picture>
 
-    @Query("DELETE FROM picture WHERE type = $PICTURE_TYPE_DAMAGE and relatedId = :damageLocalId")
-    fun deleteDamagePictures(damageLocalId: Int)
+    @Query("DELETE FROM picture WHERE interventionId = :interventionId")
+    fun deletePicturesLinkedToIntervention(interventionId: Int)
 
-    @Query("DELETE FROM picture WHERE type = $PICTURE_TYPE_DRAIN and relatedId = :drainLocalId")
-    fun deleteDrainholePictures(drainLocalId: Int)
-
-    @Query("DELETE FROM picture WHERE type = $PICTURE_TYPE_LPS and relatedId = :lightningLocalId")
-    fun deleteLightningPictures(lightningLocalId: Int)
-
-    @Query("DELETE FROM picture WHERE type = $PICTURE_TYPE_BLADE and relatedId = :bladeId")
-    fun deleteBladePictures(bladeId: Int)
-
-    @Query("DELETE FROM picture WHERE type = $PICTURE_TYPE_TURBINE and relatedId = :interventionId")
-    fun deleteTurbinePictures(interventionId: Int)
-
+    @Query("SELECT count(fileName) FROM picture WHERE interventionId = :interventionId and exportState=$EXPORTATION_STATE_NOT_EXPORTED")
+    fun countNonExportedPicturesByInterventionId(interventionId: Int): Int
 
 }
