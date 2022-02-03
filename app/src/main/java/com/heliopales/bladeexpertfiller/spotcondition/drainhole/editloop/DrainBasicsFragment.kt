@@ -28,7 +28,7 @@ class DrainBasicsFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        drain = (activity as DrainholeActivity).drain!!
+        drain = (activity as DrainholeActivity).drain
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -57,7 +57,7 @@ class DrainBasicsFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
-        description.setText("${drain.description ?: ""}")
+        description.setText(drain.description ?: "")
     }
 
     override fun onCreateView(

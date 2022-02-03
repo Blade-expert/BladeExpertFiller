@@ -17,7 +17,7 @@ import java.util.concurrent.TimeUnit
 
 const val DATABASE_FILE_NAME = "bxpfil_db_2"
 
-const val API_KEY = "LdVx6Ur82mm9oQZT4zSzBLea2XnmzaP1";
+const val API_KEY = "LdVx6Ur82mm9oQZT4zSzBLea2XnmzaP1"
 
 //PRODUCTION
 //private const val BASE_URL = "https://www.blade-expert.com/"
@@ -89,7 +89,7 @@ class App : Application() {
 
         fun getMainInterventionPath(intervention: Intervention): String {
             return "${getOutputDirectory()}/intervention_${intervention.id}_${
-                intervention.name?.replace(
+                intervention.name.replace(
                     " ",
                     "-"
                 )
@@ -106,7 +106,7 @@ class App : Application() {
 
         fun getTurbinePath(intervention: Intervention, turbine: Turbine): String {
             return "${getMainInterventionPath(intervention)}/turbine_${turbine.id}_${
-                turbine.alias?.replace(
+                turbine.alias.replace(
                     " ",
                     "-"
                 )

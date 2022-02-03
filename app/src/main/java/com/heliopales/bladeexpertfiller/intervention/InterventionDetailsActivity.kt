@@ -68,9 +68,9 @@ class InterventionDetailsActivity : AppCompatActivity(), View.OnClickListener,
                     Direction.right -> Log.d(TAG, "Swiped RIGHT")
                     else -> Log.d(TAG, "No direction found for Swipe")
                 }
-                return true;
+                return true
             }
-        });
+        })
 
         findViewById<ConstraintLayout>(R.id.intervention_detail_layout).setOnTouchListener(this)
 
@@ -81,14 +81,14 @@ class InterventionDetailsActivity : AppCompatActivity(), View.OnClickListener,
     override fun onTouch(v: View?, event: MotionEvent?): Boolean {
         Log.d(TAG, "onTouch")
         gestureDetector.onTouchEvent(event)
-        return true;
+        return true
     }
 
     fun startInterventionActivity(){
         val intent = Intent(this, InterventionActivity::class.java)
         intent.putExtra(InterventionActivity.EXTRA_INTERVENTION, intervention)
         startActivity(intent)
-        overridePendingTransition(R.anim.in_from_top, R.anim.no_anim);
+        overridePendingTransition(R.anim.in_from_top, R.anim.no_anim)
     }
 
     private fun addBladeButtons() {
@@ -122,7 +122,7 @@ class InterventionDetailsActivity : AppCompatActivity(), View.OnClickListener,
         bladeLayouts.forEach { lay ->
             val dbBla = App.database.bladeDao().getById(lay.tag as Int)
             lay.findViewById<Button>(R.id.blade_button).text =
-                "${dbBla?.position}${if (dbBla?.serial == null) "" else "\n${dbBla?.serial}"}";
+                "${dbBla.position}${if (dbBla.serial == null) "" else "\n${dbBla.serial}"}"
 
             var count = App.database.damageDao()
                 .countDamageByBladeId(dbBla.id, intervention.id, INHERIT_TYPE_DAMAGE_OUT)

@@ -39,7 +39,7 @@ class DamageAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val damageItem =
-            LayoutInflater.from(parent?.context).inflate(R.layout.item_damage, parent, false)
+            LayoutInflater.from(parent.context).inflate(R.layout.item_damage, parent, false)
         return ViewHolder(damageItem)
     }
 

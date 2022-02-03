@@ -18,7 +18,7 @@ import com.heliopales.bladeexpertfiller.spotcondition.damages.DamageViewPagerAct
 class SeverityFragment : Fragment(), View.OnClickListener {
     private val TAG = SeverityFragment::class.java.simpleName
 
-    private val buttons = mutableListOf<Button>();
+    private val buttons = mutableListOf<Button>()
 
     private lateinit var damage: DamageSpotCondition
 

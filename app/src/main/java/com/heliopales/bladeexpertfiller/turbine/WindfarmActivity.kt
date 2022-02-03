@@ -25,7 +25,7 @@ class WindfarmActivity : AppCompatActivity() {
         const val EXTRA_INTERVENTION = "intervention"
     }
 
-    lateinit var intervention: Intervention;
+    lateinit var intervention: Intervention
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -61,7 +61,7 @@ class WindfarmActivity : AppCompatActivity() {
 
 
 
-                    val button = turbineLayout.findViewById<Button>(R.id.turbine_button);
+                    val button = turbineLayout.findViewById<Button>(R.id.turbine_button)
                     button.tag = trb
                     button.text = "${trb.alias}\n${trb.serial ?: ""}"
                     button.setOnClickListener {

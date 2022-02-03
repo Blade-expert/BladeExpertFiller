@@ -14,7 +14,7 @@ class ChangeTurbineSerialDialogFragment(val initText: String?) : DialogFragment(
 
     interface ChangeTurbineSerialDialogListener {
         fun onDialogPositiveClick(serial: String)
-        fun onDialogNegativeClick();
+        fun onDialogNegativeClick()
     }
 
     var listener: ChangeTurbineSerialDialogListener? = null
@@ -25,7 +25,7 @@ class ChangeTurbineSerialDialogFragment(val initText: String?) : DialogFragment(
 
         input = EditText(context)
         if(initText != null){
-            input.setText(initText, TextView.BufferType.EDITABLE);
+            input.setText(initText, TextView.BufferType.EDITABLE)
             input.post { input.setSelection(input.text.length) }
         }
         with(input) {

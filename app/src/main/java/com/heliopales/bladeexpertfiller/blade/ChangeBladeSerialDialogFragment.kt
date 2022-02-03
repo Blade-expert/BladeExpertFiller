@@ -14,7 +14,7 @@ class ChangeBladeSerialDialogFragment(val initText: String?) : DialogFragment() 
 
     interface ChangeBladeSerialDialogListener {
         fun onDialogPositiveClick(serial: String)
-        fun onDialogNegativeClick();
+        fun onDialogNegativeClick()
     }
 
     var listener: ChangeBladeSerialDialogListener? = null
@@ -24,7 +24,7 @@ class ChangeBladeSerialDialogFragment(val initText: String?) : DialogFragment() 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
 
         input = EditText(context)
-        if(initText != null){
+        if (initText != null) {
             input.setText(initText, TextView.BufferType.EDITABLE);
             input.post { input.setSelection(input.text.length) }
         }
@@ -36,15 +36,17 @@ class ChangeBladeSerialDialogFragment(val initText: String?) : DialogFragment() 
         var builder = AlertDialog.Builder(context)
         builder.setTitle("Numéro de série pale")
             .setView(input)
-            .setPositiveButton("Enregistrer",
-                DialogInterface.OnClickListener { _, _ ->
-                    listener?.onDialogPositiveClick(input.text.toString()) })
+            .setPositiveButton(
+                "Enregistrer"
+            ) { _, _ ->
+                listener?.onDialogPositiveClick(input.text.toString())
+            }
             .setNegativeButton(
-                "Annuler",
-                DialogInterface.OnClickListener { dialog, _ ->
-                    dialog.cancel()
-                    listener?.onDialogNegativeClick()
-                })
+                "Annuler"
+            ) { dialog, _ ->
+                dialog.cancel()
+                listener?.onDialogNegativeClick()
+            }
 
         val dialog = builder.create()
         dialog.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE)

@@ -39,8 +39,8 @@ class LightningMeasureFragment : Fragment(), ReceptorMeasureAdapter.MeasureChang
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        lightning = (activity as LightningActivity).lightning!!
-        measures = (activity as LightningActivity).measures!!
+        lightning = (activity as LightningActivity).lightning
+        measures = (activity as LightningActivity).measures
     }
 
     override fun onCreateView(
@@ -50,7 +50,7 @@ class LightningMeasureFragment : Fragment(), ReceptorMeasureAdapter.MeasureChang
         return inflater.inflate(R.layout.fragment_lightning_measure, container, false)
     }
 
-    private var spinnerInitialized = false;
+    private var spinnerInitialized = false
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -82,7 +82,7 @@ class LightningMeasureFragment : Fragment(), ReceptorMeasureAdapter.MeasureChang
                 id: Long
             ) {
                 if (!spinnerInitialized) {
-                    spinnerInitialized = true;
+                    spinnerInitialized = true
                     return
                 }
                 Log.d(
@@ -131,7 +131,7 @@ class LightningMeasureFragment : Fragment(), ReceptorMeasureAdapter.MeasureChang
                     lrm.severityId = 3
                 }
             } else {
-                lrm.severityId = null;
+                lrm.severityId = null
             }
         }
 

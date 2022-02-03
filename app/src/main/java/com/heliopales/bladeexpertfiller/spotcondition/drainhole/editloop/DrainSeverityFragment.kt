@@ -20,7 +20,7 @@ import com.heliopales.bladeexpertfiller.spotcondition.drainhole.DrainholeActivit
 class DrainSeverityFragment : Fragment(), View.OnClickListener {
     private val TAG = DrainSeverityFragment::class.java.simpleName
 
-    private val buttons = mutableListOf<Button>();
+    private val buttons = mutableListOf<Button>()
 
     private lateinit var drain: DrainholeSpotCondition
 

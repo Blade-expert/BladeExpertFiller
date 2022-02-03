@@ -13,7 +13,4 @@ data class Turbine(
     val serial: String?,
     val numInWindfarm: Int?,
     val windfarmId: Int
-) : Parcelable {
-
-
-}
+) : Parcelable

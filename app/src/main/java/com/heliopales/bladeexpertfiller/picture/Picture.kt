@@ -14,5 +14,4 @@ data class Picture(
     val relatedId: Int,
     val interventionId: Int,
     val exportState: Int = EXPORTATION_STATE_NOT_EXPORTED,
-    ) {
-}
+    )

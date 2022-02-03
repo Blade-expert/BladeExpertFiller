@@ -10,13 +10,13 @@ import com.heliopales.bladeexpertfiller.secondaryentities.Severity
 interface SeverityDao {
 
     @Query("SELECT * FROM severity")
-    fun getAll(): List<Severity>;
+    fun getAll(): List<Severity>
 
     @Query("SELECT * FROM severity WHERE id = :severityId")
-    fun getById(severityId: Int): Severity;
+    fun getById(severityId: Int): Severity
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertAll(severities: List<Severity>);
+    fun insertAll(severities: List<Severity>)
 
     @Query("DELETE FROM severity WHERE id NOT IN (:severityIds) ")
     fun deleteWhereIdsNotIn(severityIds: List<Int>)

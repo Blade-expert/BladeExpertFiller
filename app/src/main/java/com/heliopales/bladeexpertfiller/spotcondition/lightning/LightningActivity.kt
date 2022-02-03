@@ -54,12 +54,12 @@ class LightningActivity : AppCompatActivity(), View.OnClickListener {
         if (lps == null) {
             lightning = LightningSpotCondition(interventionId, blade.id)
             lightning.measureMethod = MeasureMethod.RCPT_TO_NAC_200MA
-            val newId = App.database.lightningDao().upsert(lightning!!)
+            val newId = App.database.lightningDao().upsert(lightning)
             lightning.localId = newId.toInt()
 
             receptors.forEach {
                 val measure = ReceptorMeasure(
-                    lightningSpotConditionLocalId = lightning!!.localId,
+                    lightningSpotConditionLocalId = lightning.localId,
                     receptorId = it.id
                 )
                 App.database.receptorMeasureDao().upsert(measure)
@@ -70,7 +70,7 @@ class LightningActivity : AppCompatActivity(), View.OnClickListener {
             lightning = lps
             receptors.forEach {
                 val measure = App.database.receptorMeasureDao()
-                    .getByReceptorIdAndLightningId(it.id, lightning!!.localId)
+                    .getByReceptorIdAndLightningId(it.id, lightning.localId)
                 measure.receptorLabel = "${it.radius} m  |  ${it.position}"
                 measures.add(measure)
             }
@@ -98,7 +98,7 @@ class LightningActivity : AppCompatActivity(), View.OnClickListener {
     override fun onPause() {
         Log.d(TAG, "onPause()")
         super.onPause()
-        App.database.lightningDao().upsert(lightning!!)
+        App.database.lightningDao().upsert(lightning)
         App.database.receptorMeasureDao().upsert(measures)
     }
 
@@ -107,7 +107,7 @@ class LightningActivity : AppCompatActivity(), View.OnClickListener {
             R.id.lps_picture_button -> {
                 val intent = Intent(this, CameraActivity::class.java)
                 var path =
-                    "${App.getLPSPath(lightning.interventionId, lightning.bladeId)}"
+                    App.getLPSPath(lightning.interventionId, lightning.bladeId)
                 intent.putExtra(CameraActivity.EXTRA_OUTPUT_PATH, path)
                 intent.putExtra(CameraActivity.EXTRA_INTERVENTION_ID, lightning.interventionId)
                 intent.putExtra(CameraActivity.EXTRA_RELATED_ID, lightning.localId)

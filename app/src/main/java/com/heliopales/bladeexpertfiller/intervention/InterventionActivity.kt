@@ -52,7 +52,7 @@ class InterventionActivity : AppCompatActivity(), View.OnClickListener {
 
     override fun onBackPressed() {
         super.onBackPressed()
-        overridePendingTransition(0, R.anim.out_to_top);
+        overridePendingTransition(0, R.anim.out_to_top)
     }
 
 

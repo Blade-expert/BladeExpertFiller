@@ -101,14 +101,14 @@ class DamageTypeFragment : Fragment(), View.OnClickListener {
 
             Log.d(TAG, "id not null, retrieveing")
 
-            var groupToExpand = 0;
-            var indexOffset = 0;
+            var groupToExpand = 0
+            var indexOffset = 0
             (listAdapter as CustomExpandableListAdapter).titleList.forEachIndexed { index, damageTypeCategory ->
                 (listAdapter as CustomExpandableListAdapter).dataList[damageTypeCategory]?.forEachIndexed { i, dmt ->
                     if (damage.damageTypeId == dmt.id) {
                         groupToExpand = index
                         dmt.selected = true
-                        indexOffset = i;
+                        indexOffset = i
                     } else
                         dmt.selected = false
                 }

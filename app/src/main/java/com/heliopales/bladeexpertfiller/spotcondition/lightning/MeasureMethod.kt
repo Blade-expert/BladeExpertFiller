@@ -10,7 +10,7 @@ enum class MeasureMethod(val alias: String) {
     RCPT_TO_ROOT_10A("Receptor to blade root - 10A");
 
     override fun toString(): String {
-        return  "$alias"
+        return alias
     }
 
 }

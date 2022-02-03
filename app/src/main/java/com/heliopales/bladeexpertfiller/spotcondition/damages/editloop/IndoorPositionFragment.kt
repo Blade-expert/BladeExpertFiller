@@ -15,7 +15,7 @@ import com.heliopales.bladeexpertfiller.spotcondition.damages.DamageViewPagerAct
 class IndoorPositionFragment : Fragment(), View.OnClickListener {
     private val TAG = IndoorPositionFragment::class.java.simpleName
 
-    private val buttons = mutableListOf<Button>();
+    private val buttons = mutableListOf<Button>()
 
     private lateinit var damage: DamageSpotCondition
 

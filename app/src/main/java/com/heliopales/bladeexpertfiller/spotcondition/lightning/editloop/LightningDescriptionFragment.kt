@@ -19,7 +19,7 @@ import com.heliopales.bladeexpertfiller.R
 import com.heliopales.bladeexpertfiller.spotcondition.LightningSpotCondition
 import com.heliopales.bladeexpertfiller.spotcondition.lightning.LightningActivity
 
-class LightningDescriptionFragment() : Fragment() {
+class LightningDescriptionFragment : Fragment() {
 
     private val TAG =  LightningDescriptionFragment::class.java.simpleName
 
@@ -30,7 +30,7 @@ class LightningDescriptionFragment() : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         Log.d(TAG,"onCreate()")
         super.onCreate(savedInstanceState)
-        lightning = (activity as LightningActivity).lightning!!
+        lightning = (activity as LightningActivity).lightning
     }
 
     override fun onCreateView(
@@ -66,8 +66,8 @@ class LightningDescriptionFragment() : Fragment() {
     override fun onResume() {
         Log.d(TAG,"onResume()")
         super.onResume()
-        description.setText("${lightning.description ?: ""}")
-        description.postDelayed(Runnable { description.showKeyboard()} , 50)
+        description.setText(lightning.description ?: "")
+        description.postDelayed( { description.showKeyboard()} , 50)
     }
 
     fun EditText.showKeyboard() {

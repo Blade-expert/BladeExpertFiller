@@ -126,7 +126,7 @@ class DamageBasicsFragment : Fragment() {
         pictureButton.setOnClickListener {
             val intent = Intent(requireContext(), CameraActivity::class.java)
             var path =
-                "${App.getDamagePath(damage.interventionId!!, damage.bladeId!!, damage.localId)}"
+                App.getDamagePath(damage.interventionId, damage.bladeId, damage.localId)
             intent.putExtra(CameraActivity.EXTRA_OUTPUT_PATH, path)
             intent.putExtra(CameraActivity.EXTRA_INTERVENTION_ID, damage.interventionId)
             intent.putExtra(CameraActivity.EXTRA_RELATED_ID, damage.localId)
@@ -141,7 +141,7 @@ class DamageBasicsFragment : Fragment() {
         longitudinalLength.setText("${damage.longitudinalLength ?: ""}")
         radialLength.setText("${damage.radialLength ?: ""}")
         repetition.setText("${damage.repetition ?: ""}")
-        description.setText("${damage.description ?: ""}")
+        description.setText(damage.description ?: "")
     }
 
     override fun onCreateView(

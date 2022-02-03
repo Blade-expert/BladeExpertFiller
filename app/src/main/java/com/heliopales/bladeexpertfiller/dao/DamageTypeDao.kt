@@ -10,16 +10,16 @@ import com.heliopales.bladeexpertfiller.secondaryentities.DamageType
 interface DamageTypeDao {
 
     @Query("SELECT * FROM DamageType WHERE id = :id")
-    fun getById(id: Int): DamageType;
+    fun getById(id: Int): DamageType
 
     @Query("SELECT * FROM DamageType WHERE inheritType = 'IDT'")
-    fun getAllInner(): List<DamageType>;
+    fun getAllInner(): List<DamageType>
 
     @Query("SELECT * FROM damagetype WHERE inheritType = 'ODT'")
-    fun getAllOuter(): List<DamageType>;
+    fun getAllOuter(): List<DamageType>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertAll(damageTypes: List<DamageType>);
+    fun insertAll(damageTypes: List<DamageType>)
 
     @Query("DELETE FROM damagetype WHERE id NOT IN (:dmtIds) ")
     fun deleteWhereIdsNotIn(dmtIds: List<Int>)

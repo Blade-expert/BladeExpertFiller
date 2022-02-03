@@ -32,9 +32,9 @@ class DamageListActivity : AppCompatActivity(), DamageAdapter.DamageItemListener
     val TAG = DamageListActivity::class.java.simpleName
 
     companion object {
-        val EXTRA_INTERVENTION = "intervention";
-        val EXTRA_BLADE = "blade";
-        val EXTRA_DAMAGE_INOUT = "damage_inout";
+        val EXTRA_INTERVENTION = "intervention"
+        val EXTRA_BLADE = "blade"
+        val EXTRA_DAMAGE_INOUT = "damage_inout"
     }
 
     private lateinit var recyclerView: RecyclerView
@@ -81,9 +81,9 @@ class DamageListActivity : AppCompatActivity(), DamageAdapter.DamageItemListener
                     Direction.right -> Log.d(TAG, "Swiped RIGHT")
                     else -> Log.d(TAG, "No direction found for Swipe")
                 }
-                return true;
+                return true
             }
-        });
+        })
 
         findViewById<RelativeLayout>(R.id.damage_list_main_layout).setOnTouchListener(this)
     }
@@ -98,7 +98,7 @@ class DamageListActivity : AppCompatActivity(), DamageAdapter.DamageItemListener
         val intent = Intent(this, InterventionActivity::class.java)
         intent.putExtra(InterventionActivity.EXTRA_INTERVENTION, intervention)
         startActivity(intent)
-        overridePendingTransition(R.anim.in_from_top, R.anim.no_anim);
+        overridePendingTransition(R.anim.in_from_top, R.anim.no_anim)
     }
 
     override fun onResume() {
@@ -116,12 +116,12 @@ class DamageListActivity : AppCompatActivity(), DamageAdapter.DamageItemListener
     }
 
     override fun onDamageSelected(damage: DamageSpotCondition) {
-        launchDamagePager(damage.localId ?: -1)
+        launchDamagePager(damage.localId)
     }
 
     override fun onCameraButtonClicked(damage: DamageSpotCondition) {
         val intent = Intent(this, CameraActivity::class.java)
-        var path = "${App.getDamagePath(intervention, blade, damage.localId)}"
+        var path = App.getDamagePath(intervention, blade, damage.localId)
         intent.putExtra(CameraActivity.EXTRA_PICTURE_TYPE, PICTURE_TYPE_DAMAGE)
         intent.putExtra(CameraActivity.EXTRA_RELATED_ID, damage.localId)
         intent.putExtra(CameraActivity.EXTRA_INTERVENTION_ID, intervention.id)
@@ -152,10 +152,6 @@ class DamageListActivity : AppCompatActivity(), DamageAdapter.DamageItemListener
         damage.localId = newId
         damages.add(damage)
         damages.sortBy { it.radialPosition }
-
-        damages.forEach {
-            Log.d(TAG,"damage in list : id = ${damage.localId}")
-        }
 
         adapter.notifyDataSetChanged()
 

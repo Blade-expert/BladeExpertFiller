@@ -39,12 +39,12 @@ private val lifecycleOwner: LifecycleOwner
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val interventionItem =
-            LayoutInflater.from(parent?.context).inflate(R.layout.item_intervention, parent, false)
+            LayoutInflater.from(parent.context).inflate(R.layout.item_intervention, parent, false)
         return ViewHolder(interventionItem)
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val itv = interventions[position];
+        val itv = interventions[position]
         with(holder) {
             turbineNameView.text = itv.name
             cardView.tag = itv
@@ -107,7 +107,7 @@ private val lifecycleOwner: LifecycleOwner
                             helperView.text = "Exporting..."
                             progressBar.visibility = View.VISIBLE
                             progressText.visibility = View.VISIBLE
-                            itv.progress.observe(lifecycleOwner, Observer { newVal ->
+                            itv.progress.observe(lifecycleOwner, { newVal ->
                                 progressBar.progress = newVal
                                 progressText.text = "$newVal %"
                             })

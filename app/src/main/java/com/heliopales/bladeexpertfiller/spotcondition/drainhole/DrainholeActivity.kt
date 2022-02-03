@@ -47,7 +47,7 @@ class DrainholeActivity : AppCompatActivity(), View.OnClickListener {
 
         if(dhs == null){
             drain = DrainholeSpotCondition(interventionId, blade.id)
-            val newId = App.database.drainholeDao().upsertDrainhole(drain!!)
+            val newId = App.database.drainholeDao().upsertDrainhole(drain)
             drain.localId = newId.toInt()
         }else{
             drain = dhs

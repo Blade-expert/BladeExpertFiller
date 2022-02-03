@@ -50,7 +50,7 @@ class InterventionListActivity : AppCompatActivity(), InterventionAdapter.Interv
 
     private var snackBarActive: Boolean = false
 
-    private var deleteAllowed = false;
+    private var deleteAllowed = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         Log.i(TAG, "onCreate()")
@@ -69,8 +69,8 @@ class InterventionListActivity : AppCompatActivity(), InterventionAdapter.Interv
         adapter = InterventionAdapter(interventions, this, this)
         recyclerView.adapter = adapter
 
-        val itemTouchHelper = ItemTouchHelper(simpleCallBack);
-        itemTouchHelper.attachToRecyclerView(recyclerView);
+        val itemTouchHelper = ItemTouchHelper(simpleCallBack)
+        itemTouchHelper.attachToRecyclerView(recyclerView)
 
         refreshLayout = findViewById(R.id.swipe_layout)
         refreshLayout.setOnRefreshListener { updateInterventionList() }
@@ -91,7 +91,7 @@ class InterventionListActivity : AppCompatActivity(), InterventionAdapter.Interv
 
         override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
             val position = viewHolder.absoluteAdapterPosition
-            preDeleteIntervention(interventions[position], position);
+            preDeleteIntervention(interventions[position], position)
         }
 
         override fun getSwipeDirs(
@@ -146,8 +146,8 @@ class InterventionListActivity : AppCompatActivity(), InterventionAdapter.Interv
             }
             .addCallback(object : Snackbar.Callback() {
                 override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
-                    if (event == Snackbar.Callback.DISMISS_EVENT_TIMEOUT ||
-                        event == Snackbar.Callback.DISMISS_EVENT_CONSECUTIVE
+                    if (event == DISMISS_EVENT_TIMEOUT ||
+                        event == DISMISS_EVENT_CONSECUTIVE
                     ) {
                         snackBarActive = false
                         effectivelyDeleteIntervention(deletedIntervention)
@@ -223,7 +223,7 @@ class InterventionListActivity : AppCompatActivity(), InterventionAdapter.Interv
                     val newInterventions: MutableList<Intervention> = mutableListOf()
 
                     if (response.isSuccessful) {
-                        response?.body().let {
+                        response.body().let {
                             newInterventions.addAll(it?.map { itv -> mapBladeExpertIntervention(itv) } as MutableList)
                             it.forEach { itvw ->
                                 App.database.turbineDao().upsertTurbines(
@@ -232,13 +232,13 @@ class InterventionListActivity : AppCompatActivity(), InterventionAdapter.Interv
                                 App.database.bladeDao().insertNonExistingBlades(
                                     itvw.blades!!.map { bw -> mapBladeExpertBlade(bw) }
                                 )
-                                itvw.blades?.forEach { blaw ->
+                                itvw.blades.forEach { blaw ->
                                     App.database.receptorDao()
                                         .upsertLightningReceptors(
                                             blaw.receptors!!.map { ltrw ->
                                                 mapBladeExpertLightningReceptor(ltrw)
                                             })
-                                    blaw.receptors!!.forEach { ltrw ->
+                                    blaw.receptors.forEach { ltrw ->
                                         Log.d(TAG, "Receptor added $ltrw")
                                     }
                                 }
@@ -323,7 +323,7 @@ class InterventionListActivity : AppCompatActivity(), InterventionAdapter.Interv
                         settings = UserSettings(userApiKey = key)
                     } else {
                         settings!!.userApiKey = key
-                    };
+                    }
                     App.database.userSettingsDao().upsert(settings!!)
                 }
 
@@ -378,19 +378,19 @@ class InterventionListActivity : AppCompatActivity(), InterventionAdapter.Interv
         intervention.exportRealizedOperations.removeObservers(this)
         intervention.exportNumberOfOperations.removeObservers(this)
 
-        intervention.exportCount = 0;
-        intervention.exportRealizedOperations.value = 0;
-        intervention.exportNumberOfOperations.value = 0;
+        intervention.exportCount = 0
+        intervention.exportRealizedOperations.value = 0
+        intervention.exportNumberOfOperations.value = 0
 
         intervention.exportNumberOfOperations.observe(this, Observer {
-            if (it == 0) return@Observer;
+            if (it == 0) return@Observer
             App.writeOnInterventionLogFile(intervention, "Starting exportation")
             executor.execute(exportTask(intervention))
         })
 
         intervention.exportRealizedOperations.observe(this, Observer { newVal ->
-            if (newVal == 0) return@Observer;
-            var percent = newVal.toFloat() / intervention.exportNumberOfOperations.value!! * 100;
+            if (newVal == 0) return@Observer
+            var percent = newVal.toFloat() / intervention.exportNumberOfOperations.value!! * 100
             Log.d(TAG, "percent $percent% done")
             intervention.progress.postValue(percent.toInt())
             if (newVal == intervention.exportNumberOfOperations.value!!) {
@@ -421,7 +421,6 @@ class InterventionListActivity : AppCompatActivity(), InterventionAdapter.Interv
 
             //Intervention Pictures
             App.database.pictureDao().getNonExportedPicturesByTypeAndInterventionId(
-
                 PICTURE_TYPE_INTERVENTION, intervention.id).forEach { pic ->
                     Log.d(TAG,"exporting intervention picture $pic")
                 sendInterventionPicture(pic, intervention)
@@ -459,6 +458,11 @@ class InterventionListActivity : AppCompatActivity(), InterventionAdapter.Interv
                     if (dsc.radialPosition != null && dsc.position != null) {
                         Log.d(TAG, "saveDamage ${dsc.fieldCode}")
                         saveIndoorDamage(dsc, intervention)
+                    }else{
+                        intervention.exportRealizedOperations.postValue(++intervention.exportCount)
+                        App.database.pictureDao().getNonExportedDamageSpotPicturesByDamageId(dsc.localId).forEach { _ ->
+                            intervention.exportRealizedOperations.postValue(++intervention.exportCount)
+                        }
                     }
                 }
 
@@ -470,6 +474,11 @@ class InterventionListActivity : AppCompatActivity(), InterventionAdapter.Interv
                     if (dsc.radialPosition != null && dsc.position != null) {
                         Log.d(TAG, "saveDamage ${dsc.fieldCode}")
                         saveOutdoorDamage(dsc, intervention)
+                    }else{
+                        intervention.exportRealizedOperations.postValue(++intervention.exportCount)
+                        App.database.pictureDao().getNonExportedDamageSpotPicturesByDamageId(dsc.localId).forEach { _ ->
+                            intervention.exportRealizedOperations.postValue(++intervention.exportCount)
+                        }
                     }
 
                 }
@@ -984,7 +993,7 @@ class InterventionListActivity : AppCompatActivity(), InterventionAdapter.Interv
 
     private fun countOperationsForExport(intervention: Intervention): Int {
         Log.d(TAG, "countOperationsForExport()")
-        var count = 0;
+        var count = 0
 
         //count pictures
         count += App.database.pictureDao().countNonExportedPicturesByInterventionId(intervention.id)
@@ -1031,7 +1040,7 @@ class InterventionListActivity : AppCompatActivity(), InterventionAdapter.Interv
 
         }
         Log.d(TAG, "There will be $count operations")
-        return count;
+        return count
     }
 
     private fun updateSeverities() {
@@ -1041,7 +1050,7 @@ class InterventionListActivity : AppCompatActivity(), InterventionAdapter.Interv
                     call: Call<Array<SeverityWrapper>>,
                     response: Response<Array<SeverityWrapper>>
                 ) {
-                    response?.body().let {
+                    response.body().let {
                         it?.map { sevw -> mapBladeExpertSeverity(sevw) }
                             ?.let { sevs -> App.database.severityDao().insertAll(sevs) }
 
@@ -1066,7 +1075,7 @@ class InterventionListActivity : AppCompatActivity(), InterventionAdapter.Interv
                     call: Call<Array<DamageTypeWrapper>>,
                     response: Response<Array<DamageTypeWrapper>>
                 ) {
-                    response?.body().let {
+                    response.body().let {
                         it?.map { dmtw -> mapBladeExpertDamageType(dmtw) }
                             ?.let { dmts -> App.database.damageTypeDao().insertAll(dmts) }
 

@@ -90,7 +90,7 @@ class DamageViewPagerActivity : AppCompatActivity() {
 
 }
 
-class DamagePagerAdapter(val fa: FragmentActivity, val damage: DamageSpotCondition) :
+class DamagePagerAdapter(fa: FragmentActivity, val damage: DamageSpotCondition) :
     FragmentStateAdapter(fa) {
     override fun getItemCount(): Int = 5
 

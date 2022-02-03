@@ -46,10 +46,10 @@ class BladeActivity : AppCompatActivity(), View.OnClickListener, View.OnTouchLis
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_blade)
 
-        database = App.database;
+        database = App.database
 
-        intervention = intent.getParcelableExtra<Intervention>(BladeActivity.EXTRA_INTERVENTION)!!
-        blade = intent.getParcelableExtra<Blade>(BladeActivity.EXTRA_BLADE)!!
+        intervention = intent.getParcelableExtra(EXTRA_INTERVENTION)!!
+        blade = intent.getParcelableExtra(EXTRA_BLADE)!!
 
         turbineNameView = findViewById(R.id.bla_turbine_name)
         turbineNameView.text = intervention.name
@@ -58,7 +58,7 @@ class BladeActivity : AppCompatActivity(), View.OnClickListener, View.OnTouchLis
         bladeNameView.text = blade.position
 
         bladeSerialView = findViewById(R.id.blade_serial_number)
-        bladeSerialView.text = if (blade.serial == null) "-----" else blade.serial;
+        bladeSerialView.text = if (blade.serial == null) "-----" else blade.serial
 
             findViewById<ImageButton>(R.id.edit_blade_serial).setOnClickListener(this)
 
@@ -78,9 +78,9 @@ class BladeActivity : AppCompatActivity(), View.OnClickListener, View.OnTouchLis
                     Direction.right -> Log.d(TAG, "Swiped RIGHT")
                     else -> Log.d(TAG, "No direction found for Swipe")
                 }
-                return true;
+                return true
             }
-        });
+        })
 
         findViewById<ConstraintLayout>(R.id.blade_main_layout).setOnTouchListener(this)
     }
@@ -88,14 +88,14 @@ class BladeActivity : AppCompatActivity(), View.OnClickListener, View.OnTouchLis
     override fun onTouch(v: View?, event: MotionEvent?): Boolean {
         Log.d(TAG, "onTouch")
         gestureDetector.onTouchEvent(event)
-        return true;
+        return true
     }
 
     fun startInterventionActivity(){
         val intent = Intent(this, InterventionActivity::class.java)
         intent.putExtra(InterventionActivity.EXTRA_INTERVENTION, intervention)
         startActivity(intent)
-        overridePendingTransition(R.anim.in_from_top, R.anim.no_anim);
+        overridePendingTransition(R.anim.in_from_top, R.anim.no_anim)
     }
 
     override fun onClick(v: View?) {
@@ -172,7 +172,7 @@ class BladeActivity : AppCompatActivity(), View.OnClickListener, View.OnTouchLis
     override fun onResume() {
         super.onResume()
 
-        var count = 0;
+        var count = 0
         count = App.database.damageDao().getDamagesByBladeAndInterventionAndInheritType(blade.id, intervention.id, INHERIT_TYPE_DAMAGE_IN).size
         if(count > 0)
             findViewById<Button>(R.id.see_indoor_damages_button).text = "INT\n($count)"

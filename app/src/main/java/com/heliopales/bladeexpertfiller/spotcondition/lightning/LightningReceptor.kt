@@ -9,5 +9,4 @@ data class LightningReceptor(
     val bladeId: Int,
     val radius: Float,
     val position: String
-) {
-}
+)
