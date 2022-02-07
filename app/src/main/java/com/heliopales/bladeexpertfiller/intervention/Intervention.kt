@@ -1,8 +1,6 @@
 package com.heliopales.bladeexpertfiller.intervention
 
-import android.os.Parcel
 import android.os.Parcelable
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.room.Entity
 import androidx.room.Ignore
