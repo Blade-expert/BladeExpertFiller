@@ -2,11 +2,11 @@
   "formatVersion": 1,
   "database": {
     "version": 2,
-    "identityHash": "4747cd91a6aee3c0d21355a7c4b9202d",
+    "identityHash": "4eb61652d7d504cc464506f304b34e53",
     "entities": [
       {
         "tableName": "Intervention",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `turbineName` TEXT, `turbineSerial` TEXT, `exportationState` INTEGER NOT NULL, `expired` INTEGER NOT NULL, `exportErrorsInLastExport` INTEGER NOT NULL, PRIMARY KEY(`id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `name` TEXT NOT NULL, `turbineId` INTEGER NOT NULL, `turbineSerial` TEXT, `windfarmId` INTEGER NOT NULL, `windfarmName` TEXT NOT NULL, `exportationState` INTEGER NOT NULL, `expired` INTEGER NOT NULL, `exportErrorsInLastExport` INTEGER NOT NULL, PRIMARY KEY(`id`))",
         "fields": [
           {
             "fieldPath": "id",
@@ -15,16 +15,34 @@
             "notNull": true
           },
           {
-            "fieldPath": "turbineName",
-            "columnName": "turbineName",
+            "fieldPath": "name",
+            "columnName": "name",
             "affinity": "TEXT",
-            "notNull": false
+            "notNull": true
+          },
+          {
+            "fieldPath": "turbineId",
+            "columnName": "turbineId",
+            "affinity": "INTEGER",
+            "notNull": true
           },
           {
             "fieldPath": "turbineSerial",
             "columnName": "turbineSerial",
             "affinity": "TEXT",
             "notNull": false
+          },
+          {
+            "fieldPath": "windfarmId",
+            "columnName": "windfarmId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "windfarmName",
+            "columnName": "windfarmName",
+            "affinity": "TEXT",
+            "notNull": true
           },
           {
             "fieldPath": "exportationState",
@@ -81,6 +99,50 @@
             "columnName": "serial",
             "affinity": "TEXT",
             "notNull": false
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "id"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "Turbine",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `alias` TEXT NOT NULL, `serial` TEXT, `numInWindfarm` INTEGER, `windfarmId` INTEGER NOT NULL, PRIMARY KEY(`id`))",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "alias",
+            "columnName": "alias",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "serial",
+            "columnName": "serial",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "numInWindfarm",
+            "columnName": "numInWindfarm",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "windfarmId",
+            "columnName": "windfarmId",
+            "affinity": "INTEGER",
+            "notNull": true
           }
         ],
         "primaryKey": {
@@ -170,7 +232,7 @@
       },
       {
         "tableName": "DamageSpotCondition",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`inheritType` TEXT NOT NULL, `fieldCode` TEXT NOT NULL, `interventionId` INTEGER NOT NULL, `bladeId` INTEGER NOT NULL, `localId` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `id` INTEGER, `severityId` INTEGER, `description` TEXT, `damageTypeId` INTEGER, `radialPosition` REAL, `radialLength` INTEGER, `longitudinalLength` INTEGER, `repetition` INTEGER, `position` TEXT, `profileDepth` TEXT)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`inheritType` TEXT NOT NULL, `fieldCode` TEXT NOT NULL, `interventionId` INTEGER NOT NULL, `bladeId` INTEGER NOT NULL, `localId` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `id` INTEGER, `scope` TEXT, `severityId` INTEGER, `description` TEXT, `damageTypeId` INTEGER, `radialPosition` REAL, `radialLength` INTEGER, `longitudinalLength` INTEGER, `repetition` INTEGER, `position` TEXT, `profileDepth` TEXT)",
         "fields": [
           {
             "fieldPath": "inheritType",
@@ -206,6 +268,12 @@
             "fieldPath": "id",
             "columnName": "id",
             "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "scope",
+            "columnName": "scope",
+            "affinity": "TEXT",
             "notNull": false
           },
           {
@@ -458,7 +526,7 @@
       },
       {
         "tableName": "Picture",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`fileName` TEXT NOT NULL, `absolutePath` TEXT NOT NULL, `uri` TEXT NOT NULL, `type` INTEGER NOT NULL, `relatedId` INTEGER, `exportState` INTEGER NOT NULL, PRIMARY KEY(`fileName`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`fileName` TEXT NOT NULL, `absolutePath` TEXT NOT NULL, `uri` TEXT NOT NULL, `type` INTEGER NOT NULL, `relatedId` INTEGER NOT NULL, `interventionId` INTEGER NOT NULL, `exportState` INTEGER NOT NULL, PRIMARY KEY(`fileName`))",
         "fields": [
           {
             "fieldPath": "fileName",
@@ -488,7 +556,13 @@
             "fieldPath": "relatedId",
             "columnName": "relatedId",
             "affinity": "INTEGER",
-            "notNull": false
+            "notNull": true
+          },
+          {
+            "fieldPath": "interventionId",
+            "columnName": "interventionId",
+            "affinity": "INTEGER",
+            "notNull": true
           },
           {
             "fieldPath": "exportState",
@@ -536,7 +610,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '4747cd91a6aee3c0d21355a7c4b9202d')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '4eb61652d7d504cc464506f304b34e53')"
     ]
   }
 }

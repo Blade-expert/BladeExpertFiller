@@ -61,6 +61,10 @@
         <entry key="..\:/Users/Colin/AndroidStudioProjects/BladeExpertFiller/app/src/main/res/layout/pattern_blade_button.xml" value="0.3828125" />
         <entry key="..\:/Users/Colin/AndroidStudioProjects/BladeExpertFiller/app/src/main/res/menu/activity_intervention_list.xml" value="0.2140625" />
         <entry key="..\:/Users/Colin/AndroidStudioProjects/BladeExpertFiller/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml" value="0.225" />
+        <entry key="..\:/Users/Colin/StudioProjects/BladeExpertFiller/app/src/main/res/drawable/ic_tools_solid.xml" value="0.3828125" />
+        <entry key="..\:/Users/Colin/StudioProjects/BladeExpertFiller/app/src/main/res/layout/activity_damage_list.xml" value="0.36666666666666664" />
+        <entry key="..\:/Users/Colin/StudioProjects/BladeExpertFiller/app/src/main/res/layout/activity_intervention_list.xml" value="0.22798887859128822" />
+        <entry key="..\:/Users/Colin/StudioProjects/BladeExpertFiller/app/src/main/res/layout/item_damage.xml" value="0.36666666666666664" />
       </map>
     </option>
   </component>

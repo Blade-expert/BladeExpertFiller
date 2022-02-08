@@ -17,6 +17,17 @@ interface BladeExpertService {
             .getUserSettings()?.userApiKey
     ): Call<Array<InterventionWrapper>>
 
+    @GET(value = "api/mobile/intervention/{interventionId}/{inoutdoorDamage}/blade/{bladeId}")
+    fun getDamages(
+        @Path("interventionId") interventionId: Int,
+        @Path("bladeId") bladeId: Int,
+        @Path("inoutdoorDamage") inoutdoorDamage: String,
+        @Query("key") key: String = API_KEY,
+        @Query("userKey") userKey: String? = App.database.userSettingsDao()
+            .getUserSettings()?.userApiKey
+    ): Call<Array<DamageSpotConditionWrapper>>
+
+
     @GET(value = "api/mobile/severity")
     fun getSeverities(@Query("key") key: String = API_KEY): Call<Array<SeverityWrapper>>
 

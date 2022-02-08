@@ -53,18 +53,19 @@ data class DamageTypeWrapper(
 
 data class DamageSpotConditionWrapper(
     val id: Int?,
-    val fieldCode: String,
-    val interventionId: Int,
-    val bladeId: Int,
-    val severityId: Int?,
-    val description: String?,
-    val damageTypeId: Int?,
-    val radialPosition: Float?,
-    val radialLength: Int?, //Width
-    val longitudinalLength: Int?, //Length
-    val repetition: Int?,
-    val position: String?,
-    val profileDepth: String?
+    @SerializedName("f") val fieldCode: String?,
+    @SerializedName("sc") val scope: String?,
+    @SerializedName("i") val interventionId: Int,
+    @SerializedName("b") val bladeId: Int,
+    @SerializedName("s") val severityId: Int?,
+    @SerializedName("d") val description: String?,
+    @SerializedName("dt") val damageTypeId: Int?,
+    @SerializedName("r") val radialPosition: Float?,
+    @SerializedName("w") val radialLength: Int?, //Width
+    @SerializedName("l") val longitudinalLength: Int?, //Length
+    @SerializedName("re") val repetition: Int?,
+    @SerializedName("p") val position: String?,
+    @SerializedName("pr") val profileDepth: String?
 )
 
 data class DrainholeSpotConditionWrapper(

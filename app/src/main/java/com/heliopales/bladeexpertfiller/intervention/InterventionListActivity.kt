@@ -72,7 +72,7 @@ class InterventionListActivity : AppCompatActivity(), InterventionAdapter.Interv
         val itemTouchHelper = ItemTouchHelper(simpleCallBack)
         itemTouchHelper.attachToRecyclerView(recyclerView)
 
-        refreshLayout = findViewById(R.id.swipe_layout)
+        refreshLayout = findViewById(R.id.itv_swipe_layout)
         refreshLayout.setOnRefreshListener { updateInterventionList() }
 
         updateInterventionList()
@@ -80,7 +80,7 @@ class InterventionListActivity : AppCompatActivity(), InterventionAdapter.Interv
         updateDamageTypes()
     }
 
-    val simpleCallBack = object : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
+    private val simpleCallBack = object : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
         override fun onMove(
             recyclerView: RecyclerView,
             viewHolder: RecyclerView.ViewHolder,

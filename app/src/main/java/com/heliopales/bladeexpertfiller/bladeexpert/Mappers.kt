@@ -7,6 +7,7 @@ import com.heliopales.bladeexpertfiller.intervention.Intervention
 import com.heliopales.bladeexpertfiller.secondaryentities.DamageType
 import com.heliopales.bladeexpertfiller.secondaryentities.Severity
 import com.heliopales.bladeexpertfiller.spotcondition.DrainholeSpotCondition
+import com.heliopales.bladeexpertfiller.spotcondition.INHERIT_TYPE_DAMAGE_IN
 import com.heliopales.bladeexpertfiller.spotcondition.LightningSpotCondition
 import com.heliopales.bladeexpertfiller.spotcondition.lightning.LightningReceptor
 import com.heliopales.bladeexpertfiller.spotcondition.lightning.ReceptorMeasure
@@ -16,7 +17,7 @@ fun mapBladeExpertIntervention(interventionWrapper: InterventionWrapper): Interv
     return Intervention(
         id = interventionWrapper.id,
         name = interventionWrapper.name,
-        turbineId= interventionWrapper.turbineId,
+        turbineId = interventionWrapper.turbineId,
         turbineSerial = interventionWrapper.turbineSerial,
         windfarmId = interventionWrapper.windfarmId,
         windfarmName = interventionWrapper.windfarmName
@@ -45,8 +46,6 @@ fun mapBladeExpertBlade(bladeWrapper: BladeWrapper): Blade {
     )
 }
 
-
-
 fun mapToBladeExpertBlade(blade: Blade): BladeWrapper {
     return BladeWrapper(
         id = blade.id,
@@ -59,7 +58,7 @@ fun mapToBladeExpertBlade(blade: Blade): BladeWrapper {
 
 fun mapBladeExpertTurbine(turbineWrapper: TurbineWrapper): Turbine {
     return Turbine(
-        id =turbineWrapper.id,
+        id = turbineWrapper.id,
         alias = turbineWrapper.alias,
         serial = turbineWrapper.serial,
         numInWindfarm = turbineWrapper.numInWindfarm,
@@ -110,6 +109,7 @@ fun mapToBladeExpertDamageSpotCondition(dsc: DamageSpotCondition): DamageSpotCon
     return DamageSpotConditionWrapper(
         id = dsc.id,
         fieldCode = dsc.fieldCode,
+        scope = dsc.scope,
         interventionId = dsc.interventionId,
         bladeId = dsc.bladeId,
         severityId = dsc.severityId,
@@ -122,6 +122,31 @@ fun mapToBladeExpertDamageSpotCondition(dsc: DamageSpotCondition): DamageSpotCon
         position = dsc.position,
         profileDepth = dsc.profileDepth
     )
+}
+
+fun mapBladeExpertDamageSpotCondition(
+    wrapper: DamageSpotConditionWrapper,
+    inheritType: String
+): DamageSpotCondition {
+    val fieldCode = if(inheritType == INHERIT_TYPE_DAMAGE_IN) wrapper.fieldCode?:"ix" else wrapper.fieldCode?:"Dx"
+    val dsc = DamageSpotCondition(
+        inheritType = inheritType,
+        fieldCode = fieldCode,
+        interventionId = wrapper.interventionId,
+        bladeId = wrapper.bladeId
+    )
+    dsc.id = wrapper.id
+    dsc.scope = wrapper.scope
+    dsc.severityId = wrapper.severityId
+    dsc.description = wrapper.description
+    dsc.damageTypeId = wrapper.damageTypeId
+    dsc.radialPosition = wrapper.radialPosition
+    dsc.radialLength = wrapper.radialLength
+    dsc.longitudinalLength = wrapper.longitudinalLength
+    dsc.repetition = wrapper.repetition
+    dsc.position = wrapper.position
+    dsc.profileDepth = wrapper.profileDepth
+    return dsc;
 }
 
 fun mapToBladeExpertDrainholeSpotCondition(dhs: DrainholeSpotCondition): DrainholeSpotConditionWrapper {
@@ -151,7 +176,7 @@ fun mapToBladeExpertLightningSpotCondition(
 fun mapToBladeExpertLightningMeasure(lrm: ReceptorMeasure): LightningReceptorMeasureWrapper {
     return LightningReceptorMeasureWrapper(
         receptorId = lrm.receptorId,
-        value = if (lrm.isOverLimit) "OL" else (if(lrm.value == null) null else lrm.value.toString()),
+        value = if (lrm.isOverLimit) "OL" else (if (lrm.value == null) null else lrm.value.toString()),
         severityId = lrm.severityId
     )
 }

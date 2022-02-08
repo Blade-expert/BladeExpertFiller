@@ -1,6 +1,7 @@
 package com.heliopales.bladeexpertfiller
 
 
+import androidx.room.AutoMigration
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import com.heliopales.bladeexpertfiller.blade.Blade
@@ -23,12 +24,10 @@ import com.heliopales.bladeexpertfiller.turbine.Turbine
     entities = [Intervention::class, Blade::class, Turbine::class, Severity::class, DamageType::class,
         DamageSpotCondition::class, DrainholeSpotCondition::class, LightningSpotCondition::class,
         LightningReceptor::class, ReceptorMeasure::class, Picture::class, UserSettings::class],
-    version = 1,
+    version = 2,
     autoMigrations = [
-
-    ],
-
-
+        AutoMigration (from = 1, to = 2)
+    ]
 )
 abstract class AppDatabase : RoomDatabase() {
     abstract fun interventionDao(): InterventionDao

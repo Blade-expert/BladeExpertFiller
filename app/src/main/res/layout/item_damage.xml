@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -14,97 +13,140 @@
         android:layout_marginVertical="4dp"
         android:focusable="true"
         android:foreground="?android:selectableItemBackground"
-        app:cardCornerRadius="8dp"
         app:cardBackgroundColor="@color/bulma_light"
+        app:cardCornerRadius="8dp"
         tools:backgroundTint="@color/bulma_warning">
 
-        <androidx.constraintlayout.widget.ConstraintLayout
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingHorizontal="12dp"
-            android:paddingVertical="18dp">
+            android:layout_height="match_parent">
 
-            <TextView
-                android:id="@+id/damage_field_code"
-                android:layout_width="wrap_content"
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/damage_constraint_layout"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintLeft_toLeftOf="parent"
-                android:paddingRight="12dp"
-                android:textColor="@color/bulma_black"
-                android:textSize="20sp"
-                tools:text="D1"/>
+                android:paddingHorizontal="12dp"
+                android:paddingTop="18dp"
+                android:paddingBottom="12dp">
 
-            <TextView
-                android:id="@+id/damage_text_1"
-                android:layout_width="wrap_content"
+                <TextView
+                    android:id="@+id/damage_field_code"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingRight="12dp"
+                    android:textColor="@color/bulma_black"
+                    android:textSize="20sp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:text="D1" />
+
+                <TextView
+                    android:id="@+id/damage_text_1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/bulma_black"
+                    android:textSize="22sp"
+                    app:layout_constraintBottom_toTopOf="@id/damage_text_2"
+                    app:layout_constraintLeft_toRightOf="@id/damage_field_code"
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:text="R 14.0  -  PS  -  Spar Cap" />
+
+                <TextView
+                    android:id="@+id/damage_text_2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="8dp"
+                    android:textColor="@color/bulma_black"
+                    android:textSize="18sp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintLeft_toLeftOf="@id/damage_text_1"
+                    app:layout_constraintTop_toBottomOf="@id/damage_text_1"
+                    tools:text="LAM - Crack" />
+
+
+                <ImageButton
+                    android:id="@+id/damage_camera_button"
+                    android:layout_width="35dp"
+                    android:layout_height="35dp"
+                    android:background="@null"
+                    android:foreground="@drawable/ic_round_camera_alt_24"
+                    android:foregroundTint="@color/bulma_black"
+                    app:layout_constraintBottom_toTopOf="@id/photo_count"
+                    app:layout_constraintRight_toRightOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintVertical_chainStyle="packed" />
+
+
+                <TextView
+                    android:id="@+id/photo_count"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:visibility="gone"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintLeft_toLeftOf="@id/damage_camera_button"
+                    app:layout_constraintRight_toRightOf="@id/damage_camera_button"
+                    app:layout_constraintTop_toBottomOf="@id/damage_camera_button"
+                    tools:text="22" />
+
+
+                <TextView
+                    android:id="@+id/damage_uncompleted"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="#DBDBDB"
+                    android:paddingHorizontal="10dp"
+                    android:text="UNCOMPLETE"
+                    android:textColor="@color/bulma_danger"
+                    android:textSize="30sp"
+                    android:textStyle="bold"
+                    android:visibility="gone"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/damage_scope_layout"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textColor="@color/bulma_black"
-                android:textSize="22sp"
-                app:layout_constraintBottom_toTopOf="@id/damage_text_2"
-                app:layout_constraintLeft_toRightOf="@id/damage_field_code"
-                app:layout_constraintTop_toTopOf="parent"
-                tools:text="R 14.0  -  PS  -  Spar Cap" />
+                android:layout_below="@id/damage_constraint_layout"
+                android:paddingHorizontal="12dp"
+                android:paddingBottom="12dp"
+                app:layout_constraintBottom_toBottomOf="parent">
 
-            <TextView
-                android:id="@+id/damage_text_2"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="8dp"
-                android:textColor="@color/bulma_black"
-                android:textSize="18sp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/damage_text_1"
-                app:layout_constraintLeft_toLeftOf="@id/damage_text_1"
-                tools:text="LAM - Crack" />
+                <ImageView
+                    android:id="@+id/damage_scope_icon"
+                    android:layout_width="24dp"
+                    android:layout_height="match_parent"
+                    android:src="@drawable/ic_tools_solid"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:tint="@color/bulma_black" />
 
-            <ImageButton
-                android:id="@+id/damage_camera_button"
-                android:layout_width="35dp"
-                android:layout_height="35dp"
-                app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toTopOf="@id/photo_count"
-                app:layout_constraintVertical_chainStyle="packed"
-                android:foreground="@drawable/ic_round_camera_alt_24"
-                android:foregroundTint="@color/bulma_black"
-                android:background="@null"
-                />
+                <TextView
+                    android:id="@+id/damage_scope"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_toRightOf="@id/damage_scope_icon"
+                    android:paddingLeft="16dp"
+                    android:textColor="@color/bulma_black"
+                    android:textSize="18sp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintLeft_toRightOf="@id/damage_scope_icon"
+                    app:layout_constraintRight_toRightOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:text="Ouvrir uniquement à R8 je pense et reprendre Radius précis" />
 
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
-            <TextView
-                android:id="@+id/photo_count"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:visibility="gone"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/damage_camera_button"
-                app:layout_constraintLeft_toLeftOf="@id/damage_camera_button"
-                app:layout_constraintRight_toRightOf="@id/damage_camera_button"
-                tools:text="22"
-                />
-
-
-            <TextView
-                android:id="@+id/damage_uncompleted"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:visibility="gone"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                android:paddingHorizontal="10dp"
-                android:textColor="@color/bulma_danger"
-                android:textSize="30sp"
-                android:textStyle="bold"
-                android:text="UNCOMPLETE"
-                android:background="#DBDBDB"
-               />
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
-
+        </RelativeLayout>
 
     </androidx.cardview.widget.CardView>
 

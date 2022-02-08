@@ -18,6 +18,9 @@ interface DamageDao {
     @Query("SELECT * FROM DamageSpotCondition WHERE localId = :localId")
     fun getDamageByLocalId(localId: Int): DamageSpotCondition
 
+    @Query("SELECT * FROM DamageSpotCondition WHERE id = :remoteId")
+    fun getDamageByRemoteId(remoteId: Int): DamageSpotCondition?
+
     @Query("SELECT * FROM DamageSpotCondition WHERE interventionId = :interventionId")
     fun getDamagesByInterventionId(interventionId: Int): List<DamageSpotCondition>
 

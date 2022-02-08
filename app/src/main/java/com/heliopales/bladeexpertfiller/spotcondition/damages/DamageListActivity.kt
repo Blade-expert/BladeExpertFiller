@@ -2,6 +2,8 @@ package com.heliopales.bladeexpertfiller.spotcondition.damages
 
 import android.annotation.SuppressLint
 import android.content.Intent
+import android.graphics.Canvas
+import android.media.MediaScannerConnection
 import android.os.Bundle
 import android.util.Log
 import android.view.GestureDetector
@@ -12,13 +14,17 @@ import android.widget.RelativeLayout
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import com.google.android.material.snackbar.Snackbar
 import com.heliopales.bladeexpertfiller.App
 import com.heliopales.bladeexpertfiller.PICTURE_TYPE_DAMAGE
 import com.heliopales.bladeexpertfiller.R
 import com.heliopales.bladeexpertfiller.blade.Blade
 import com.heliopales.bladeexpertfiller.blade.BladeActivity
+import com.heliopales.bladeexpertfiller.bladeexpert.*
 import com.heliopales.bladeexpertfiller.camera.CameraActivity
 import com.heliopales.bladeexpertfiller.intervention.Intervention
 import com.heliopales.bladeexpertfiller.intervention.InterventionActivity
@@ -26,6 +32,11 @@ import com.heliopales.bladeexpertfiller.spotcondition.DamageSpotCondition
 import com.heliopales.bladeexpertfiller.spotcondition.INHERIT_TYPE_DAMAGE_IN
 import com.heliopales.bladeexpertfiller.spotcondition.INHERIT_TYPE_DAMAGE_OUT
 import com.heliopales.bladeexpertfiller.utils.OnSwipeListener
+import com.heliopales.bladeexpertfiller.utils.toast
+import it.xabaras.android.recyclerview.swipedecorator.RecyclerViewSwipeDecorator
+import retrofit2.Call
+import retrofit2.Response
+import java.io.File
 
 class DamageListActivity : AppCompatActivity(), DamageAdapter.DamageItemListener,
     View.OnClickListener, View.OnTouchListener {
@@ -44,7 +55,11 @@ class DamageListActivity : AppCompatActivity(), DamageAdapter.DamageItemListener
     private lateinit var gestureDetector: GestureDetector
     private lateinit var damages: MutableList<DamageSpotCondition>
 
+    private lateinit var refreshLayout: SwipeRefreshLayout
+
     private lateinit var damageInheritType: String
+
+    private var snackBarActive: Boolean = false
 
     @SuppressLint("ClickableViewAccessibility")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -69,6 +84,12 @@ class DamageListActivity : AppCompatActivity(), DamageAdapter.DamageItemListener
             else -> findViewById<TextView>(R.id.damage_list_label).text = "ERROR"
         }
 
+        val itemTouchHelper = ItemTouchHelper(simpleCallBack)
+        itemTouchHelper.attachToRecyclerView(recyclerView)
+
+        refreshLayout = findViewById(R.id.damage_swipe_layout)
+        refreshLayout.setOnRefreshListener { updateDamageList() }
+
         findViewById<ImageButton>(R.id.add_damage_button).setOnClickListener(this)
 
         gestureDetector = GestureDetector(this, object : OnSwipeListener() {
@@ -88,6 +109,104 @@ class DamageListActivity : AppCompatActivity(), DamageAdapter.DamageItemListener
         findViewById<RelativeLayout>(R.id.damage_list_main_layout).setOnTouchListener(this)
     }
 
+    private fun updateDamageList() {
+        if (snackBarActive) {
+            if (refreshLayout.isRefreshing)
+                refreshLayout.isRefreshing = false
+            return
+        }
+        if (!refreshLayout.isRefreshing) {
+            refreshLayout.isRefreshing = true
+        }
+
+        /* UPDATE database with damages from BladeExpert */
+        val inout = if(damageInheritType == INHERIT_TYPE_DAMAGE_IN) "indoorDamage" else "outdoorDamage"
+        App.bladeExpertService.getDamages(interventionId = intervention.id, bladeId=blade.id, inoutdoorDamage = inout)
+        .enqueue(object : retrofit2.Callback<Array<DamageSpotConditionWrapper>> {
+            override fun onResponse(
+                call: Call<Array<DamageSpotConditionWrapper>>,
+                response: Response<Array<DamageSpotConditionWrapper>>
+            ) {
+                if (response.isSuccessful) {
+                    response.body().let {
+                        it?.forEach { dscw ->
+                            Log.d(TAG, dscw.toString())
+                            val dsc =
+                                App.database.damageDao().getDamageByRemoteId(remoteId = dscw.id!!)
+                            var updatedDamage =
+                                mapBladeExpertDamageSpotCondition(dscw, damageInheritType);
+                            if (dsc == null) {
+                                App.database.damageDao().insertDamage(updatedDamage)
+                            } else {
+                                updatedDamage.localId = dsc.localId
+                                App.database.damageDao().updateDamage(updatedDamage)
+                            }
+                        }
+                    }
+                }
+                loadDamagesFromDb()
+                refreshLayout.isRefreshing = false
+            }
+
+            override fun onFailure(call: Call<Array<DamageSpotConditionWrapper>>, t: Throwable) {
+                toast("Impossible to update damage list")
+                loadDamagesFromDb()
+                refreshLayout.isRefreshing = false
+            }
+        })
+    }
+
+    private fun preDeleteDamage(deletedDamage: DamageSpotCondition, position: Int) {
+        snackBarActive = true
+        damages.remove(deletedDamage)
+        adapter.notifyItemRemoved(position)
+        Snackbar.make(
+            recyclerView,
+            "Damage deleted",
+            Snackbar.LENGTH_SHORT
+        )
+            .setAction("Cancel") {
+                damages.add(position, deletedDamage)
+                adapter.notifyItemInserted(position)
+                snackBarActive = false
+            }
+            .addCallback(object : Snackbar.Callback() {
+                override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
+                    if (event == DISMISS_EVENT_TIMEOUT ||
+                        event == DISMISS_EVENT_CONSECUTIVE
+                    ) {
+                        snackBarActive = false
+                        effectivelyDeleteDamage(deletedDamage)
+                    }
+                    super.onDismissed(transientBottomBar, event)
+                }
+            })
+            .show()
+    }
+
+    private fun effectivelyDeleteDamage(deletedDamage: DamageSpotCondition) {
+
+        //delete damageFolder
+        val file = File(App.getDamagePath(intervention = intervention, blade = blade, damageSpotConditionLocalId = deletedDamage.localId))
+        if (file.exists() && file.isDirectory) {
+            Log.w(TAG, "will delete directory ${file.absolutePath}")
+            file.deleteRecursively()
+            MediaScannerConnection.scanFile(
+                this, arrayOf(file.absolutePath), null, null
+            )
+        }
+
+        //delete pictures in DB
+        App.database.pictureDao().getDamageSpotPicturesByDamageId(deletedDamage.localId).forEach {
+            App.database.pictureDao().deletePictureByFileName(it.fileName)
+        }
+
+        //delete damage itself
+        App.database.damageDao().delete(deletedDamage)
+
+    }
+
+
     override fun onTouch(v: View?, event: MotionEvent?): Boolean {
         Log.d(TAG, "onTouch")
         gestureDetector.onTouchEvent(event)
@@ -104,12 +223,19 @@ class DamageListActivity : AppCompatActivity(), DamageAdapter.DamageItemListener
     override fun onResume() {
         Log.i(TAG, "onResume()")
         super.onResume()
+        updateDamageList()
+    }
+
+    fun loadDamagesFromDb(){
         damages = App.database.damageDao().getDamagesByBladeAndInterventionAndInheritType(
             blade.id,
             intervention.id,
             damageInheritType
         )
         damages.sortBy { it.radialPosition }
+
+        damages.forEach { Log.d(TAG, it.toString() ) }
+
 
         adapter = DamageAdapter(damages, this)
         recyclerView.adapter = adapter
@@ -141,9 +267,17 @@ class DamageListActivity : AppCompatActivity(), DamageAdapter.DamageItemListener
 
         val prefix = if(damageInheritType == INHERIT_TYPE_DAMAGE_OUT) "D" else "i"
 
+        var num:Int = 1;
+        damages.forEach{
+            try{
+                num = it.fieldCode.replace("[^0-9]".toRegex(), "").toInt() + 1
+            }catch (exception:Exception){}
+        }
+        num.coerceAtLeast(damages.size+1)
+
         var damage = DamageSpotCondition(
             damageInheritType,
-            "$prefix${adapter.itemCount + 1}",
+            "$prefix$num",
             intervention.id,
             blade.id
         )
@@ -162,5 +296,46 @@ class DamageListActivity : AppCompatActivity(), DamageAdapter.DamageItemListener
         val intent = Intent(this, DamageViewPagerActivity::class.java)
         intent.putExtra(DamageViewPagerActivity.EXTRA_DAMAGE_SPOT_CONDITION_LOCAL_ID, damageLocalId)
         startActivity(intent)
+    }
+
+
+    private val simpleCallBack = object : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
+        override fun onMove(
+            recyclerView: RecyclerView,
+            viewHolder: RecyclerView.ViewHolder,
+            target: RecyclerView.ViewHolder
+        ): Boolean {
+            return false
+        }
+
+        override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+            val position = viewHolder.absoluteAdapterPosition
+            preDeleteDamage(damages[position], position)
+        }
+
+        override fun onChildDraw(
+            c: Canvas,
+            recyclerView: RecyclerView,
+            viewHolder: RecyclerView.ViewHolder,
+            dX: Float,
+            dY: Float,
+            actionState: Int,
+            isCurrentlyActive: Boolean
+        ) {
+            RecyclerViewSwipeDecorator.Builder(
+                c,
+                recyclerView,
+                viewHolder,
+                dX,
+                dY,
+                actionState,
+                isCurrentlyActive
+            )
+                .addBackgroundColor(getColor(R.color.bulma_danger))
+                .addActionIcon(R.drawable.ic_baseline_delete_24)
+                .create()
+                .decorate()
+            super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive)
+        }
     }
 }

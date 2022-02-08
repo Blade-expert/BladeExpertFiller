@@ -2,6 +2,7 @@ package com.heliopales.bladeexpertfiller.spotcondition
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.heliopales.bladeexpertfiller.intervention.Intervention
 import com.heliopales.bladeexpertfiller.spotcondition.lightning.MeasureMethod
 
 const val INHERIT_TYPE_DAMAGE_IN = "IDC"
@@ -13,6 +14,7 @@ data class DamageSpotCondition(val inheritType: String, val fieldCode: String, v
 
     @PrimaryKey(autoGenerate = true) var localId: Int = 0
     var id: Int? = null
+    var scope: String? = null
     var severityId: Int? = null
     var description: String? = null
     var damageTypeId: Int? = null
@@ -23,6 +25,16 @@ data class DamageSpotCondition(val inheritType: String, val fieldCode: String, v
     var position: String? = null
     var profileDepth: String? = null
 
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+        other as DamageSpotCondition
+        if (localId != other.localId) return false
+        return true
+    }
+    override fun hashCode(): Int {
+        return localId.hashCode()
+    }
 }
 
 @Entity
