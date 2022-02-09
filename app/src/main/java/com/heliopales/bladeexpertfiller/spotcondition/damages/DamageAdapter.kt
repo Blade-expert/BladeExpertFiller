@@ -7,8 +7,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.cardview.widget.CardView
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.heliopales.bladeexpertfiller.App
@@ -21,6 +23,8 @@ class DamageAdapter(
 ) : RecyclerView.Adapter<DamageAdapter.ViewHolder>(), View.OnClickListener {
 
     private val TAG = DamageAdapter::class.java.simpleName
+
+    var scopeMode = false;
 
     interface DamageItemListener {
         fun onDamageSelected(damage: DamageSpotCondition)
@@ -35,6 +39,9 @@ class DamageAdapter(
         val cameraButton: ImageButton = itemView.findViewById(R.id.damage_camera_button)
         val photoCount: TextView = itemView.findViewById(R.id.photo_count)
         val uncompleted: TextView = itemView.findViewById(R.id.damage_uncompleted)
+        val scopeLayout: ConstraintLayout = itemView.findViewById(R.id.damage_scope_layout)
+        val damageScope: TextView = itemView.findViewById(R.id.damage_scope)
+        val damageScopeIcon: ImageView = itemView.findViewById(R.id.damage_scope_icon)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -70,7 +77,15 @@ class DamageAdapter(
                     R.color.bulma_light
                 )
             )
-            val textViews = listOf(textView1, textView2, fieldCode, photoCount )
+
+            damageScopeIcon.imageTintList=ColorStateList.valueOf(
+                ContextCompat.getColor(
+                    cardView.context,
+                    R.color.bulma_black
+                )
+            )
+
+            val textViews = listOf(textView1, textView2, fieldCode, photoCount, damageScope )
 
             textViews.forEach {
                 it.setTextColor(ContextCompat.getColor(
@@ -93,8 +108,17 @@ class DamageAdapter(
                         it.setTextColor(Color.parseColor(sev.fontColor))
                     }
                     cameraButton.foregroundTintList = ColorStateList.valueOf(Color.parseColor(sev.fontColor))
+                    damageScopeIcon.imageTintList=ColorStateList.valueOf(Color.parseColor(sev.fontColor))
                 }
             }
+
+            if(dsc.scope == null){
+                scopeLayout.visibility = View.GONE
+            }else{
+                scopeLayout.visibility = View.VISIBLE
+                damageScope.text = dsc.scope
+            }
+
             val count = App.database.pictureDao().getDamageSpotPicturesByDamageId(dsc.localId).size
             if(count > 0){
                 photoCount.text = "$count"
@@ -107,6 +131,28 @@ class DamageAdapter(
                 uncompleted.visibility = View.VISIBLE
             else
                 uncompleted.visibility = View.GONE
+
+            if(scopeMode){
+                if(dsc.scope == null){
+                    holder.itemView.visibility = View.GONE
+                    holder.itemView.layoutParams = RecyclerView.LayoutParams(0, 0)
+                }else{
+                    holder.itemView.visibility = View.VISIBLE
+                    holder.itemView.layoutParams =
+                        RecyclerView.LayoutParams(
+                            ViewGroup.LayoutParams.MATCH_PARENT,
+                            ViewGroup.LayoutParams.WRAP_CONTENT
+                        )
+                }
+            }else{
+                scopeLayout.visibility = View.GONE
+                holder.itemView.visibility = View.VISIBLE
+                holder.itemView.layoutParams =
+                    RecyclerView.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT,
+                        ViewGroup.LayoutParams.WRAP_CONTENT
+                    )
+            }
         }
     }
 

@@ -2,6 +2,7 @@ package com.heliopales.bladeexpertfiller.spotcondition.damages
 
 import android.annotation.SuppressLint
 import android.content.Intent
+import android.content.res.ColorStateList
 import android.graphics.Canvas
 import android.media.MediaScannerConnection
 import android.os.Bundle
@@ -9,11 +10,10 @@ import android.util.Log
 import android.view.GestureDetector
 import android.view.MotionEvent
 import android.view.View
-import android.widget.ImageButton
-import android.widget.RelativeLayout
-import android.widget.TextView
+import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -55,6 +55,7 @@ class DamageListActivity : AppCompatActivity(), DamageAdapter.DamageItemListener
     private lateinit var gestureDetector: GestureDetector
     private lateinit var damages: MutableList<DamageSpotCondition>
 
+    private lateinit var scopeSwitch: Switch
     private lateinit var refreshLayout: SwipeRefreshLayout
 
     private lateinit var damageInheritType: String
@@ -70,6 +71,39 @@ class DamageListActivity : AppCompatActivity(), DamageAdapter.DamageItemListener
 
         recyclerView = findViewById(R.id.damages_recycler_view)
         recyclerView.layoutManager = LinearLayoutManager(this)
+
+        scopeSwitch = findViewById(R.id.damage_switch_scope)
+        scopeSwitch.setOnCheckedChangeListener { _, isChecked ->
+            if (isChecked) {
+                scopeSwitch.trackTintList = ColorStateList.valueOf(
+                    ContextCompat.getColor(
+                        scopeSwitch.context,
+                        R.color.bulma_link
+                    )
+                )
+                scopeSwitch.thumbTintList = ColorStateList.valueOf(
+                    ContextCompat.getColor(
+                        scopeSwitch.context,
+                        R.color.bulma_link
+                    )
+                )
+            } else {
+                scopeSwitch.trackTintList = ColorStateList.valueOf(
+                    ContextCompat.getColor(
+                        scopeSwitch.context,
+                        R.color.bulma_gray_light
+                    )
+                )
+                scopeSwitch.thumbTintList = ColorStateList.valueOf(
+                    ContextCompat.getColor(
+                        scopeSwitch.context,
+                        R.color.bulma_gray_light
+                    )
+                )
+            }
+            adapter.scopeMode = isChecked
+            adapter.notifyDataSetChanged();
+        }
 
         blade = intent.getParcelableExtra(EXTRA_BLADE)!!
         intervention = intent.getParcelableExtra(EXTRA_INTERVENTION)!!
@@ -238,6 +272,7 @@ class DamageListActivity : AppCompatActivity(), DamageAdapter.DamageItemListener
 
 
         adapter = DamageAdapter(damages, this)
+        adapter.scopeMode = scopeSwitch.isChecked
         recyclerView.adapter = adapter
     }
 
@@ -270,14 +305,16 @@ class DamageListActivity : AppCompatActivity(), DamageAdapter.DamageItemListener
         var num:Int = 1;
         damages.forEach{
             try{
-                num = it.fieldCode.replace("[^0-9]".toRegex(), "").toInt() + 1
+                num = num.coerceAtLeast(it.fieldCode.replace("[^0-9]".toRegex(), "").toInt() + 1)
             }catch (exception:Exception){}
         }
-        num.coerceAtLeast(damages.size+1)
+        num = num.coerceAtLeast(damages.size+1)
+
+        var numStr:String = if(num<10)"0$num" else num.toString()
 
         var damage = DamageSpotCondition(
             damageInheritType,
-            "$prefix$num",
+            "$prefix$numStr",
             intervention.id,
             blade.id
         )
