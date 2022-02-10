@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 2,
-    "identityHash": "4eb61652d7d504cc464506f304b34e53",
+    "identityHash": "6034d0d3d4f875f979400449bce54daa",
     "entities": [
       {
         "tableName": "Intervention",
@@ -605,12 +605,74 @@
         },
         "indices": [],
         "foreignKeys": []
+      },
+      {
+        "tableName": "Weather",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`interventionId` INTEGER NOT NULL, `localId` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `id` INTEGER, `dateTime` INTEGER, `type` TEXT, `windspeed` REAL, `temperature` REAL, `humidity` REAL)",
+        "fields": [
+          {
+            "fieldPath": "interventionId",
+            "columnName": "interventionId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "localId",
+            "columnName": "localId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "dateTime",
+            "columnName": "dateTime",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "type",
+            "columnName": "type",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "windspeed",
+            "columnName": "windspeed",
+            "affinity": "REAL",
+            "notNull": false
+          },
+          {
+            "fieldPath": "temperature",
+            "columnName": "temperature",
+            "affinity": "REAL",
+            "notNull": false
+          },
+          {
+            "fieldPath": "humidity",
+            "columnName": "humidity",
+            "affinity": "REAL",
+            "notNull": false
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "localId"
+          ],
+          "autoGenerate": true
+        },
+        "indices": [],
+        "foreignKeys": []
       }
     ],
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '4eb61652d7d504cc464506f304b34e53')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '6034d0d3d4f875f979400449bce54daa')"
     ]
   }
 }

@@ -159,6 +159,11 @@ class InterventionListActivity : AppCompatActivity(), InterventionAdapter.Interv
     }
 
     private fun effectivelyDeleteIntervention(deletedIntervention: Intervention) {
+        //delete weathers
+        App.database.weatherDao().getWeathersByInterventionId(interventionId = deletedIntervention.id)
+            .forEach {
+                App.database.weatherDao().delete(it)
+            }
         //delete damages and related pictures
         App.database.damageDao().getDamagesByInterventionId(interventionId = deletedIntervention.id)
             .forEach {

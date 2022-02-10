@@ -6,7 +6,7 @@
     android:layout_height="wrap_content">
 
     <androidx.cardview.widget.CardView
-        android:id="@+id/damage_card_view"
+        android:id="@+id/weather_card_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="8dp"
@@ -20,7 +20,7 @@
 
 
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/damage_constraint_layout"
+            android:id="@+id/weather_constraint_layout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:paddingVertical="10dp"
@@ -65,7 +65,7 @@
                 app:layout_constraintRight_toLeftOf="@id/iws_figures_layout"
                 app:layout_constraintTop_toTopOf="parent"
                 app:tint="@color/bulma_link"
-                tools:src="@drawable/ic_cloud_sun_rain_solid" />
+                tools:src="@drawable/ic_circle_question_regular_24" />
 
             <LinearLayout
                 android:id="@+id/iws_figures_layout"

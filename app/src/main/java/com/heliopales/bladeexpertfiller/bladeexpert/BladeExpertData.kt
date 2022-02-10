@@ -2,6 +2,7 @@ package com.heliopales.bladeexpertfiller.bladeexpert
 
 import com.google.gson.annotations.SerializedName
 import com.heliopales.bladeexpertfiller.spotcondition.lightning.MeasureMethod
+import java.time.LocalDateTime
 
 data class InterventionWrapper(
     val id: Int,
@@ -89,4 +90,14 @@ data class LightningReceptorMeasureWrapper(
     val receptorId: Int,
     val value: String?,
     val severityId: Int?
+)
+
+data class WeatherWrapper(
+    val id: Int?,
+    @SerializedName("i") val interventionId: Int,
+    @SerializedName("d") var dateTime: String?,
+    @SerializedName("ty") var type:String?,
+    @SerializedName("w") var windspeed: Float?,
+    @SerializedName("t") var temperature: Float?,
+    @SerializedName("h") var humidity: Float?
 )

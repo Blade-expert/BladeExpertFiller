@@ -12,6 +12,8 @@ import com.heliopales.bladeexpertfiller.spotcondition.LightningSpotCondition
 import com.heliopales.bladeexpertfiller.spotcondition.lightning.LightningReceptor
 import com.heliopales.bladeexpertfiller.spotcondition.lightning.ReceptorMeasure
 import com.heliopales.bladeexpertfiller.turbine.Turbine
+import com.heliopales.bladeexpertfiller.weather.Weather
+import java.time.LocalDateTime
 
 fun mapBladeExpertIntervention(interventionWrapper: InterventionWrapper): Intervention {
     return Intervention(
@@ -128,7 +130,9 @@ fun mapBladeExpertDamageSpotCondition(
     wrapper: DamageSpotConditionWrapper,
     inheritType: String
 ): DamageSpotCondition {
-    val fieldCode = if(inheritType == INHERIT_TYPE_DAMAGE_IN) wrapper.fieldCode?:"ix" else wrapper.fieldCode?:"Dx"
+    val fieldCode =
+        if (inheritType == INHERIT_TYPE_DAMAGE_IN) wrapper.fieldCode ?: "ix" else wrapper.fieldCode
+            ?: "Dx"
     val dsc = DamageSpotCondition(
         inheritType = inheritType,
         fieldCode = fieldCode,
@@ -181,3 +185,25 @@ fun mapToBladeExpertLightningMeasure(lrm: ReceptorMeasure): LightningReceptorMea
     )
 }
 
+fun mapBladeExpertWeather(ww: WeatherWrapper): Weather {
+    val wx = Weather(ww.interventionId)
+    wx.id = ww.id
+    wx.dateTime = LocalDateTime.parse(ww.dateTime)
+    wx.type = ww.type
+    wx.windspeed = ww.windspeed
+    wx.temperature = ww.temperature
+    wx.humidity = ww.humidity
+    return wx;
+}
+
+fun mapToBladeExpertWeather(wx: Weather): WeatherWrapper {
+    return WeatherWrapper(
+        id = wx.id,
+        interventionId = wx.interventionId,
+        dateTime = wx.dateTime.toString(),
+        type = wx.type,
+        windspeed = wx.windspeed,
+        temperature = wx.temperature,
+        humidity = wx.humidity
+    )
+}

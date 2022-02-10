@@ -242,7 +242,6 @@ class DamageListActivity : AppCompatActivity(), DamageAdapter.DamageItemListener
 
 
     override fun onTouch(v: View?, event: MotionEvent?): Boolean {
-        Log.d(TAG, "onTouch")
         gestureDetector.onTouchEvent(event)
         return true;
     }
@@ -257,6 +256,7 @@ class DamageListActivity : AppCompatActivity(), DamageAdapter.DamageItemListener
     override fun onResume() {
         Log.i(TAG, "onResume()")
         super.onResume()
+        loadDamagesFromDb()
         updateDamageList()
     }
 
@@ -266,10 +266,7 @@ class DamageListActivity : AppCompatActivity(), DamageAdapter.DamageItemListener
             intervention.id,
             damageInheritType
         )
-        damages.sortBy { it.radialPosition }
-
-        damages.forEach { Log.d(TAG, it.toString() ) }
-
+        damages.sortBy { it.fieldCode}
 
         adapter = DamageAdapter(damages, this)
         adapter.scopeMode = scopeSwitch.isChecked

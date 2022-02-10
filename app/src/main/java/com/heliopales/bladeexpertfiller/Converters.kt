@@ -1,0 +1,18 @@
+package com.heliopales.bladeexpertfiller
+
+import androidx.room.TypeConverter
+import java.time.Instant
+import java.time.LocalDateTime
+import java.time.ZoneOffset
+
+class Converters {
+    @TypeConverter
+    fun fromLocalDateTime(value: Long?): LocalDateTime? {
+        return value?.let { LocalDateTime.ofInstant(Instant.ofEpochMilli(value), ZoneOffset.UTC) }
+    }
+
+    @TypeConverter
+    fun dateToLocalDateTime(date: LocalDateTime?): Long? {
+        return date?.atZone(ZoneOffset.UTC)?.toInstant()?.toEpochMilli()
+    }
+}

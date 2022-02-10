@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/itv_main_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".intervention.InterventionActivity">
@@ -48,11 +50,29 @@
         app:layout_constraintRight_toRightOf="parent">
 
         <Button
-            android:id="@+id/itv_pic_button"
+            android:id="@+id/itv_wx_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toTopOf="@id/itv_wx_button"
+            app:layout_constraintBottom_toTopOf="@id/itv_pic_button"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            android:padding="28dp"
+            android:text="METEO"
+            android:textColor="@color/bulma_white"
+            android:textSize="22sp"
+            android:drawableLeft="@drawable/ic_cloud_sun_rain_solid"
+            android:drawableTint="@color/bulma_white"
+            android:drawablePadding="10dp"
+            android:backgroundTint="@color/bulma_link"
+            />
+
+        <Button
+            android:id="@+id/itv_pic_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/itv_wx_button"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             android:padding="24dp"
@@ -65,24 +85,7 @@
             android:backgroundTint="@color/bulma_link"
             />
 
-        <Button
-            android:id="@+id/itv_wx_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/itv_pic_button"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            android:padding="24dp"
-            android:text="METEO\n(comming soon)"
-            android:textStyle="italic"
-            android:textColor="@color/bulma_link"
-            android:textSize="18sp"
-            android:drawableLeft="@drawable/ic_cloud_sun_rain_solid"
-            android:drawableTint="@color/bulma_link"
-            android:drawablePadding="10dp"
-            android:backgroundTint="@color/bulma_link_light"
-            />
+
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
