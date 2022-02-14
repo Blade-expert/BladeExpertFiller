@@ -152,7 +152,7 @@ class WeatherActivity : AppCompatActivity(), View.OnClickListener, WeatherAdapte
     }
 
     override fun onWeatherSelected(weather: Weather) {
-        launchWeatherPager(weather.localId)
+        launchWeatherPager(weather)
     }
 
     override fun onClick(v: View) {
@@ -161,28 +161,27 @@ class WeatherActivity : AppCompatActivity(), View.OnClickListener, WeatherAdapte
         }
     }
 
-    private fun addNewWeather(): Int {
+    private fun addNewWeather(): Weather {
         Log.d(TAG, "addNewWeather()")
-
 
         var weather = Weather(intervention.id)
         weather.dateTime = LocalDateTime.now()
 
-        val newId = App.database.weatherDao().upsert(weather).toInt();
-        weather.localId = newId;
+        val newId = App.database.weatherDao().upsert(weather).toInt()
+        weather.localId = newId
 
         weathers.add(weather)
         weathers.sortBy { it.dateTime }
 
         adapter.notifyDataSetChanged()
 
-        return newId
+        return weather
     }
 
-    private fun launchWeatherPager(weatherLocalId: Int) {
-        /*val intent = Intent(this, DamageViewPagerActivity::class.java)
-        intent.putExtra(DamageViewPagerActivity.EXTRA_DAMAGE_SPOT_CONDITION_LOCAL_ID, damageLocalId)
-        startActivity(intent)*/
+    private fun launchWeatherPager(weather: Weather) {
+        val intent = Intent(this, WeatherViewPagerActivity::class.java)
+        intent.putExtra(WeatherViewPagerActivity.EXTRA_WEATHER, weather)
+        startActivity(intent)
     }
 
     private val simpleCallBack = object : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {

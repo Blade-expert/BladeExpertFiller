@@ -12,10 +12,9 @@ android {
         applicationId "com.heliopales.bladeexpertfiller"
         minSdk 26
         targetSdk 31
-        versionCode 3
-        versionName "1.1"
+        versionCode 4
+        versionName "1.2"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-
         kapt {
             arguments {
                 arg("room.schemaLocation", "$projectDir/schemas")
@@ -103,5 +102,6 @@ dependencies {
     // optional - Paging 3 Integration
     implementation "androidx.room:room-paging:2.4.1"
 
+    implementation "com.google.android.material:material:1.5.0"
 
 }

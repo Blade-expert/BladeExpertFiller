@@ -26,8 +26,6 @@ class WeatherAdapter(
 
     private val TAG = WeatherAdapter::class.java.simpleName
 
-    var scopeMode = false;
-
     interface WeatherItemListener {
         fun onWeatherSelected(weather: Weather)
     }
@@ -52,6 +50,7 @@ class WeatherAdapter(
         val wx = weathers[position]
         with(holder) {
             cardView.tag = wx
+            cardView.setOnClickListener(this@WeatherAdapter)
             dayTextView.text = wx.dateTime?.format(DateTimeFormatter.ofPattern("dd")) ?: "--"
             hourTextView.text = wx.dateTime?.format(DateTimeFormatter.ofPattern("HH'h'")) ?: "--"
 
@@ -75,6 +74,8 @@ class WeatherAdapter(
     override fun onClick(view: View) {
         when (view.id) {
             R.id.weather_card_view -> weatherListener.onWeatherSelected(view.tag as Weather)
+            else->Log.d(TAG, "unhandled click")
         }
+
     }
 }

@@ -17,8 +17,13 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.BladeExpertFiller">
         <activity
+            android:name=".weather.WeatherViewPagerActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"/>
+        <activity
             android:name=".weather.WeatherActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:screenOrientation="portrait"/>
         <activity
             android:name=".intervention.InterventionActivity"
             android:exported="false"
@@ -51,7 +56,7 @@
         <activity
             android:name=".camera.CameraActivity"
             android:exported="false"
-            android:screenOrientation="landscape" />
+            android:screenOrientation="sensorLandscape" />
         <activity
             android:name=".blade.BladeActivity"
             android:exported="false"
