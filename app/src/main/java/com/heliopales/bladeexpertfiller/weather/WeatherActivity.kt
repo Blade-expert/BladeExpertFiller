@@ -22,7 +22,6 @@ import com.heliopales.bladeexpertfiller.utils.toast
 import it.xabaras.android.recyclerview.swipedecorator.RecyclerViewSwipeDecorator
 import retrofit2.Call
 import retrofit2.Response
-import java.time.LocalDate
 import java.time.LocalDateTime
 import kotlin.math.roundToInt
 
@@ -88,10 +87,17 @@ class WeatherActivity : AppCompatActivity(), View.OnClickListener,
                                 val wx =
                                     App.database.weatherDao()
                                         .getWeatherByRemoteId(remoteId = ww.id!!)
-                                var updatedWeather = mapBladeExpertWeather(ww)
+                                var w = mapBladeExpertWeather(ww)
 
-                                if (wx != null) updatedWeather.localId = wx.localId
-                                App.database.weatherDao().upsert(updatedWeather)
+                                if (wx != null){
+                                    w.localId = wx.localId
+                                    if(w.dateTime == null) w.dateTime = wx.dateTime
+                                    if( w.type == null) w.type = wx.type
+                                    if( w.windspeed == null) w.windspeed = wx.windspeed
+                                    if( w.temperature == null) w.temperature = wx.temperature
+                                    if( w.humidity == null) w.humidity = wx.humidity
+                                }
+                                App.database.weatherDao().upsert(w)
                             }
                         }
                     }
@@ -150,7 +156,7 @@ class WeatherActivity : AppCompatActivity(), View.OnClickListener,
     fun loadWeatherFromDb() {
         weathers = App.database.weatherDao().getWeathersByInterventionId(intervention.id)
         weathers.sortBy { it.dateTime }
-
+        weathers.reverse()
         adapter = WeatherAdapter(weathers, this)
         recyclerView.adapter = adapter
     }

@@ -50,10 +50,47 @@
         app:layout_constraintRight_toRightOf="parent">
 
         <Button
-            android:id="@+id/itv_wx_button"
+            android:id="@+id/itv_start_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/itv_end_button"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            android:padding="20dp"
+            android:text="Start : 12/02 12h58"
+            android:textColor="@color/bulma_white"
+            android:textSize="18sp"
+            android:drawableLeft="@drawable/ic_circle_play_solid_32"
+            android:drawableTint="@color/bulma_white"
+            android:drawablePadding="16dp"
+            android:backgroundTint="@color/bulma_link"
+            />
+
+        <Button
+            android:id="@+id/itv_end_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@id/itv_start_button"
+            app:layout_constraintBottom_toTopOf="@id/itv_wx_button"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            android:padding="20dp"
+            android:text="Clic to stop intervention"
+            android:textColor="@color/bulma_white"
+            android:textSize="18sp"
+            android:drawableLeft="@drawable/ic_circle_stop_solid_32"
+            android:drawableTint="@color/bulma_white"
+            android:drawablePadding="16dp"
+            android:backgroundTint="@color/bulma_link"
+            />
+
+
+        <Button
+            android:id="@+id/itv_wx_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@id/itv_end_button"
             app:layout_constraintBottom_toTopOf="@id/itv_pic_button"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
@@ -63,9 +100,11 @@
             android:textSize="22sp"
             android:drawableLeft="@drawable/ic_cloud_sun_rain_solid"
             android:drawableTint="@color/bulma_white"
-            android:drawablePadding="10dp"
+            android:drawablePadding="16dp"
             android:backgroundTint="@color/bulma_link"
             />
+
+
 
         <Button
             android:id="@+id/itv_pic_button"
@@ -79,7 +118,7 @@
             android:text="Intervention pictures"
             android:textColor="@color/bulma_white"
             android:textSize="18sp"
-            android:drawableLeft="@drawable/ic_round_camera_alt_24"
+            android:drawableTop="@drawable/ic_round_camera_alt_48"
             android:drawableTint="@color/bulma_white"
             android:drawablePadding="10dp"
             android:backgroundTint="@color/bulma_link"

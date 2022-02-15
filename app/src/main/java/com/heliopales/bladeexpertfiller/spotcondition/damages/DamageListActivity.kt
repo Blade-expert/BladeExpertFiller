@@ -12,7 +12,6 @@ import android.view.MotionEvent
 import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
-import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -23,7 +22,6 @@ import com.heliopales.bladeexpertfiller.App
 import com.heliopales.bladeexpertfiller.PICTURE_TYPE_DAMAGE
 import com.heliopales.bladeexpertfiller.R
 import com.heliopales.bladeexpertfiller.blade.Blade
-import com.heliopales.bladeexpertfiller.blade.BladeActivity
 import com.heliopales.bladeexpertfiller.bladeexpert.*
 import com.heliopales.bladeexpertfiller.camera.CameraActivity
 import com.heliopales.bladeexpertfiller.intervention.Intervention
@@ -167,13 +165,23 @@ class DamageListActivity : AppCompatActivity(), DamageAdapter.DamageItemListener
                             Log.d(TAG, dscw.toString())
                             val dsc =
                                 App.database.damageDao().getDamageByRemoteId(remoteId = dscw.id!!)
-                            var updatedDamage =
-                                mapBladeExpertDamageSpotCondition(dscw, damageInheritType);
+                            var d =
+                                mapBladeExpertDamageSpotCondition(dscw, damageInheritType)
                             if (dsc == null) {
-                                App.database.damageDao().insertDamage(updatedDamage)
+                                App.database.damageDao().insertDamage(d)
                             } else {
-                                updatedDamage.localId = dsc.localId
-                                App.database.damageDao().updateDamage(updatedDamage)
+                                d.localId = dsc.localId
+                                if(d.severityId == null) d.severityId = dsc.severityId
+                                if(d.description == null) d.description = dsc.description
+                                if(d.damageTypeId == null) d.damageTypeId = dsc.damageTypeId
+                                if(d.radialPosition == null) d.radialPosition = dsc.radialPosition
+                                if(d.radialLength == null) d.radialLength = dsc.radialLength
+                                if(d.longitudinalLength == null) d.longitudinalLength = dsc.longitudinalLength
+                                if(d.repetition == null) d.repetition = dsc.repetition
+                                if(d.position == null) d.position = dsc.position
+                                if(d.profileDepth == null) d.profileDepth = dsc.profileDepth
+
+                                App.database.damageDao().updateDamage(d)
                             }
                         }
                     }
