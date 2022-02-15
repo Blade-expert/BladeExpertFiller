@@ -160,7 +160,8 @@ class InterventionListActivity : AppCompatActivity(), InterventionAdapter.Interv
 
     private fun effectivelyDeleteIntervention(deletedIntervention: Intervention) {
         //delete weathers
-        App.database.weatherDao().getWeathersByInterventionId(interventionId = deletedIntervention.id)
+        App.database.weatherDao()
+            .getWeathersByInterventionId(interventionId = deletedIntervention.id)
             .forEach {
                 App.database.weatherDao().delete(it)
             }
@@ -345,7 +346,7 @@ class InterventionListActivity : AppCompatActivity(), InterventionAdapter.Interv
         intervention: Intervention
     ) {
         if (intervention.exporting) return
-        exportAfterDamageUncompleteCheck(intervention)
+        else exportAfterDamageUncompleteCheck(intervention)
     }
 
     private fun exportAfterDamageUncompleteCheck(intervention: Intervention) {
@@ -422,30 +423,37 @@ class InterventionListActivity : AppCompatActivity(), InterventionAdapter.Interv
 
     private fun exportTask(intervention: Intervention): Runnable {
         return Runnable {
-            Log.i(TAG, "saveIntervention ${intervention.id} ${intervention.name}")
+            Log.i(TAG, "exporting Intervention ${intervention.id} ${intervention.name}")
+
+            //Weather
+            saveWeathers(intervention)
 
             //Intervention Pictures
             App.database.pictureDao().getNonExportedPicturesByTypeAndInterventionId(
-                PICTURE_TYPE_INTERVENTION, intervention.id).forEach { pic ->
-                    Log.d(TAG,"exporting intervention picture $pic")
+                PICTURE_TYPE_INTERVENTION, intervention.id
+            ).forEach { pic ->
+                Log.d(TAG, "exporting intervention picture $pic")
                 sendInterventionPicture(pic, intervention)
             }
 
             //Blade Pictures
             App.database.pictureDao().getNonExportedPicturesByTypeAndInterventionId(
-                PICTURE_TYPE_BLADE, intervention.id).forEach { pic ->
+                PICTURE_TYPE_BLADE, intervention.id
+            ).forEach { pic ->
                 sendBladePicture(pic, intervention)
             }
 
             //Turbine Pictures
             App.database.pictureDao().getNonExportedPicturesByTypeAndInterventionId(
-                PICTURE_TYPE_TURBINE, intervention.id).forEach { pic ->
+                PICTURE_TYPE_TURBINE, intervention.id
+            ).forEach { pic ->
                 sendTurbinePicture(pic, intervention)
             }
 
             //Windfarm Pictures
             App.database.pictureDao().getNonExportedPicturesByTypeAndInterventionId(
-                PICTURE_TYPE_WINDFARM, intervention.id).forEach { pic ->
+                PICTURE_TYPE_WINDFARM, intervention.id
+            ).forEach { pic ->
                 sendWindfarmPicture(pic, intervention)
             }
 
@@ -463,11 +471,12 @@ class InterventionListActivity : AppCompatActivity(), InterventionAdapter.Interv
                     if (dsc.radialPosition != null && dsc.position != null) {
                         Log.d(TAG, "saveDamage ${dsc.fieldCode}")
                         saveIndoorDamage(dsc, intervention)
-                    }else{
+                    } else {
                         intervention.exportRealizedOperations.postValue(++intervention.exportCount)
-                        App.database.pictureDao().getNonExportedDamageSpotPicturesByDamageId(dsc.localId).forEach { _ ->
-                            intervention.exportRealizedOperations.postValue(++intervention.exportCount)
-                        }
+                        App.database.pictureDao()
+                            .getNonExportedDamageSpotPicturesByDamageId(dsc.localId).forEach { _ ->
+                                intervention.exportRealizedOperations.postValue(++intervention.exportCount)
+                            }
                     }
                 }
 
@@ -479,11 +488,12 @@ class InterventionListActivity : AppCompatActivity(), InterventionAdapter.Interv
                     if (dsc.radialPosition != null && dsc.position != null) {
                         Log.d(TAG, "saveDamage ${dsc.fieldCode}")
                         saveOutdoorDamage(dsc, intervention)
-                    }else{
+                    } else {
                         intervention.exportRealizedOperations.postValue(++intervention.exportCount)
-                        App.database.pictureDao().getNonExportedDamageSpotPicturesByDamageId(dsc.localId).forEach { _ ->
-                            intervention.exportRealizedOperations.postValue(++intervention.exportCount)
-                        }
+                        App.database.pictureDao()
+                            .getNonExportedDamageSpotPicturesByDamageId(dsc.localId).forEach { _ ->
+                                intervention.exportRealizedOperations.postValue(++intervention.exportCount)
+                            }
                     }
 
                 }
@@ -561,6 +571,53 @@ class InterventionListActivity : AppCompatActivity(), InterventionAdapter.Interv
             })
     }
 
+    private fun saveWeathers(intervention: Intervention) {
+        val wrappers: List<WeatherWrapper> =
+            App.database.weatherDao().getWeathersByInterventionId(intervention.id)
+                .map { weather ->
+                    Log.d(TAG, "weather to be uploaded $weather")
+                    mapToBladeExpertWeather(weather) }
+
+        App.bladeExpertService.saveWeather(
+            weatherWrappers = wrappers
+        ).enqueue(object : retrofit2.Callback<List<WeatherWrapper>> {
+            override fun onResponse(
+                call: Call<List<WeatherWrapper>>,
+                response: Response<List<WeatherWrapper>>
+            ) {
+                intervention.exportRealizedOperations.postValue(++intervention.exportCount)
+                //Récupération de l'id de bladeExpert et sauvegarde
+                if (response.isSuccessful) {
+                    response.body()?.forEach { ww ->
+                        val wx = mapBladeExpertWeather(ww)
+                        App.database.weatherDao().upsert(wx)
+                        Log.d(TAG, "weather upserted after import $wx")
+                    }
+
+                } else {
+                    App.writeOnInterventionLogFile(
+                        intervention,
+                        "Error while saving weather | Http response code = ${response.code()} | ${response.message()}"
+                    )
+                    intervention.exportErrorsInLastExport = true
+                    intervention.exportRealizedOperations.postValue(intervention.exportCount)
+                }
+            }
+
+            override fun onFailure(
+                call: Call<List<WeatherWrapper>>,
+                t: Throwable
+            ) {
+                App.writeOnInterventionLogFile(intervention, "Failure while exporting weather")
+                App.writeOnInterventionLogFile(intervention, t.stackTraceToString())
+                intervention.exportRealizedOperations.postValue(++intervention.exportCount)
+                intervention.exportErrorsInLastExport = true
+            }
+        })
+
+
+    }
+
     private fun saveIndoorDamage(dsc: DamageSpotCondition, intervention: Intervention) {
         App.bladeExpertService.saveIndoorDamageSpotCondition(
             damageSpotConditionWrapper =
@@ -614,6 +671,7 @@ class InterventionListActivity : AppCompatActivity(), InterventionAdapter.Interv
                 }
             })
     }
+
 
     private fun saveOutdoorDamage(dsc: DamageSpotCondition, intervention: Intervention) {
         App.bladeExpertService.saveOutdoorDamageSpotCondition(
@@ -1007,6 +1065,12 @@ class InterventionListActivity : AppCompatActivity(), InterventionAdapter.Interv
         //turbineSerial
         count++
         Log.d(TAG, " - 1 turbine")
+
+        //Weather
+        if (App.database.weatherDao().getWeathersByInterventionId(intervention.id).size > 0) {
+            count++
+            Log.d(TAG, " - Weather")
+        }
 
         App.database.bladeDao().getBladesByInterventionId(intervention.id).forEach { bla ->
             count++ // BladeSerial

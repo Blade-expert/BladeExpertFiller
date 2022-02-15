@@ -56,7 +56,7 @@
         <activity
             android:name=".camera.CameraActivity"
             android:exported="false"
-            android:screenOrientation="sensorLandscape" />
+            android:screenOrientation="landscape" />
         <activity
             android:name=".blade.BladeActivity"
             android:exported="false"

@@ -42,6 +42,7 @@ class DamageAdapter(
         val scopeLayout: ConstraintLayout = itemView.findViewById(R.id.damage_scope_layout)
         val damageScope: TextView = itemView.findViewById(R.id.damage_scope)
         val damageScopeIcon: ImageView = itemView.findViewById(R.id.damage_scope_icon)
+        val lock:ImageView = itemView.findViewById(R.id.damage_lock)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -78,12 +79,16 @@ class DamageAdapter(
                 )
             )
 
-            damageScopeIcon.imageTintList=ColorStateList.valueOf(
+            val colorStateList = ColorStateList.valueOf(
                 ContextCompat.getColor(
                     cardView.context,
                     R.color.bulma_black
                 )
             )
+
+            damageScopeIcon.imageTintList=colorStateList
+            lock.imageTintList=colorStateList
+            cameraButton.foregroundTintList = colorStateList
 
             val textViews = listOf(textView1, textView2, fieldCode, photoCount, damageScope )
 
@@ -94,12 +99,6 @@ class DamageAdapter(
                 ))
             }
 
-            cameraButton.foregroundTintList = ColorStateList.valueOf(
-                ContextCompat.getColor(
-                    cardView.context,
-                    R.color.bulma_black
-                )
-            )
             if (dsc.severityId != null) {
                 val sev = App.database.severityDao().getById(dsc.severityId!!)
                 if (sev != null) {
@@ -109,6 +108,7 @@ class DamageAdapter(
                     }
                     cameraButton.foregroundTintList = ColorStateList.valueOf(Color.parseColor(sev.fontColor))
                     damageScopeIcon.imageTintList=ColorStateList.valueOf(Color.parseColor(sev.fontColor))
+                    lock.imageTintList= ColorStateList.valueOf(Color.parseColor(sev.fontColor))
                 }
             }
 
@@ -117,6 +117,12 @@ class DamageAdapter(
             }else{
                 scopeLayout.visibility = View.VISIBLE
                 damageScope.text = dsc.scope
+            }
+
+            if(dsc.id == null){
+                lock.visibility = View.GONE
+            }else{
+                lock.visibility = View.VISIBLE
             }
 
             val count = App.database.pictureDao().getDamageSpotPicturesByDamageId(dsc.localId).size

@@ -94,6 +94,7 @@ data class LightningReceptorMeasureWrapper(
 
 data class WeatherWrapper(
     val id: Int?,
+    @SerializedName("m") val mobileId: Int,
     @SerializedName("i") val interventionId: Int,
     @SerializedName("d") var dateTime: String?,
     @SerializedName("ty") var type:String?,

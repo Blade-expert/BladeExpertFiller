@@ -1,14 +1,118 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".weather.edit.WeatherFiguresFragment">
+    android:layout_height="match_parent">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+
+    <TableLayout
+        android:id="@+id/table_layout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="16dp"
+        android:stretchColumns="1">
 
-</FrameLayout>
+        <TableRow>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Wind = "
+                android:textColor="@color/bulma_black"
+                android:textSize="35sp" />
+            <EditText
+                android:id="@+id/wx_wind_edit_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:inputType="number|numberDecimal"
+                android:textColor="@color/bulma_black"
+                android:textSize="35sp"
+                android:textCursorDrawable="@drawable/link_cursor"
+                android:backgroundTint="@color/bulma_link"
+                android:layout_marginHorizontal="15dp"
+                tools:text="18.5" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="m/s"
+                android:textColor="@color/bulma_black"
+                android:textSize="25sp" />
+        </TableRow>
+
+        <TableRow>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Temp. ="
+                android:textColor="@color/bulma_black"
+                android:textSize="35sp" />
+            <EditText
+                android:id="@+id/wx_temp_edit_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:inputType="number|numberDecimal"
+                android:textColor="@color/bulma_black"
+                android:textSize="35sp"
+                android:textCursorDrawable="@drawable/link_cursor"
+                android:backgroundTint="@color/bulma_link"
+                android:layout_marginHorizontal="15dp"
+                tools:text="20.2" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:maxLines="1"
+                android:text="°C"
+                android:textColor="@color/bulma_black"
+                android:textSize="25sp" />
+        </TableRow>
+
+        <TableRow>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Hum. ="
+                android:textColor="@color/bulma_black"
+                android:textSize="35sp" />
+            <EditText
+                android:id="@+id/wx_hum_edit_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:inputType="number|numberDecimal"
+                android:textColor="@color/bulma_black"
+                android:textSize="35sp"
+                android:textCursorDrawable="@drawable/link_cursor"
+                android:backgroundTint="@color/bulma_link"
+                android:layout_marginHorizontal="15dp"
+                tools:text="102.6" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:maxLines="1"
+                android:text="%"
+                android:textColor="@color/bulma_black"
+                android:textSize="30sp" />
+        </TableRow>
+
+
+    </TableLayout>
+
+    <Button
+        android:id="@+id/wx_done_button"
+        android:layout_width="170dp"
+        android:layout_height="100dp"
+        android:layout_below="@id/table_layout"
+        android:layout_marginTop="24dp"
+        android:layout_centerHorizontal="true"
+        android:background="@drawable/ic_square_24"
+        android:backgroundTint="@color/bulma_link"
+        android:textColor="@color/bulma_white"
+        android:text="DONE"
+        android:textSize="30sp"
+        android:padding="20dp"
+        android:scaleType="fitCenter"
+        />
+
+
+</RelativeLayout>

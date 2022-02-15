@@ -27,6 +27,20 @@
             android:paddingHorizontal="16dp"
             >
 
+            <ImageView
+                android:id="@+id/iwx_lock"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintHorizontal_chainStyle="spread_inside"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toLeftOf="@id/iwx_day"
+                app:layout_constraintTop_toTopOf="parent"
+                android:src="@drawable/ic_lock_solid_24"
+                app:tint="@color/bulma_danger_dark"
+                android:alpha="0.5"
+                />
+
             <TextView
                 android:id="@+id/iwx_day"
                 android:layout_width="wrap_content"
@@ -39,7 +53,7 @@
                 android:textSize="30sp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintHorizontal_chainStyle="spread_inside"
-                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintLeft_toRightOf="@id/iwx_lock"
                 app:layout_constraintRight_toLeftOf="@id/iwx_hour"
                 app:layout_constraintTop_toTopOf="parent"
                 tools:text="29" />

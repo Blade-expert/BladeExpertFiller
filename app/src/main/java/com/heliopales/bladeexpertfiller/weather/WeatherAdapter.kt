@@ -38,6 +38,7 @@ class WeatherAdapter(
         val windTextView: TextView = itemView.findViewById(R.id.iwx_wind)
         val tempTextView: TextView = itemView.findViewById(R.id.iwx_temp)
         val humTextView: TextView = itemView.findViewById(R.id.iwx_hum)
+        val lock:ImageView =  itemView.findViewById(R.id.iwx_lock)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -65,6 +66,11 @@ class WeatherAdapter(
                 "FOG" ->weatherIcon.setImageDrawable(ContextCompat.getDrawable(cardView.context, R.drawable.ic_smog_solid_24));
                 "WND" ->weatherIcon.setImageDrawable(ContextCompat.getDrawable(cardView.context, R.drawable.ic_wind_solid_24));
                 else ->weatherIcon.setImageDrawable(ContextCompat.getDrawable(cardView.context, R.drawable.ic_circle_question_regular_24));
+            }
+            if(wx.id == null){
+                lock.visibility = View.GONE
+            }else{
+                lock.visibility = View.VISIBLE
             }
         }
     }

@@ -24,8 +24,10 @@ import retrofit2.Call
 import retrofit2.Response
 import java.time.LocalDate
 import java.time.LocalDateTime
+import kotlin.math.roundToInt
 
-class WeatherActivity : AppCompatActivity(), View.OnClickListener, WeatherAdapter.WeatherItemListener{
+class WeatherActivity : AppCompatActivity(), View.OnClickListener,
+    WeatherAdapter.WeatherItemListener {
 
     val TAG = WeatherActivity::class.java.simpleName
 
@@ -84,10 +86,11 @@ class WeatherActivity : AppCompatActivity(), View.OnClickListener, WeatherAdapte
                             it?.forEach { ww ->
                                 Log.d(TAG, ww.toString())
                                 val wx =
-                                    App.database.weatherDao().getWeatherByRemoteId(remoteId = ww.id!!)
+                                    App.database.weatherDao()
+                                        .getWeatherByRemoteId(remoteId = ww.id!!)
                                 var updatedWeather = mapBladeExpertWeather(ww)
 
-                                if(wx != null) updatedWeather.localId = wx.localId
+                                if (wx != null) updatedWeather.localId = wx.localId
                                 App.database.weatherDao().upsert(updatedWeather)
                             }
                         }
@@ -95,8 +98,9 @@ class WeatherActivity : AppCompatActivity(), View.OnClickListener, WeatherAdapte
                     loadWeatherFromDb()
                     refreshLayout.isRefreshing = false
                 }
+
                 override fun onFailure(call: Call<Array<WeatherWrapper>>, t: Throwable) {
-                    Log.e(TAG, "Impossible to update weather list",t)
+                    Log.e(TAG, "Impossible to update weather list", t)
                     toast("Impossible to update weather list")
                     loadWeatherFromDb()
                     refreshLayout.isRefreshing = false
@@ -124,7 +128,7 @@ class WeatherActivity : AppCompatActivity(), View.OnClickListener, WeatherAdapte
                         event == DISMISS_EVENT_CONSECUTIVE
                     ) {
                         snackBarActive = false
-                        effectivelyDeleteWeather(deletedWeather )
+                        effectivelyDeleteWeather(deletedWeather)
                     }
                     super.onDismissed(transientBottomBar, event)
                 }
@@ -143,7 +147,7 @@ class WeatherActivity : AppCompatActivity(), View.OnClickListener, WeatherAdapte
         updateWeatherList()
     }
 
-    fun loadWeatherFromDb(){
+    fun loadWeatherFromDb() {
         weathers = App.database.weatherDao().getWeathersByInterventionId(intervention.id)
         weathers.sortBy { it.dateTime }
 
@@ -165,7 +169,23 @@ class WeatherActivity : AppCompatActivity(), View.OnClickListener, WeatherAdapte
         Log.d(TAG, "addNewWeather()")
 
         var weather = Weather(intervention.id)
-        weather.dateTime = LocalDateTime.now()
+
+        val now = LocalDateTime.now()
+
+        var hr: Float = now.hour.toFloat() + now.minute.toFloat() / 60f
+        hr -= 9
+        if (hr < 0) hr = 0f
+        hr /= 3f
+        if (hr > 3) hr = 3f
+
+
+        weather.dateTime = LocalDateTime.of(
+            now.year,
+            now.monthValue,
+            now.dayOfMonth,
+            hr.roundToInt() * 3 + 9,
+            0
+        )
 
         val newId = App.database.weatherDao().upsert(weather).toInt()
         weather.localId = newId

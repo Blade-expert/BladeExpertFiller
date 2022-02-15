@@ -58,7 +58,6 @@ class BasicWeatherFragment : Fragment(), View.OnClickListener {
                 initCall = false
                 return@setOnDateChangedListener
             }
-
             updateDate(
                 year,
                 monthOfYear,

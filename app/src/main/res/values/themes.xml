@@ -5,11 +5,11 @@
         <item name="android:textColorPrimary">@color/bulma_link</item>
         <item name="android:colorControlNormal">@color/bulma_link_dark</item>
 
-        <!-- Primary brand color. -->
+
         <item name="colorPrimary">@color/bulma_link</item>
         <item name="colorPrimaryVariant">@color/bulma_dark</item>
         <item name="colorOnPrimary">@color/bulma_white</item>
-        <!-- Secondary brand color. -->
+
         <item name="colorSecondary">@color/bulma_link</item>
         <item name="colorSecondaryVariant">@color/bulma_link_dark</item>
         <item name="colorOnSecondary">@color/bulma_link_light</item>
@@ -17,6 +17,16 @@
         <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimary</item>
         <!-- Customize your theme here. -->
 
+        <item name="android:alertDialogTheme">@style/AlertDialogCustom</item>
+
+    </style>
+
+    <style name="AlertDialogCustom" parent="android:Theme.Material.Light.Dialog.Alert">
+        <item name="android:colorPrimary">@color/bulma_link</item>
+        <item name="android:colorAccent">@color/bulma_link_dark</item>
+        <item name="android:textColorPrimary">@color/bulma_link</item>
+        <item name="android:colorPrimaryDark">@color/bulma_link_dark</item>
+        <item name="android:colorControlActivated">@color/bulma_link</item>
     </style>
 
 </resources>

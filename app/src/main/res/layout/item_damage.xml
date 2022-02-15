@@ -30,6 +30,8 @@
                 android:layout_height="wrap_content"
                 >
 
+
+
                 <TextView
                     android:id="@+id/damage_field_code"
                     android:layout_width="wrap_content"
@@ -37,10 +39,22 @@
                     android:paddingRight="12dp"
                     android:textColor="@color/bulma_black"
                     android:textSize="20sp"
-                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintBottom_toTopOf="@id/damage_lock"
                     app:layout_constraintLeft_toLeftOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
-                    tools:text="D1" />
+                    tools:text="D1"/>
+
+                <ImageView
+                    android:id="@+id/damage_lock"
+                    android:layout_width="21dp"
+                    android:layout_height="24dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/damage_field_code"
+                    android:src="@drawable/ic_lock_solid_24"
+                    app:tint="@color/bulma_danger"
+                    android:padding="2dp"
+                    />
 
                 <TextView
                     android:id="@+id/damage_text_1"

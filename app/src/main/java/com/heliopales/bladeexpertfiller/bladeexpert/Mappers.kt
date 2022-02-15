@@ -188,6 +188,7 @@ fun mapToBladeExpertLightningMeasure(lrm: ReceptorMeasure): LightningReceptorMea
 fun mapBladeExpertWeather(ww: WeatherWrapper): Weather {
     val wx = Weather(ww.interventionId)
     wx.id = ww.id
+    wx.localId = ww.mobileId
     wx.dateTime = LocalDateTime.parse(ww.dateTime)
     wx.type = ww.type
     wx.windspeed = ww.windspeed
@@ -199,6 +200,7 @@ fun mapBladeExpertWeather(ww: WeatherWrapper): Weather {
 fun mapToBladeExpertWeather(wx: Weather): WeatherWrapper {
     return WeatherWrapper(
         id = wx.id,
+        mobileId = wx.localId,
         interventionId = wx.interventionId,
         dateTime = wx.dateTime.toString(),
         type = wx.type,
