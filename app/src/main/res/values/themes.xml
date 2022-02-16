@@ -18,6 +18,8 @@
         <!-- Customize your theme here. -->
 
         <item name="android:alertDialogTheme">@style/AlertDialogCustom</item>
+        <item name="android:timePickerDialogTheme">@style/AlertDialogCustom</item>
+        <item name="android:datePickerDialogTheme">@style/AlertDialogCustom</item>
 
     </style>
 
@@ -27,6 +29,8 @@
         <item name="android:textColorPrimary">@color/bulma_link</item>
         <item name="android:colorPrimaryDark">@color/bulma_link_dark</item>
         <item name="android:colorControlActivated">@color/bulma_link</item>
+        <item name="android:colorControlHighlight">@color/bulma_link_dark</item>
+        <item name="android:colorActivatedHighlight">@color/bulma_link_dark</item>
     </style>
 
 </resources>

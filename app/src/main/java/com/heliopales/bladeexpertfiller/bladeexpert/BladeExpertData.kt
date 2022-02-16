@@ -7,6 +7,8 @@ import java.time.LocalDateTime
 data class InterventionWrapper(
     val id: Int,
     val name: String,
+    val startTime: String?,
+    val endTime: String?,
     val turbineId: Int,
     val turbineSerial: String?,
     val windfarmId: Int,

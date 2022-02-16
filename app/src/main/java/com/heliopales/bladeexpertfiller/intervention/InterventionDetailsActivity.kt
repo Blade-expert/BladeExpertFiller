@@ -86,7 +86,7 @@ class InterventionDetailsActivity : AppCompatActivity(), View.OnClickListener,
 
     fun startInterventionActivity(){
         val intent = Intent(this, InterventionActivity::class.java)
-        intent.putExtra(InterventionActivity.EXTRA_INTERVENTION, intervention)
+        intent.putExtra(InterventionActivity.EXTRA_INTERVENTION_ID, intervention.id)
         startActivity(intent)
         overridePendingTransition(R.anim.in_from_top, R.anim.no_anim)
     }
@@ -113,7 +113,7 @@ class InterventionDetailsActivity : AppCompatActivity(), View.OnClickListener,
     private fun startBladeActivity(blade: Blade) {
         val intent = Intent(this, BladeActivity::class.java)
         intent.putExtra(BladeActivity.EXTRA_INTERVENTION, intervention)
-        intent.putExtra(BladeActivity.EXTRA_BLADE, blade)
+        intent.putExtra(BladeActivity.EXTRA_BLADE_ID, blade.id)
         startActivity(intent)
     }
 

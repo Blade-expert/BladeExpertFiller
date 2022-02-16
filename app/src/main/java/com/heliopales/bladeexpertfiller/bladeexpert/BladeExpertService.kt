@@ -49,13 +49,13 @@ interface BladeExpertService {
     @GET(value = "api/mobile/damagetype")
     fun getDamageTypes(@Query("key") key: String = API_KEY): Call<Array<DamageTypeWrapper>>
 
-    @PUT(value = "api/mobile/turbineSerial")
-    fun updateTurbineSerial(
+    @PUT(value = "api/mobile/intervention")
+    fun updateIntervention(
         @Query("key") key: String = API_KEY,
         @Query("userKey") userKey: String? = App.database.userSettingsDao()
             .getUserSettings()?.userApiKey,
         @Body interventionWrapper: InterventionWrapper
-    ): Call<Boolean>
+    ): Call<ResponseBody>
 
     @PUT(value = "api/mobile/bladeSerial")
     fun updateBladeSerial(
@@ -63,7 +63,7 @@ interface BladeExpertService {
         @Query("userKey") userKey: String? = App.database.userSettingsDao()
             .getUserSettings()?.userApiKey,
         @Body bladeWrapper: BladeWrapper
-    ): Call<Boolean>
+    ): Call<ResponseBody>
 
     @Multipart
     @POST(value = "api/mobile/spotCondition/{id}/addPicture")

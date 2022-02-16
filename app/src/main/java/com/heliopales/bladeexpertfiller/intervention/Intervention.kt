@@ -7,12 +7,15 @@ import androidx.room.Ignore
 import androidx.room.PrimaryKey
 import com.heliopales.bladeexpertfiller.EXPORTATION_STATE_EMPTY
 import kotlinx.android.parcel.Parcelize
+import java.time.LocalDateTime
 
 @Entity
 @Parcelize
 data class Intervention(
     @PrimaryKey val id: Int,
     val name: String,
+    var startTime: LocalDateTime?,
+    var endTime: LocalDateTime?,
     val turbineId: Int,
     var turbineSerial: String?,
     val windfarmId: Int,

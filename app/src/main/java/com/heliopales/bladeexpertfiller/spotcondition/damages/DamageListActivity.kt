@@ -256,7 +256,7 @@ class DamageListActivity : AppCompatActivity(), DamageAdapter.DamageItemListener
 
     fun startInterventionActivity(){
         val intent = Intent(this, InterventionActivity::class.java)
-        intent.putExtra(InterventionActivity.EXTRA_INTERVENTION, intervention)
+        intent.putExtra(InterventionActivity.EXTRA_INTERVENTION_ID, intervention.id)
         startActivity(intent)
         overridePendingTransition(R.anim.in_from_top, R.anim.no_anim)
     }

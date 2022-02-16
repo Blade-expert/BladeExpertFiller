@@ -282,7 +282,9 @@ class InterventionListActivity : AppCompatActivity(), InterventionAdapter.Interv
             with(it) {
                 val dbitv = App.database.interventionDao().getById(id)
                 turbineSerial = dbitv.turbineSerial
-                it.exportationState = dbitv.exportationState
+                exportationState = dbitv.exportationState
+                startTime = dbitv.startTime
+                endTime = dbitv.endTime
             }
         }
         adapter.notifyDataSetChanged()
@@ -512,15 +514,15 @@ class InterventionListActivity : AppCompatActivity(), InterventionAdapter.Interv
     }
 
     private fun saveTurbineSerial(intervention: Intervention) {
-        App.bladeExpertService.updateTurbineSerial(
+        App.bladeExpertService.updateIntervention(
             interventionWrapper = mapToBladeExpertIntervention(
                 intervention
             )
         )
-            .enqueue(object : retrofit2.Callback<Boolean> {
+            .enqueue(object : retrofit2.Callback<ResponseBody> {
                 override fun onResponse(
-                    call: Call<Boolean>,
-                    response: Response<Boolean>
+                    call: Call<ResponseBody>,
+                    response: Response<ResponseBody>
                 ) {
                     if (!response.isSuccessful) {
                         intervention.exportErrorsInLastExport = true
@@ -532,7 +534,7 @@ class InterventionListActivity : AppCompatActivity(), InterventionAdapter.Interv
                     intervention.exportRealizedOperations.postValue(++intervention.exportCount)
                 }
 
-                override fun onFailure(call: Call<Boolean>, t: Throwable) {
+                override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
                     App.writeOnInterventionLogFile(
                         intervention,
                         "Failure while exporting $intervention"
@@ -547,10 +549,10 @@ class InterventionListActivity : AppCompatActivity(), InterventionAdapter.Interv
 
     private fun saveBladeSerial(bla: Blade, intervention: Intervention) {
         App.bladeExpertService.updateBladeSerial(bladeWrapper = mapToBladeExpertBlade(bla))
-            .enqueue(object : retrofit2.Callback<Boolean> {
+            .enqueue(object : retrofit2.Callback<ResponseBody> {
                 override fun onResponse(
-                    call: Call<Boolean>,
-                    response: Response<Boolean>
+                    call: Call<ResponseBody>,
+                    response: Response<ResponseBody>
                 ) {
                     if (!response.isSuccessful) {
                         intervention.exportErrorsInLastExport = true
@@ -562,7 +564,7 @@ class InterventionListActivity : AppCompatActivity(), InterventionAdapter.Interv
                     intervention.exportRealizedOperations.postValue(++intervention.exportCount)
                 }
 
-                override fun onFailure(call: Call<Boolean>, t: Throwable) {
+                override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
                     App.writeOnInterventionLogFile(intervention, "Failure while exporting $bla")
                     App.writeOnInterventionLogFile(intervention, t.stackTraceToString())
                     intervention.exportRealizedOperations.postValue(++intervention.exportCount)

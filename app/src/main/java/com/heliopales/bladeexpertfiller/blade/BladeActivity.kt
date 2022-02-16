@@ -30,7 +30,7 @@ class BladeActivity : AppCompatActivity(), View.OnClickListener, View.OnTouchLis
 
     companion object {
         const val EXTRA_INTERVENTION = "intervention"
-        const val EXTRA_BLADE = "blade"
+        const val EXTRA_BLADE_ID = "blade"
     }
 
     private lateinit var intervention: Intervention
@@ -49,7 +49,7 @@ class BladeActivity : AppCompatActivity(), View.OnClickListener, View.OnTouchLis
         database = App.database
 
         intervention = intent.getParcelableExtra(EXTRA_INTERVENTION)!!
-        blade = intent.getParcelableExtra(EXTRA_BLADE)!!
+        blade = App.database.bladeDao().getById(intent.getIntExtra(EXTRA_BLADE_ID,-1)!!)
 
         turbineNameView = findViewById(R.id.bla_turbine_name)
         turbineNameView.text = intervention.name
@@ -60,8 +60,7 @@ class BladeActivity : AppCompatActivity(), View.OnClickListener, View.OnTouchLis
         bladeSerialView = findViewById(R.id.blade_serial_number)
         bladeSerialView.text = if (blade.serial == null) "-----" else blade.serial
 
-            findViewById<ImageButton>(R.id.edit_blade_serial).setOnClickListener(this)
-
+        findViewById<ImageButton>(R.id.edit_blade_serial).setOnClickListener(this)
         findViewById<ImageButton>(R.id.take_blade_serial_picture).setOnClickListener(this)
         findViewById<Button>(R.id.see_indoor_damages_button).setOnClickListener(this)
         findViewById<Button>(R.id.see_outdoor_damages_button).setOnClickListener(this)
@@ -81,7 +80,6 @@ class BladeActivity : AppCompatActivity(), View.OnClickListener, View.OnTouchLis
                 return true
             }
         })
-
         findViewById<ConstraintLayout>(R.id.blade_main_layout).setOnTouchListener(this)
     }
 
@@ -93,7 +91,7 @@ class BladeActivity : AppCompatActivity(), View.OnClickListener, View.OnTouchLis
 
     fun startInterventionActivity(){
         val intent = Intent(this, InterventionActivity::class.java)
-        intent.putExtra(InterventionActivity.EXTRA_INTERVENTION, intervention)
+        intent.putExtra(InterventionActivity.EXTRA_INTERVENTION_ID, intervention.id)
         startActivity(intent)
         overridePendingTransition(R.anim.in_from_top, R.anim.no_anim)
     }
@@ -171,6 +169,8 @@ class BladeActivity : AppCompatActivity(), View.OnClickListener, View.OnTouchLis
 
     override fun onResume() {
         super.onResume()
+
+        blade = App.database.bladeDao().getById(blade.id)
 
         var count = 0
         count = App.database.damageDao().getDamagesByBladeAndInterventionAndInheritType(blade.id, intervention.id, INHERIT_TYPE_DAMAGE_IN).size

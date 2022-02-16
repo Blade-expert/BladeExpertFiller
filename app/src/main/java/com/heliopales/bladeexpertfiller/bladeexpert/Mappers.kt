@@ -19,6 +19,8 @@ fun mapBladeExpertIntervention(interventionWrapper: InterventionWrapper): Interv
     return Intervention(
         id = interventionWrapper.id,
         name = interventionWrapper.name,
+        startTime = if(interventionWrapper.startTime != null) LocalDateTime.parse(interventionWrapper.startTime) else null,
+        endTime = if(interventionWrapper.endTime != null) LocalDateTime.parse(interventionWrapper.endTime) else null,
         turbineId = interventionWrapper.turbineId,
         turbineSerial = interventionWrapper.turbineSerial,
         windfarmId = interventionWrapper.windfarmId,
@@ -30,6 +32,8 @@ fun mapToBladeExpertIntervention(intervention: Intervention): InterventionWrappe
     return InterventionWrapper(
         id = intervention.id,
         name = intervention.name,
+        startTime = if(intervention.startTime != null) intervention.startTime.toString() else null,
+        endTime = if(intervention.endTime != null) intervention.endTime.toString() else null,
         turbineId = intervention.turbineId,
         turbineSerial = intervention.turbineSerial,
         windfarmId = intervention.windfarmId,
@@ -76,17 +80,6 @@ fun mapBladeExpertLightningReceptor(lightningReceptorWrapper: LightningReceptorW
         position = lightningReceptorWrapper.position
     )
 }
-
-/*
-fun mapToBladeExpertLightningReceptor(lightningReceptor: LightningReceptor): LightningReceptorWrapper {
-    return LightningReceptorWrapper(
-        id = lightningReceptor.id,
-        bladeId = lightningReceptor.bladeId,
-        radius = lightningReceptor.radius,
-        position = lightningReceptor.position
-    )
-}
-*/
 
 
 fun mapBladeExpertSeverity(severityWrapper: SeverityWrapper): Severity {
@@ -189,7 +182,7 @@ fun mapBladeExpertWeather(ww: WeatherWrapper): Weather {
     val wx = Weather(ww.interventionId)
     wx.id = ww.id
     wx.localId = ww.mobileId
-    wx.dateTime = LocalDateTime.parse(ww.dateTime)
+    wx.dateTime = if(ww.dateTime != null) LocalDateTime.parse(ww.dateTime) else null
     wx.type = ww.type
     wx.windspeed = ww.windspeed
     wx.temperature = ww.temperature
@@ -202,7 +195,7 @@ fun mapToBladeExpertWeather(wx: Weather): WeatherWrapper {
         id = wx.id,
         mobileId = wx.localId,
         interventionId = wx.interventionId,
-        dateTime = wx.dateTime.toString(),
+        dateTime = if(wx.dateTime != null) wx.dateTime.toString() else null,
         type = wx.type,
         windspeed = wx.windspeed,
         temperature = wx.temperature,
