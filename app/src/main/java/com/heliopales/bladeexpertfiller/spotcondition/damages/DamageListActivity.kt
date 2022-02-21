@@ -11,6 +11,7 @@ import android.view.GestureDetector
 import android.view.MotionEvent
 import android.view.View
 import android.widget.*
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.ItemTouchHelper
@@ -227,7 +228,6 @@ class DamageListActivity : AppCompatActivity(), DamageAdapter.DamageItemListener
     }
 
     private fun effectivelyDeleteDamage(deletedDamage: DamageSpotCondition) {
-
         //delete damageFolder
         val file = File(App.getDamagePath(intervention = intervention, blade = blade, damageSpotConditionLocalId = deletedDamage.localId))
         if (file.exists() && file.isDirectory) {
@@ -247,7 +247,6 @@ class DamageListActivity : AppCompatActivity(), DamageAdapter.DamageItemListener
         App.database.damageDao().delete(deletedDamage)
 
     }
-
 
     override fun onTouch(v: View?, event: MotionEvent?): Boolean {
         gestureDetector.onTouchEvent(event)
@@ -351,8 +350,17 @@ class DamageListActivity : AppCompatActivity(), DamageAdapter.DamageItemListener
         }
 
         override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-            val position = viewHolder.absoluteAdapterPosition
-            preDeleteDamage(damages[position], position)
+            AlertDialog.Builder(this@DamageListActivity)
+                .setMessage(
+                    "This will also delete pictures of the damage, Please confirm."
+                )
+                .setPositiveButton("Delete") { _, _ ->
+                    val position = viewHolder.absoluteAdapterPosition
+                    preDeleteDamage(damages[position], position)
+                }
+                .setNegativeButton("Cancel") { _, _ -> }
+                .create()
+                .show()
         }
 
         override fun onChildDraw(
