@@ -24,5 +24,7 @@ interface ReceptorMeasureDao {
     @Query("SELECT * FROM ReceptorMeasure WHERE lightningSpotConditionLocalId=:lightningLocalId")
     fun getByLightningSpotConditionLocalId(lightningLocalId: Int): List<ReceptorMeasure>
 
+    @Query("SELECT count(receptorId) FROM ReceptorMeasure WHERE lightningSpotConditionLocalId=:lightningLocalId AND (value is not null OR isOverLimit = 1)")
+    fun getCountByLightningSpotConditionLocalId(lightningLocalId: Int): Int
 
 }

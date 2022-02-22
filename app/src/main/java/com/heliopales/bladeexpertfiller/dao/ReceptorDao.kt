@@ -15,4 +15,7 @@ interface ReceptorDao {
     @Query("SELECT * FROM LightningReceptor WHERE bladeId = :bladeId")
     fun getByBladeId(bladeId:Int): List<LightningReceptor>
 
+    @Query("SELECT count(*) FROM LightningReceptor WHERE bladeId = :bladeId")
+    fun getCountByBladeId(bladeId:Int): Int
+
 }

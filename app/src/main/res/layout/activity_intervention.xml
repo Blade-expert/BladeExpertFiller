@@ -39,7 +39,6 @@
             android:textSize="25sp" />
     </LinearLayout>
 
-
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/itv_content_const_layout"
         android:layout_width="match_parent"
@@ -50,10 +49,28 @@
         app:layout_constraintRight_toRightOf="parent">
 
         <Button
-            android:id="@+id/itv_start_button"
+            android:id="@+id/itv_wx_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/itv_start_button"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            android:padding="28dp"
+            android:text="METEO"
+            android:textColor="@color/bulma_white"
+            android:textSize="22sp"
+            android:drawableLeft="@drawable/ic_cloud_sun_rain_solid"
+            android:drawableTint="@color/bulma_white"
+            android:drawablePadding="16dp"
+            android:backgroundTint="@color/bulma_link"
+            />
+
+        <Button
+            android:id="@+id/itv_start_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@+id/itv_wx_button"
             app:layout_constraintBottom_toTopOf="@id/itv_end_button"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
@@ -72,7 +89,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:layout_constraintTop_toBottomOf="@id/itv_start_button"
-            app:layout_constraintBottom_toTopOf="@id/itv_wx_button"
+            app:layout_constraintBottom_toTopOf="@id/itv_pic_button"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             android:padding="20dp"
@@ -85,33 +102,12 @@
             android:backgroundTint="@color/bulma_link"
             />
 
-
-        <Button
-            android:id="@+id/itv_wx_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@id/itv_end_button"
-            app:layout_constraintBottom_toTopOf="@id/itv_pic_button"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            android:padding="28dp"
-            android:text="METEO"
-            android:textColor="@color/bulma_white"
-            android:textSize="22sp"
-            android:drawableLeft="@drawable/ic_cloud_sun_rain_solid"
-            android:drawableTint="@color/bulma_white"
-            android:drawablePadding="16dp"
-            android:backgroundTint="@color/bulma_link"
-            />
-
-
-
         <Button
             android:id="@+id/itv_pic_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/itv_wx_button"
+            app:layout_constraintTop_toBottomOf="@id/itv_end_button"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             android:padding="24dp"
@@ -123,8 +119,6 @@
             android:drawablePadding="10dp"
             android:backgroundTint="@color/bulma_link"
             />
-
-
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

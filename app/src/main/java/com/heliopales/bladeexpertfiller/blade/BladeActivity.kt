@@ -185,14 +185,26 @@ class BladeActivity : AppCompatActivity(), View.OnClickListener, View.OnTouchLis
         else
             findViewById<Button>(R.id.see_outdoor_damages_button).text = "EXT"
 
-        if(App.database.drainholeDao().getByBladeAndIntervention(blade.id, intervention.id)!=null)
+        val drain =
+            App.database.drainholeDao().getByBladeAndIntervention(blade.id, intervention.id)
+        if(drain?.severityId != null)
             findViewById<Button>(R.id.see_drainhole_button).text = "DRAIN\n(done)"
         else
             findViewById<Button>(R.id.see_drainhole_button).text = "DRAIN"
 
-        if(App.database.lightningDao().getByBladeAndIntervention(blade.id, intervention.id)!=null)
-            findViewById<Button>(R.id.see_lightning_button).text = "LPS\n(done)"
-        else
+        val lightning =
+            App.database.lightningDao().getByBladeAndIntervention(blade.id, intervention.id)
+
+        if(lightning != null){
+            val recept = App.database.receptorDao().getCountByBladeId(blade.id)
+            val meas = App.database.receptorMeasureDao()
+                .getCountByLightningSpotConditionLocalId(lightning.localId)
+            if(meas == 0){
+                findViewById<Button>(R.id.see_lightning_button).text = "LPS"
+            }else{
+                findViewById<Button>(R.id.see_lightning_button).text = "LPS\n($meas/$recept)"
+            }
+        } else
             findViewById<Button>(R.id.see_lightning_button).text = "LPS"
 
 

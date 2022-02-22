@@ -84,7 +84,7 @@ class InterventionDetailsActivity : AppCompatActivity(), View.OnClickListener,
         return true
     }
 
-    fun startInterventionActivity(){
+    fun startInterventionActivity() {
         val intent = Intent(this, InterventionActivity::class.java)
         intent.putExtra(InterventionActivity.EXTRA_INTERVENTION_ID, intervention.id)
         startActivity(intent)
@@ -152,9 +152,10 @@ class InterventionDetailsActivity : AppCompatActivity(), View.OnClickListener,
                 lay.findViewWithTag<TextView>("inner_count").setTypeface(null, Typeface.NORMAL)
             }
 
-            count = App.database.drainholeDao()
-                .countByBladeId(dbBla.id, intervention.id)
-            if (count > 0) {
+            val drain =
+                App.database.drainholeDao().getByBladeAndIntervention(dbBla.id, intervention.id)
+
+            if (drain?.severityId != null) {
                 lay.findViewWithTag<ImageView>("drain_count")
                     .imageTintList = ColorStateList.valueOf(getColor(R.color.bulma_success))
             } else {
@@ -162,11 +163,21 @@ class InterventionDetailsActivity : AppCompatActivity(), View.OnClickListener,
                     .imageTintList = ColorStateList.valueOf(getColor(R.color.bulma_gray_light))
             }
 
-            count = App.database.lightningDao()
-                .countByBladeId(dbBla.id, intervention.id)
-            if (count > 0) {
-                lay.findViewWithTag<ImageView>("lps_count")
-                    .imageTintList = ColorStateList.valueOf(getColor(R.color.bulma_success))
+            val lightning =
+                App.database.lightningDao().getByBladeAndIntervention(dbBla.id, intervention.id)
+            if (lightning != null) {
+                val recept = App.database.receptorDao().getCountByBladeId(dbBla.id)
+                val meas = App.database.receptorMeasureDao()
+                    .getCountByLightningSpotConditionLocalId(lightning.localId)
+
+                when(meas){
+                    0 -> lay.findViewWithTag<ImageView>("lps_count")
+                        .imageTintList = ColorStateList.valueOf(getColor(R.color.bulma_gray_light))
+                    recept ->  lay.findViewWithTag<ImageView>("lps_count")
+                        .imageTintList = ColorStateList.valueOf(getColor(R.color.bulma_success))
+                    else -> lay.findViewWithTag<ImageView>("lps_count")
+                        .imageTintList = ColorStateList.valueOf(getColor(R.color.bulma_warning))
+                }
             } else {
                 lay.findViewWithTag<ImageView>("lps_count")
                     .imageTintList = ColorStateList.valueOf(getColor(R.color.bulma_gray_light))
@@ -191,7 +202,7 @@ class InterventionDetailsActivity : AppCompatActivity(), View.OnClickListener,
     private fun takeTurbineSerialPicture() {
         val intent = Intent(this, CameraActivity::class.java)
         val turbine = App.database.turbineDao().getTurbinesById(intervention.turbineId)!!
-        var path = App.getTurbinePath(intervention, turbine)
+        val path = App.getTurbinePath(intervention, turbine)
         intent.putExtra(CameraActivity.EXTRA_PICTURE_TYPE, PICTURE_TYPE_TURBINE)
         intent.putExtra(CameraActivity.EXTRA_RELATED_ID, turbine.id)
         intent.putExtra(CameraActivity.EXTRA_OUTPUT_PATH, path)

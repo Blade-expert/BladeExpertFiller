@@ -32,8 +32,6 @@ private const val MAXIMUM_PARALLEL_REQUESTS = 1
 
 class App : Application() {
 
-    private val TAG = App::class.java.simpleName
-
     companion object {
 
         lateinit var instance: App
