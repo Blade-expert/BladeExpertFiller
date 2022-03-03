@@ -13,6 +13,7 @@ import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.camera.core.ImageCapture
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -101,7 +102,7 @@ class DamageListActivity : AppCompatActivity(), DamageAdapter.DamageItemListener
                 )
             }
             adapter.scopeMode = isChecked
-            adapter.notifyDataSetChanged();
+            adapter.notifyDataSetChanged()
         }
 
         blade = intent.getParcelableExtra(EXTRA_BLADE)!!
@@ -166,7 +167,7 @@ class DamageListActivity : AppCompatActivity(), DamageAdapter.DamageItemListener
                             Log.d(TAG, dscw.toString())
                             val dsc =
                                 App.database.damageDao().getDamageByRemoteId(remoteId = dscw.id!!)
-                            var d =
+                            val d =
                                 mapBladeExpertDamageSpotCondition(dscw, damageInheritType)
                             if (dsc == null) {
                                 App.database.damageDao().insertDamage(d)
@@ -286,11 +287,13 @@ class DamageListActivity : AppCompatActivity(), DamageAdapter.DamageItemListener
 
     override fun onCameraButtonClicked(damage: DamageSpotCondition) {
         val intent = Intent(this, CameraActivity::class.java)
-        var path = App.getDamagePath(intervention, blade, damage.localId)
+        val path = App.getDamagePath(intervention, blade, damage.localId)
         intent.putExtra(CameraActivity.EXTRA_PICTURE_TYPE, PICTURE_TYPE_DAMAGE)
         intent.putExtra(CameraActivity.EXTRA_RELATED_ID, damage.localId)
         intent.putExtra(CameraActivity.EXTRA_INTERVENTION_ID, intervention.id)
         intent.putExtra(CameraActivity.EXTRA_OUTPUT_PATH, path)
+        if(damageInheritType == INHERIT_TYPE_DAMAGE_IN)
+            intent.putExtra(CameraActivity.EXTRA_FLASH_MODE, ImageCapture.FLASH_MODE_ON)
         startActivity(intent)
     }
 
@@ -314,9 +317,9 @@ class DamageListActivity : AppCompatActivity(), DamageAdapter.DamageItemListener
         }
         num = num.coerceAtLeast(damages.size+1)
 
-        var numStr:String = if(num<10)"0$num" else num.toString()
+        val numStr:String = if(num<10)"0$num" else num.toString()
 
-        var damage = DamageSpotCondition(
+        val damage = DamageSpotCondition(
             damageInheritType,
             "$prefix$numStr",
             intervention.id,

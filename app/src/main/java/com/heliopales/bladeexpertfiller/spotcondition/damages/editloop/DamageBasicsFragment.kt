@@ -9,18 +9,16 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.ImageButton
-import androidx.core.text.isDigitsOnly
+import androidx.camera.core.ImageCapture
 import androidx.fragment.app.Fragment
 import com.heliopales.bladeexpertfiller.App
 import com.heliopales.bladeexpertfiller.EXPORTATION_STATE_NOT_EXPORTED
 import com.heliopales.bladeexpertfiller.PICTURE_TYPE_DAMAGE
 import com.heliopales.bladeexpertfiller.R
-import com.heliopales.bladeexpertfiller.blade.Blade
 import com.heliopales.bladeexpertfiller.camera.CameraActivity
-import com.heliopales.bladeexpertfiller.intervention.Intervention
 import com.heliopales.bladeexpertfiller.spotcondition.DamageSpotCondition
+import com.heliopales.bladeexpertfiller.spotcondition.INHERIT_TYPE_DAMAGE_IN
 import com.heliopales.bladeexpertfiller.spotcondition.damages.DamageViewPagerActivity
-import kotlinx.android.synthetic.main.activity_intervention_details.*
 import kotlin.math.roundToInt
 
 
@@ -125,12 +123,14 @@ class DamageBasicsFragment : Fragment() {
 
         pictureButton.setOnClickListener {
             val intent = Intent(requireContext(), CameraActivity::class.java)
-            var path =
+            val path =
                 App.getDamagePath(damage.interventionId, damage.bladeId, damage.localId)
             intent.putExtra(CameraActivity.EXTRA_OUTPUT_PATH, path)
             intent.putExtra(CameraActivity.EXTRA_INTERVENTION_ID, damage.interventionId)
             intent.putExtra(CameraActivity.EXTRA_RELATED_ID, damage.localId)
             intent.putExtra(CameraActivity.EXTRA_PICTURE_TYPE, PICTURE_TYPE_DAMAGE)
+            if(damage.inheritType == INHERIT_TYPE_DAMAGE_IN)
+                intent.putExtra(CameraActivity.EXTRA_FLASH_MODE, ImageCapture.FLASH_MODE_ON)
             startActivity(intent)
         }
     }

@@ -76,7 +76,7 @@ class App : Application() {
                 File(it, "${instance.resources.getString(R.string.app_name)}_$DATABASE_FILE_NAME").apply { mkdirs() }
             }
 
-            var file = if (mediaDir != null && mediaDir.exists()) {
+            val file = if (mediaDir != null && mediaDir.exists()) {
                 mediaDir
             } else {
                 instance.filesDir

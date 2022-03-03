@@ -430,6 +430,7 @@ class InterventionListActivity : AppCompatActivity(), InterventionAdapter.Interv
             //Weather
             saveWeathers(intervention)
 
+
             //Intervention Pictures
             App.database.pictureDao().getNonExportedPicturesByTypeAndInterventionId(
                 PICTURE_TYPE_INTERVENTION, intervention.id
@@ -497,14 +498,11 @@ class InterventionListActivity : AppCompatActivity(), InterventionAdapter.Interv
                                 intervention.exportRealizedOperations.postValue(++intervention.exportCount)
                             }
                     }
-
                 }
-
                 App.database.drainholeDao().getByBladeAndIntervention(bla.id, bla.interventionId)
                     ?.let { dhs ->
                         saveDrainhole(dhs, intervention)
                     }
-
                 App.database.lightningDao().getByBladeAndIntervention(bla.id, bla.interventionId)
                     ?.let { lps ->
                         saveLightning(lps, intervention)
@@ -563,7 +561,6 @@ class InterventionListActivity : AppCompatActivity(), InterventionAdapter.Interv
                     }
                     intervention.exportRealizedOperations.postValue(++intervention.exportCount)
                 }
-
                 override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
                     App.writeOnInterventionLogFile(intervention, "Failure while exporting $bla")
                     App.writeOnInterventionLogFile(intervention, t.stackTraceToString())
@@ -574,11 +571,14 @@ class InterventionListActivity : AppCompatActivity(), InterventionAdapter.Interv
     }
 
     private fun saveWeathers(intervention: Intervention) {
+        val weathers =  App.database.weatherDao().getWeathersByInterventionId(intervention.id)
+        if(weathers.isEmpty()) return
+
         val wrappers: List<WeatherWrapper> =
-            App.database.weatherDao().getWeathersByInterventionId(intervention.id)
-                .map { weather ->
+            weathers.map { weather ->
                     Log.d(TAG, "weather to be uploaded $weather")
-                    mapToBladeExpertWeather(weather) }
+                    mapToBladeExpertWeather(weather)
+                }
 
         App.bladeExpertService.saveWeather(
             weatherWrappers = wrappers
@@ -602,7 +602,6 @@ class InterventionListActivity : AppCompatActivity(), InterventionAdapter.Interv
                         "Error while saving weather | Http response code = ${response.code()} | ${response.message()}"
                     )
                     intervention.exportErrorsInLastExport = true
-                    intervention.exportRealizedOperations.postValue(intervention.exportCount)
                 }
             }
 

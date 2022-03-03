@@ -42,6 +42,7 @@ class CameraActivity : AppCompatActivity() {
         const val EXTRA_PICTURE_TYPE = "pic_type"
         const val EXTRA_RELATED_ID = "pic_related_id"
         const val EXTRA_INTERVENTION_ID = "intervention_id"
+        const val EXTRA_FLASH_MODE = "initial_flash_mode"
         private const val FILENAME_FORMAT = "yyyyMMdd_HHmmss_SSS"
         private const val REQUEST_CODE_PERMISSIONS = 10
         private val REQUIRED_PERMISSIONS = arrayOf(Manifest.permission.CAMERA)
@@ -52,6 +53,7 @@ class CameraActivity : AppCompatActivity() {
     private var imageCapture: ImageCapture? = null
     lateinit var outputDirectoryPath: String
     lateinit var outputDirectory: File
+    private var initialFlashMode:Int = ImageCapture.FLASH_MODE_OFF
     private var pictureType: Int = PICTURE_TYPE_TURBINE
     private var relatedId: Int = -1
     private var interventionId: Int = -1
@@ -64,6 +66,7 @@ class CameraActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_camera)
+        initialFlashMode = intent.getIntExtra(EXTRA_FLASH_MODE, ImageCapture.FLASH_MODE_OFF)
 
         // Request camera permissions
         if (allPermissionsGranted()) {
@@ -75,6 +78,7 @@ class CameraActivity : AppCompatActivity() {
         }
         pictureType = intent.getIntExtra(EXTRA_PICTURE_TYPE, PICTURE_TYPE_TURBINE)
         relatedId = intent.getIntExtra(EXTRA_RELATED_ID, -1)
+
         interventionId = intent.getIntExtra(EXTRA_INTERVENTION_ID, -1)
         outputDirectoryPath = intent.getStringExtra(EXTRA_OUTPUT_PATH).toString()
         outputDirectory = File(outputDirectoryPath)
@@ -89,7 +93,10 @@ class CameraActivity : AppCompatActivity() {
 
         camera_capture_button.setOnClickListener { takePhoto() }
         see_photos_button.setOnClickListener { openGallery() }
-        flash_button.tag = ImageCapture.FLASH_MODE_OFF
+
+        flash_button.tag = initialFlashMode
+        updateFlashButton()
+
         flash_button.setOnClickListener { changeFlashMode() }
 
         camera_preview.setOnTouchListener(View.OnTouchListener{view: View, motionEvent: MotionEvent ->
@@ -132,9 +139,7 @@ class CameraActivity : AppCompatActivity() {
                 linearZoom = progress.toFloat() / 100.toFloat()
                 cameraControl?.setLinearZoom(linearZoom)
             }
-
             override fun onStartTrackingTouch(seekBar: SeekBar?) {}
-
             override fun onStopTrackingTouch(seekBar: SeekBar?) {}
         })
     }
@@ -152,6 +157,11 @@ class CameraActivity : AppCompatActivity() {
             ImageCapture.FLASH_MODE_AUTO -> newState = ImageCapture.FLASH_MODE_OFF
         }
         flash_button.tag = newState
+        updateFlashButton()
+        imageCapture?.flashMode = newState
+    }
+
+    private fun updateFlashButton(){
         with(flash_button) {
             when (tag as Int) {
                 ImageCapture.FLASH_MODE_OFF -> background = ContextCompat.getDrawable(
@@ -168,8 +178,6 @@ class CameraActivity : AppCompatActivity() {
                 )
             }
         }
-
-        imageCapture?.flashMode = newState
     }
 
     private fun openGallery() {
@@ -177,7 +185,6 @@ class CameraActivity : AppCompatActivity() {
         intent.putExtra(GalleryActivity.EXTRA_DIRECTORY_PATH, outputDirectoryPath)
         startActivity(intent)
     }
-
 
     private fun setGalleryThumbnail(uri: Uri) {
         // Run the operations in the view's thread
@@ -219,7 +226,7 @@ class CameraActivity : AppCompatActivity() {
 
             imageCapture = ImageCapture.Builder()
                 .setCaptureMode(ImageCapture.CAPTURE_MODE_MINIMIZE_LATENCY)
-                .setFlashMode(ImageCapture.FLASH_MODE_OFF)
+                .setFlashMode(initialFlashMode)
                 .setTargetResolution(Size(1440, 1080))
                 .build()
 
