@@ -19,8 +19,10 @@ fun mapBladeExpertIntervention(interventionWrapper: InterventionWrapper): Interv
     return Intervention(
         id = interventionWrapper.id,
         name = interventionWrapper.name,
-        startTime = if(interventionWrapper.startTime != null) LocalDateTime.parse(interventionWrapper.startTime) else null,
-        endTime = if(interventionWrapper.endTime != null) LocalDateTime.parse(interventionWrapper.endTime) else null,
+        startTime = if (interventionWrapper.startTime != null) LocalDateTime.parse(
+            interventionWrapper.startTime
+        ) else null,
+        endTime = if (interventionWrapper.endTime != null) LocalDateTime.parse(interventionWrapper.endTime) else null,
         turbineId = interventionWrapper.turbineId,
         turbineSerial = interventionWrapper.turbineSerial,
         windfarmId = interventionWrapper.windfarmId,
@@ -32,8 +34,8 @@ fun mapToBladeExpertIntervention(intervention: Intervention): InterventionWrappe
     return InterventionWrapper(
         id = intervention.id,
         name = intervention.name,
-        startTime = if(intervention.startTime != null) intervention.startTime.toString() else null,
-        endTime = if(intervention.endTime != null) intervention.endTime.toString() else null,
+        startTime = if (intervention.startTime != null) intervention.startTime.toString() else null,
+        endTime = if (intervention.endTime != null) intervention.endTime.toString() else null,
         turbineId = intervention.turbineId,
         turbineSerial = intervention.turbineSerial,
         windfarmId = intervention.windfarmId,
@@ -105,6 +107,8 @@ fun mapToBladeExpertDamageSpotCondition(dsc: DamageSpotCondition): DamageSpotCon
         id = dsc.id,
         fieldCode = dsc.fieldCode,
         scope = dsc.scope,
+        scopeRemark = dsc.scopeRemark,
+        spotCode = dsc.spotCode,
         interventionId = dsc.interventionId,
         bladeId = dsc.bladeId,
         severityId = dsc.severityId,
@@ -112,7 +116,7 @@ fun mapToBladeExpertDamageSpotCondition(dsc: DamageSpotCondition): DamageSpotCon
         damageTypeId = dsc.damageTypeId,
         radialPosition = dsc.radialPosition,
         radialLength = dsc.radialLength,
-        longitudinalLength = dsc.radialLength,
+        longitudinalLength = dsc.longitudinalLength,
         repetition = dsc.repetition,
         position = dsc.position,
         profileDepth = dsc.profileDepth
@@ -134,6 +138,8 @@ fun mapBladeExpertDamageSpotCondition(
     )
     dsc.id = wrapper.id
     dsc.scope = wrapper.scope
+    dsc.scopeRemark = wrapper.scopeRemark
+    dsc.spotCode = wrapper.spotCode
     dsc.severityId = wrapper.severityId
     dsc.description = wrapper.description
     dsc.damageTypeId = wrapper.damageTypeId
@@ -143,7 +149,7 @@ fun mapBladeExpertDamageSpotCondition(
     dsc.repetition = wrapper.repetition
     dsc.position = wrapper.position
     dsc.profileDepth = wrapper.profileDepth
-    return dsc;
+    return dsc
 }
 
 fun mapToBladeExpertDrainholeSpotCondition(dhs: DrainholeSpotCondition): DrainholeSpotConditionWrapper {
@@ -182,7 +188,7 @@ fun mapBladeExpertWeather(ww: WeatherWrapper): Weather {
     val wx = Weather(ww.interventionId)
     wx.id = ww.id
     wx.localId = ww.mobileId
-    wx.dateTime = if(ww.dateTime != null) LocalDateTime.parse(ww.dateTime) else null
+    wx.dateTime = if (ww.dateTime != null) LocalDateTime.parse(ww.dateTime) else null
     wx.type = ww.type
     wx.windspeed = ww.windspeed
     wx.temperature = ww.temperature
@@ -195,7 +201,7 @@ fun mapToBladeExpertWeather(wx: Weather): WeatherWrapper {
         id = wx.id,
         mobileId = wx.localId,
         interventionId = wx.interventionId,
-        dateTime = if(wx.dateTime != null) wx.dateTime.toString() else null,
+        dateTime = if (wx.dateTime != null) wx.dateTime.toString() else null,
         type = wx.type,
         windspeed = wx.windspeed,
         temperature = wx.temperature,

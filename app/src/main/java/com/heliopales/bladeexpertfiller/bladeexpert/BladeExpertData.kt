@@ -58,6 +58,8 @@ data class DamageSpotConditionWrapper(
     val id: Int?,
     @SerializedName("f") val fieldCode: String?,
     @SerializedName("sc") val scope: String?,
+    @SerializedName("scr") val scopeRemark: String?,
+    @SerializedName("spt") val spotCode: String?,
     @SerializedName("i") val interventionId: Int,
     @SerializedName("b") val bladeId: Int,
     @SerializedName("s") val severityId: Int?,

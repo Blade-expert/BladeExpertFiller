@@ -125,6 +125,8 @@ class DamageBasicsFragment : Fragment() {
             val intent = Intent(requireContext(), CameraActivity::class.java)
             val path =
                 App.getDamagePath(damage.interventionId, damage.bladeId, damage.localId)
+
+            intent.putExtra(CameraActivity.EXTRA_TEXT, damage.getSummarizedFieldCodeRadiusPosition())
             intent.putExtra(CameraActivity.EXTRA_OUTPUT_PATH, path)
             intent.putExtra(CameraActivity.EXTRA_INTERVENTION_ID, damage.interventionId)
             intent.putExtra(CameraActivity.EXTRA_RELATED_ID, damage.localId)

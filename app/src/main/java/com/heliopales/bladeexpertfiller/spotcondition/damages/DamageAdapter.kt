@@ -42,7 +42,7 @@ class DamageAdapter(
         val scopeLayout: ConstraintLayout = itemView.findViewById(R.id.damage_scope_layout)
         val damageScope: TextView = itemView.findViewById(R.id.damage_scope)
         val damageScopeIcon: ImageView = itemView.findViewById(R.id.damage_scope_icon)
-        val lock:ImageView = itemView.findViewById(R.id.damage_lock)
+        val lock: ImageView = itemView.findViewById(R.id.damage_lock)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -57,11 +57,16 @@ class DamageAdapter(
             cardView.tag = dsc
             cardView.setOnClickListener(this@DamageAdapter)
             cameraButton.tag = dsc
-            Log.d(TAG,"camera tag set for damage${(cameraButton.tag as DamageSpotCondition).localId}")
+            Log.d(
+                TAG,
+                "camera tag set for damage${(cameraButton.tag as DamageSpotCondition).localId}"
+            )
             cameraButton.setOnClickListener(this@DamageAdapter)
 
             textView1.text =
-                "R ${if (dsc.radialPosition != null) dsc.radialPosition else "--"}${getDamagePosition(dsc)}${getDamageProfileDepth(dsc)}"
+                "R ${if (dsc.radialPosition != null) dsc.radialPosition else "--"}${
+                    dsc.getDamagePositionAlias()             
+                }${dsc.getDamageProfileDepthAlias()}"
 
             if (dsc.damageTypeId != null) {
                 val dmt = App.database.damageTypeDao().getById(dsc.damageTypeId!!)
@@ -86,17 +91,19 @@ class DamageAdapter(
                 )
             )
 
-            damageScopeIcon.imageTintList=colorStateList
-            lock.imageTintList=colorStateList
+            damageScopeIcon.imageTintList = colorStateList
+            lock.imageTintList = colorStateList
             cameraButton.foregroundTintList = colorStateList
 
-            val textViews = listOf(textView1, textView2, fieldCode, photoCount, damageScope )
+            val textViews = listOf(textView1, textView2, fieldCode, photoCount, damageScope)
 
             textViews.forEach {
-                it.setTextColor(ContextCompat.getColor(
-                    cardView.context,
-                    R.color.bulma_black
-                ))
+                it.setTextColor(
+                    ContextCompat.getColor(
+                        cardView.context,
+                        R.color.bulma_black
+                    )
+                )
             }
 
             if (dsc.severityId != null) {
@@ -106,43 +113,45 @@ class DamageAdapter(
                     textViews.forEach {
                         it.setTextColor(Color.parseColor(sev.fontColor))
                     }
-                    cameraButton.foregroundTintList = ColorStateList.valueOf(Color.parseColor(sev.fontColor))
-                    damageScopeIcon.imageTintList=ColorStateList.valueOf(Color.parseColor(sev.fontColor))
-                    lock.imageTintList= ColorStateList.valueOf(Color.parseColor(sev.fontColor))
+                    cameraButton.foregroundTintList =
+                        ColorStateList.valueOf(Color.parseColor(sev.fontColor))
+                    damageScopeIcon.imageTintList =
+                        ColorStateList.valueOf(Color.parseColor(sev.fontColor))
+                    lock.imageTintList = ColorStateList.valueOf(Color.parseColor(sev.fontColor))
                 }
             }
 
-            if(dsc.scope == null){
-                scopeLayout.visibility = View.GONE
-            }else{
-                scopeLayout.visibility = View.VISIBLE
-                damageScope.text = dsc.scope
-            }
-
-            if(dsc.id == null){
+            if (dsc.id == null) {
                 lock.visibility = View.GONE
-            }else{
+            } else {
                 lock.visibility = View.VISIBLE
             }
 
             val count = App.database.pictureDao().getDamageSpotPicturesByDamageId(dsc.localId).size
-            if(count > 0){
+            if (count > 0) {
                 photoCount.text = "$count"
                 photoCount.visibility = View.VISIBLE
-            }else{
+            } else {
                 photoCount.visibility = View.GONE
             }
 
-            if(dsc.radialPosition == null || dsc.position == null)
+            if (dsc.radialPosition == null || dsc.position == null)
                 uncompleted.visibility = View.VISIBLE
             else
                 uncompleted.visibility = View.GONE
 
-            if(scopeMode){
-                if(dsc.scope == null){
+            if (scopeMode) {
+                if (dsc.scope == null || dsc.scope?.uppercase()?.trim() == "NR") {
+                    scopeLayout.visibility = View.GONE
                     holder.itemView.visibility = View.GONE
                     holder.itemView.layoutParams = RecyclerView.LayoutParams(0, 0)
-                }else{
+                } else {
+                    scopeLayout.visibility = View.VISIBLE
+                    var rem = ""
+                    if (dsc.scopeRemark != null && dsc.scopeRemark!!.isNotBlank()) {
+                        rem = "\n" + dsc.scopeRemark!!
+                    }
+                    damageScope.text = dsc.scope + rem;
                     holder.itemView.visibility = View.VISIBLE
                     holder.itemView.layoutParams =
                         RecyclerView.LayoutParams(
@@ -150,7 +159,7 @@ class DamageAdapter(
                             ViewGroup.LayoutParams.WRAP_CONTENT
                         )
                 }
-            }else{
+            } else {
                 scopeLayout.visibility = View.GONE
                 holder.itemView.visibility = View.VISIBLE
                 holder.itemView.layoutParams =
@@ -163,47 +172,13 @@ class DamageAdapter(
     }
 
 
-    private fun getDamagePosition(dsc: DamageSpotCondition): String {
-        when (dsc.position) {
-            null -> return ""
-            "OLE", "ILE" -> return " - LE"
-            "OTE", "ITE" -> return " - TE"
-            "OPS", "IPS" -> return " - PS"
-            "OSS", "ISS" -> return " - SS"
-            "IRT", "ORT" -> return " - Root"
-            "ITP", "OTP" -> return " - Tip"
-            "IWB" -> return ""
-            "IHA" -> return " - Hatch"
-        }
-        return ""
-    }
-
-    private fun getDamageProfileDepth(dsc: DamageSpotCondition): String {
-        when(dsc.profileDepth){
-            "O1", "I1" -> return " - LE panel"
-            "O2", "I2" -> return " - Spar cap"
-            "O3", "I3" -> return " - TE panel"
-            "W1L" -> return " - Web 1 LE Side"
-            "W1T" -> return " - Web 1 TE Side"
-            "W2L" -> return " - Web 2 LE Side"
-            "W2T" -> return " - Web 2 TE Side"
-            "W3L" -> return " - Web 3 LE Side"
-            "W3T" -> return " - Web 3 TE Side"
-            "W4L" -> return " - Web 4 LE Side"
-            "W4T" -> return " - Web 4 TE Side"
-        }
-        return ""
-    }
-
 
     override fun getItemCount(): Int = damages.size
 
     override fun onClick(view: View) {
-        when(view.id){
+        when (view.id) {
             R.id.damage_card_view -> damageListener.onDamageSelected(view.tag as DamageSpotCondition)
             R.id.damage_camera_button -> damageListener.onCameraButtonClicked(view.tag as DamageSpotCondition)
-
         }
-
     }
 }

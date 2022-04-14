@@ -43,6 +43,7 @@ class CameraActivity : AppCompatActivity() {
         const val EXTRA_RELATED_ID = "pic_related_id"
         const val EXTRA_INTERVENTION_ID = "intervention_id"
         const val EXTRA_FLASH_MODE = "initial_flash_mode"
+        const val EXTRA_TEXT = "warn_text"
         private const val FILENAME_FORMAT = "yyyyMMdd_HHmmss_SSS"
         private const val REQUEST_CODE_PERMISSIONS = 10
         private val REQUIRED_PERMISSIONS = arrayOf(Manifest.permission.CAMERA)
@@ -89,6 +90,13 @@ class CameraActivity : AppCompatActivity() {
             arrayOf("JPG").contains(file.extension.uppercase(Locale.ROOT))
         }?.maxOrNull()?.let {
             setGalleryThumbnail(Uri.fromFile(it))
+        }
+
+        val text = intent.getStringExtra(EXTRA_TEXT)
+        if(text == null){
+            damage_label.visibility = View.GONE
+        }else{
+            damage_label.text = text
         }
 
         camera_capture_button.setOnClickListener { takePhoto() }

@@ -15,6 +15,8 @@ data class DamageSpotCondition(val inheritType: String, val fieldCode: String, v
     @PrimaryKey(autoGenerate = true) var localId: Int = 0
     var id: Int? = null
     var scope: String? = null
+    var scopeRemark: String? = null
+    var spotCode: String? = null
     var severityId: Int? = null
     var description: String? = null
     var damageTypeId: Int? = null
@@ -34,6 +36,47 @@ data class DamageSpotCondition(val inheritType: String, val fieldCode: String, v
     }
     override fun hashCode(): Int {
         return localId.hashCode()
+    }
+
+    fun getSummarizedFieldCodeRadiusPosition() : String{
+        var text = "$fieldCode";
+        if(radialPosition != null)
+            text+=" - R${radialPosition!!.toInt()}"
+        if(position != null)
+            text+=getDamagePositionAlias()
+        return text
+    }
+
+     fun getDamagePositionAlias(): String {
+        when (position) {
+            null -> return ""
+            "OLE", "ILE" -> return " - LE"
+            "OTE", "ITE" -> return " - TE"
+            "OPS", "IPS" -> return " - PS"
+            "OSS", "ISS" -> return " - SS"
+            "IRT", "ORT" -> return " - Root"
+            "ITP", "OTP" -> return " - Tip"
+            "IWB" -> return ""
+            "IHA" -> return " - Hatch"
+        }
+        return ""
+    }
+
+     fun getDamageProfileDepthAlias(): String {
+        when (profileDepth) {
+            "O1", "I1" -> return " - LE panel"
+            "O2", "I2" -> return " - Spar cap"
+            "O3", "I3" -> return " - TE panel"
+            "W1L" -> return " - Web 1 LE Side"
+            "W1T" -> return " - Web 1 TE Side"
+            "W2L" -> return " - Web 2 LE Side"
+            "W2T" -> return " - Web 2 TE Side"
+            "W3L" -> return " - Web 3 LE Side"
+            "W3T" -> return " - Web 3 TE Side"
+            "W4L" -> return " - Web 4 LE Side"
+            "W4T" -> return " - Web 4 TE Side"
+        }
+        return ""
     }
 }
 

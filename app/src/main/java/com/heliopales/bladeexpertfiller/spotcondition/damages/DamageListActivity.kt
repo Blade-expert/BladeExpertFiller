@@ -292,6 +292,7 @@ class DamageListActivity : AppCompatActivity(), DamageAdapter.DamageItemListener
         intent.putExtra(CameraActivity.EXTRA_RELATED_ID, damage.localId)
         intent.putExtra(CameraActivity.EXTRA_INTERVENTION_ID, intervention.id)
         intent.putExtra(CameraActivity.EXTRA_OUTPUT_PATH, path)
+        intent.putExtra(CameraActivity.EXTRA_TEXT, damage.getSummarizedFieldCodeRadiusPosition())
         if(damageInheritType == INHERIT_TYPE_DAMAGE_IN)
             intent.putExtra(CameraActivity.EXTRA_FLASH_MODE, ImageCapture.FLASH_MODE_ON)
         startActivity(intent)
