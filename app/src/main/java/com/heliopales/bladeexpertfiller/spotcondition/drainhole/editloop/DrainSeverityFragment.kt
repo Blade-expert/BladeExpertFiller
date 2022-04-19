@@ -16,6 +16,7 @@ import com.heliopales.bladeexpertfiller.R
 import com.heliopales.bladeexpertfiller.spotcondition.DrainholeSpotCondition
 import com.heliopales.bladeexpertfiller.spotcondition.damages.DamageViewPagerActivity
 import com.heliopales.bladeexpertfiller.spotcondition.drainhole.DrainholeActivity
+import kotlinx.android.synthetic.main.fragment_drain_severity.*
 
 class DrainSeverityFragment : Fragment(), View.OnClickListener {
     private val TAG = DrainSeverityFragment::class.java.simpleName
@@ -37,13 +38,22 @@ class DrainSeverityFragment : Fragment(), View.OnClickListener {
                 it.setOnClickListener(this)
             }
         }
-        App.database.severityDao().getAll().sortedBy { it.id }.forEachIndexed { i, sev ->
-            if (i < buttons.size && buttons[i].id != R.id.button_sev_na) {
-                buttons[i].backgroundTintList = ColorStateList.valueOf(Color.parseColor(sev.color))
-                buttons[i].setTextColor(Color.parseColor(sev.fontColor))
-                buttons[i].tag = sev.id
-            }
-        }
+
+        val sevs = App.database.severityDao().getAll().sortedBy { it.id }
+
+        view.findViewById<Button>(R.id.button_sev_1).backgroundTintList = ColorStateList.valueOf(Color.parseColor(sevs[0].color))
+        view.findViewById<Button>(R.id.button_sev_1).setTextColor(Color.parseColor(sevs[0].fontColor))
+        view.findViewById<Button>(R.id.button_sev_1).tag = sevs[0].id
+
+        view.findViewById<Button>(R.id.button_sev_2).backgroundTintList = ColorStateList.valueOf(Color.parseColor(sevs[1].color))
+        view.findViewById<Button>(R.id.button_sev_2).setTextColor(Color.parseColor(sevs[1].fontColor))
+        view.findViewById<Button>(R.id.button_sev_2).tag = sevs[1].id
+
+        view.findViewById<Button>(R.id.button_sev_4).backgroundTintList = ColorStateList.valueOf(Color.parseColor(sevs[3].color))
+        view.findViewById<Button>(R.id.button_sev_4).setTextColor(Color.parseColor(sevs[3].fontColor))
+        view.findViewById<Button>(R.id.button_sev_4).tag = sevs[3].id
+
+
     }
 
     override fun onResume() {

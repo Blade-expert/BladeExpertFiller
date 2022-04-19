@@ -70,7 +70,8 @@ data class DamageSpotConditionWrapper(
     @SerializedName("l") val longitudinalLength: Int?, //Length
     @SerializedName("re") val repetition: Int?,
     @SerializedName("p") val position: String?,
-    @SerializedName("pr") val profileDepth: String?
+    @SerializedName("pr") val profileDepth: String?,
+    @SerializedName("c") val closed: Boolean?,
 )
 
 data class DrainholeSpotConditionWrapper(

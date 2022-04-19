@@ -119,7 +119,8 @@ fun mapToBladeExpertDamageSpotCondition(dsc: DamageSpotCondition): DamageSpotCon
         longitudinalLength = dsc.longitudinalLength,
         repetition = dsc.repetition,
         position = dsc.position,
-        profileDepth = dsc.profileDepth
+        profileDepth = dsc.profileDepth,
+        closed = dsc.closed
     )
 }
 
@@ -134,7 +135,8 @@ fun mapBladeExpertDamageSpotCondition(
         inheritType = inheritType,
         fieldCode = fieldCode,
         interventionId = wrapper.interventionId,
-        bladeId = wrapper.bladeId
+        bladeId = wrapper.bladeId,
+        closed = wrapper.closed
     )
     dsc.id = wrapper.id
     dsc.scope = wrapper.scope
@@ -162,6 +164,14 @@ fun mapToBladeExpertDrainholeSpotCondition(dhs: DrainholeSpotCondition): Drainho
     )
 }
 
+fun mapBladeExpertDrainholeSpotCondition(wrapper: DrainholeSpotConditionWrapper): DrainholeSpotCondition {
+    val dhs = DrainholeSpotCondition(wrapper.interventionId, wrapper.bladeId)
+    dhs.id = wrapper.id
+    dhs.severityId = wrapper.severityId
+    dhs.description = wrapper.description
+    return dhs;
+}
+
 fun mapToBladeExpertLightningSpotCondition(
     lsc: LightningSpotCondition,
     measures: List<LightningReceptorMeasureWrapper>
@@ -176,12 +186,36 @@ fun mapToBladeExpertLightningSpotCondition(
     )
 }
 
+fun mapBladeExpertLightningSpotCondition(wrapper: LightningSpotConditionWrapper): LightningSpotCondition {
+    val lsc = LightningSpotCondition(wrapper.interventionId, wrapper.bladeId)
+    lsc.id = wrapper.id
+    lsc.description = wrapper.description
+    lsc.measureMethod = wrapper.measureMethod
+    return lsc
+}
+
 fun mapToBladeExpertLightningMeasure(lrm: ReceptorMeasure): LightningReceptorMeasureWrapper {
     return LightningReceptorMeasureWrapper(
         receptorId = lrm.receptorId,
         value = if (lrm.isOverLimit) "OL" else (if (lrm.value == null) null else lrm.value.toString()),
         severityId = lrm.severityId
     )
+}
+
+fun mapBladeExpertLightningMeasure(wrapper: LightningReceptorMeasureWrapper, lightningSpotConditionLocalId: Int): ReceptorMeasure {
+    var isOverLimit = false
+    var value: Float? = null
+
+    if (wrapper.value == null) {
+        value = null
+    } else if (wrapper.value.matches("-?\\d+(\\.\\d+)?".toRegex())) {
+        value = wrapper.value.toFloat()
+    } else if (wrapper.value.trim().uppercase() == "OL") {
+        value = null
+        isOverLimit = true
+    }
+
+    return ReceptorMeasure(wrapper.receptorId, lightningSpotConditionLocalId, value, isOverLimit, wrapper.severityId)
 }
 
 fun mapBladeExpertWeather(ww: WeatherWrapper): Weather {

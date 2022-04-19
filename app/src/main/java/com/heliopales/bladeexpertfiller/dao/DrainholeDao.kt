@@ -22,4 +22,7 @@ interface DrainholeDao {
     @Query("SELECT count(localId) FROM DrainholeSpotCondition WHERE bladeId = :bladeId AND interventionId = :interventionId")
     fun countByBladeId(bladeId: Int, interventionId: Int): Int
 
+    @Query("SELECT * FROM DrainholeSpotCondition WHERE id = :remoteId")
+    fun getByRemoteId(remoteId: Int): DrainholeSpotCondition?
+
 }

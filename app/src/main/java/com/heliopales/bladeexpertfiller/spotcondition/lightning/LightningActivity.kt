@@ -69,8 +69,15 @@ class LightningActivity : AppCompatActivity(), View.OnClickListener {
         } else {
             lightning = lps
             receptors.forEach {
-                val measure = App.database.receptorMeasureDao()
+                var measure = App.database.receptorMeasureDao()
                     .getByReceptorIdAndLightningId(it.id, lightning.localId)
+                if(measure == null){
+                    measure = ReceptorMeasure(
+                        lightningSpotConditionLocalId = lightning.localId,
+                        receptorId = it.id
+                    )
+                    App.database.receptorMeasureDao().upsert(measure)
+                }
                 measure.receptorLabel = "${it.radius} m  |  ${it.position}"
                 measures.add(measure)
             }

@@ -48,6 +48,9 @@ class DamageListActivity : AppCompatActivity(), DamageAdapter.DamageItemListener
         val EXTRA_DAMAGE_INOUT = "damage_inout"
     }
 
+    private var shouldKeepScrollPosition = false
+    private var scrollPosition = 0
+
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: DamageAdapter
     private lateinit var blade: Blade;
@@ -141,6 +144,15 @@ class DamageListActivity : AppCompatActivity(), DamageAdapter.DamageItemListener
         })
 
         findViewById<RelativeLayout>(R.id.damage_list_main_layout).setOnTouchListener(this)
+
+        recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                super.onScrolled(recyclerView, dx, dy)
+                if (shouldKeepScrollPosition) {
+                    this@DamageListActivity.scrollPosition += dy
+                }
+            }
+        })
     }
 
     private fun updateDamageList() {
@@ -264,9 +276,17 @@ class DamageListActivity : AppCompatActivity(), DamageAdapter.DamageItemListener
     override fun onResume() {
         Log.i(TAG, "onResume()")
         super.onResume()
+
+        shouldKeepScrollPosition = false
         loadDamagesFromDb()
-        updateDamageList()
+        shouldKeepScrollPosition = true
+        recyclerView.scrollBy(0, scrollPosition)
+
+        //a eviter car rechargement du recycler view et garder le scrollposition...
+        //updateDamageList()
     }
+
+
 
     fun loadDamagesFromDb(){
         damages = App.database.damageDao().getDamagesByBladeAndInterventionAndInheritType(

@@ -22,6 +22,8 @@ interface LightningDao {
     @Query("SELECT count(localId) FROM LightningSpotCondition WHERE bladeId = :bladeId AND interventionId = :interventionId")
     fun countByBladeId(bladeId: Int, interventionId: Int): Int
 
+    @Query("SELECT * FROM LightningSpotCondition WHERE id = :remoteId")
+    fun getByRemoteId(remoteId: Int): LightningSpotCondition
 
 
 }

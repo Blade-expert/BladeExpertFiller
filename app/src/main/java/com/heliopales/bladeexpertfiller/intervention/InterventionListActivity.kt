@@ -25,8 +25,6 @@ import com.heliopales.bladeexpertfiller.settings.UserSettings
 import com.heliopales.bladeexpertfiller.spotcondition.*
 import com.heliopales.bladeexpertfiller.utils.toast
 import it.xabaras.android.recyclerview.swipedecorator.RecyclerViewSwipeDecorator
-import kotlinx.android.synthetic.main.activity_gallery.*
-import kotlinx.android.synthetic.main.item_intervention.*
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import retrofit2.Call
 import retrofit2.Response
@@ -258,14 +256,200 @@ class InterventionListActivity : AppCompatActivity(), InterventionAdapter.Interv
                         App.database.interventionDao().insertNonExistingIntervention(it)
                     }
                     interventions.sortBy { it.name }
+                    downloadSpotConditionsFromBladeExpert()
                     adapter.notifyDataSetChanged()
                     toast("La liste d'interventions est à jour")
                     refreshLayout.isRefreshing = false
+
+
                 }
 
                 override fun onFailure(call: Call<Array<InterventionWrapper>>, t: Throwable) {
                     toast("Impossible de mettre à jour les interventions")
                     refreshLayout.isRefreshing = false
+                }
+            })
+    }
+
+    private fun downloadSpotConditionsFromBladeExpert() {
+        interventions.forEach { itv ->
+            downloadDrainholes(itv.id)
+            downloadLightnings(itv.id)
+            App.database.bladeDao().getBladesByInterventionId(itv.id)
+                .sortedBy { it.position }.forEach { bla ->
+                    /* UPDATE database with damages from BladeExpert */
+                    downloadDamages(itv.id, bla.id, INHERIT_TYPE_DAMAGE_OUT)
+                    downloadDamages(itv.id, bla.id, INHERIT_TYPE_DAMAGE_IN)
+                }
+        }
+    }
+
+    private fun downloadDamages(interventionId: Int, bladeId: Int, damageInheritType: String) {
+        val inout =
+            if (damageInheritType == INHERIT_TYPE_DAMAGE_IN) "indoorDamage" else "outdoorDamage"
+        App.bladeExpertService.getDamages(
+            interventionId = interventionId,
+            bladeId = bladeId,
+            inoutdoorDamage = inout
+        )
+            .enqueue(object :
+                retrofit2.Callback<Array<DamageSpotConditionWrapper>> {
+                override fun onResponse(
+                    call: Call<Array<DamageSpotConditionWrapper>>,
+                    response: Response<Array<DamageSpotConditionWrapper>>
+                ) {
+                    if (response.isSuccessful) {
+                        response.body().let {
+                            it?.forEach { dscw ->
+                                Log.d(TAG, dscw.toString())
+                                val dsc =
+                                    App.database.damageDao()
+                                        .getDamageByRemoteId(remoteId = dscw.id!!)
+                                val d =
+                                    mapBladeExpertDamageSpotCondition(
+                                        dscw,
+                                        if (inout == "indoorDamage") INHERIT_TYPE_DAMAGE_IN else INHERIT_TYPE_DAMAGE_OUT
+                                    )
+
+                                if (dsc == null) {
+                                    App.database.damageDao().insertDamage(d)
+                                } else {
+                                    d.localId = dsc.localId
+                                    if (d.severityId == null) d.severityId =
+                                        dsc.severityId
+                                    if (d.description == null) d.description =
+                                        dsc.description
+                                    if (d.damageTypeId == null) d.damageTypeId =
+                                        dsc.damageTypeId
+                                    if (d.radialPosition == null) d.radialPosition =
+                                        dsc.radialPosition
+                                    if (d.radialLength == null) d.radialLength =
+                                        dsc.radialLength
+                                    if (d.longitudinalLength == null) d.longitudinalLength =
+                                        dsc.longitudinalLength
+                                    if (d.repetition == null) d.repetition =
+                                        dsc.repetition
+                                    if (d.position == null) d.position =
+                                        dsc.position
+                                    if (d.profileDepth == null) d.profileDepth =
+                                        dsc.profileDepth
+
+                                    App.database.damageDao().updateDamage(d)
+                                }
+                            }
+                        }
+                    }
+
+                    refreshLayout.isRefreshing = false
+                }
+
+                override fun onFailure(
+                    call: Call<Array<DamageSpotConditionWrapper>>,
+                    t: Throwable
+                ) {
+
+                }
+            })
+    }
+
+    private fun downloadDrainholes(interventionId: Int) {
+        App.bladeExpertService.getDrainholes(interventionId)
+            .enqueue(object :
+                retrofit2.Callback<Array<DrainholeSpotConditionWrapper>> {
+                override fun onResponse(
+                    call: Call<Array<DrainholeSpotConditionWrapper>>,
+                    response: Response<Array<DrainholeSpotConditionWrapper>>
+                ) {
+                    if (response.isSuccessful) {
+                        response.body().let {
+                            it?.forEach { dhsw ->
+                                Log.d(TAG, dhsw.toString())
+                                val dhs =
+                                    App.database.drainholeDao()
+                                        .getByRemoteId(remoteId = dhsw.id!!)
+                                val d =
+                                   mapBladeExpertDrainholeSpotCondition(dhsw)
+
+                                if (dhs != null) {
+                                    d.localId = dhs.localId
+                                    if (d.severityId == null) d.severityId =
+                                        dhs.severityId
+                                    if (d.description == null) d.description =
+                                        dhs.description
+                                }
+
+                                App.database.drainholeDao().upsertDrainhole(d);
+                            }
+                        }
+                    }
+                    refreshLayout.isRefreshing = false
+                }
+
+                override fun onFailure(
+                    call: Call<Array<DrainholeSpotConditionWrapper>>,
+                    t: Throwable
+                ) {
+
+                }
+            })
+    }
+
+    private fun downloadLightnings(interventionId: Int) {
+        App.bladeExpertService.getLightnings(interventionId)
+            .enqueue(object :
+                retrofit2.Callback<Array<LightningSpotConditionWrapper>> {
+                override fun onResponse(
+                    call: Call<Array<LightningSpotConditionWrapper>>,
+                    response: Response<Array<LightningSpotConditionWrapper>>
+                ) {
+                    if (response.isSuccessful) {
+                        response.body().let {
+                            it?.forEach { lscw ->
+                                Log.d(TAG, lscw.toString())
+
+                                val lsc =
+                                    App.database.lightningDao()
+                                        .getByRemoteId(remoteId = lscw.id!!)
+                                val d =
+                                    mapBladeExpertLightningSpotCondition(lscw)
+
+                                if (lsc != null) {
+                                    d.localId = lsc.localId
+                                    if (d.description == null) d.description =
+                                        lsc.description
+                                    if (d.measureMethod == null) d.measureMethod =
+                                        lsc.measureMethod
+
+                                    lscw.measures.forEach { mesW ->
+                                        val mes = App.database.receptorMeasureDao().getByReceptorIdAndLightningId(mesW.receptorId, lsc.localId)
+                                        val m = mapBladeExpertLightningMeasure(mesW, lsc.localId)
+
+                                        if(mes!=null){
+
+                                            if(m.isOverLimit == null)
+                                                m.isOverLimit = mes.isOverLimit
+                                            if(m.value == null)
+                                                m.value = mes.value
+                                            if(m.severityId == null)
+                                                m.severityId = mes.severityId
+                                        }
+                                        Log.d(TAG,"Will upsert $m")
+                                        App.database.receptorMeasureDao().upsert(m)
+                                    }
+                                }
+
+                                App.database.lightningDao().upsert(d)
+                            }
+                        }
+                    }
+                    refreshLayout.isRefreshing = false
+                }
+
+                override fun onFailure(
+                    call: Call<Array<LightningSpotConditionWrapper>>,
+                    t: Throwable
+                ) {
+
                 }
             })
     }
@@ -561,6 +745,7 @@ class InterventionListActivity : AppCompatActivity(), InterventionAdapter.Interv
                     }
                     intervention.exportRealizedOperations.postValue(++intervention.exportCount)
                 }
+
                 override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
                     App.writeOnInterventionLogFile(intervention, "Failure while exporting $bla")
                     App.writeOnInterventionLogFile(intervention, t.stackTraceToString())
@@ -571,14 +756,14 @@ class InterventionListActivity : AppCompatActivity(), InterventionAdapter.Interv
     }
 
     private fun saveWeathers(intervention: Intervention) {
-        val weathers =  App.database.weatherDao().getWeathersByInterventionId(intervention.id)
-        if(weathers.isEmpty()) return
+        val weathers = App.database.weatherDao().getWeathersByInterventionId(intervention.id)
+        if (weathers.isEmpty()) return
 
         val wrappers: List<WeatherWrapper> =
             weathers.map { weather ->
-                    Log.d(TAG, "weather to be uploaded $weather")
-                    mapToBladeExpertWeather(weather)
-                }
+                Log.d(TAG, "weather to be uploaded $weather")
+                mapToBladeExpertWeather(weather)
+            }
 
         App.bladeExpertService.saveWeather(
             weatherWrappers = wrappers
