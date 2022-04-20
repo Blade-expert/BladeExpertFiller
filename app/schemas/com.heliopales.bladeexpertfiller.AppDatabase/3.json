@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 3,
-    "identityHash": "38aa158cc00e5ef513a359cfb2244d3f",
+    "identityHash": "b7e298c61463a97102f306af6c5c8aac",
     "entities": [
       {
         "tableName": "Intervention",
@@ -612,7 +612,7 @@
       },
       {
         "tableName": "UserSettings",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `userApiKey` TEXT NOT NULL, PRIMARY KEY(`id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `userApiKey` TEXT NOT NULL, `volumeKeyForPicture` INTEGER, `cameraSounds` INTEGER, PRIMARY KEY(`id`))",
         "fields": [
           {
             "fieldPath": "id",
@@ -625,6 +625,18 @@
             "columnName": "userApiKey",
             "affinity": "TEXT",
             "notNull": true
+          },
+          {
+            "fieldPath": "volumeKeyForPicture",
+            "columnName": "volumeKeyForPicture",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "cameraSounds",
+            "columnName": "cameraSounds",
+            "affinity": "INTEGER",
+            "notNull": false
           }
         ],
         "primaryKey": {
@@ -702,7 +714,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '38aa158cc00e5ef513a359cfb2244d3f')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'b7e298c61463a97102f306af6c5c8aac')"
     ]
   }
 }

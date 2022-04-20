@@ -1,10 +1,13 @@
 package com.heliopales.bladeexpertfiller.camera
 
 import android.Manifest
+import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
+import android.media.MediaActionSound
+import android.media.MediaScannerConnection
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -15,9 +18,9 @@ import android.view.MotionEvent
 import android.view.View
 import android.widget.SeekBar
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.camera.core.*
-import androidx.camera.core.impl.CameraCaptureMetaData
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -28,12 +31,14 @@ import com.heliopales.bladeexpertfiller.EXPORTATION_STATE_NOT_EXPORTED
 import com.heliopales.bladeexpertfiller.PICTURE_TYPE_TURBINE
 import com.heliopales.bladeexpertfiller.R
 import com.heliopales.bladeexpertfiller.picture.Picture
-import com.heliopales.bladeexpertfiller.utils.*
+import com.heliopales.bladeexpertfiller.utils.ANIMATION_FAST_MILLIS
+import com.heliopales.bladeexpertfiller.utils.ANIMATION_SLOW_MILLIS
+import com.heliopales.bladeexpertfiller.utils.simulateClick
+import com.heliopales.bladeexpertfiller.utils.toast
 import kotlinx.android.synthetic.main.activity_camera.*
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
-import java.util.concurrent.TimeUnit
 
 class CameraActivity : AppCompatActivity() {
 
@@ -54,7 +59,8 @@ class CameraActivity : AppCompatActivity() {
     private var imageCapture: ImageCapture? = null
     lateinit var outputDirectoryPath: String
     lateinit var outputDirectory: File
-    private var initialFlashMode:Int = ImageCapture.FLASH_MODE_OFF
+    private var mediaActionSound = MediaActionSound()
+    private var initialFlashMode: Int = ImageCapture.FLASH_MODE_OFF
     private var pictureType: Int = PICTURE_TYPE_TURBINE
     private var relatedId: Int = -1
     private var interventionId: Int = -1
@@ -63,6 +69,9 @@ class CameraActivity : AppCompatActivity() {
     private var cameraAvailable = false
 
     private var linearZoom = 0f;
+
+    private var volumeKeyTakePicture = true
+    private var cameraSound = true
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -93,9 +102,9 @@ class CameraActivity : AppCompatActivity() {
         }
 
         val text = intent.getStringExtra(EXTRA_TEXT)
-        if(text == null){
+        if (text == null) {
             damage_label.visibility = View.GONE
-        }else{
+        } else {
             damage_label.text = text
         }
 
@@ -107,15 +116,23 @@ class CameraActivity : AppCompatActivity() {
 
         flash_button.setOnClickListener { changeFlashMode() }
 
-        camera_preview.setOnTouchListener(View.OnTouchListener{view: View, motionEvent: MotionEvent ->
-            when(motionEvent.action){
+        val settings = App.database.userSettingsDao().getUserSettings()
+
+        volumeKeyTakePicture = settings?.volumeKeyForPicture ?: true
+        cameraSound = settings?.cameraSounds ?: true
+        if (cameraSound) {
+            mediaActionSound.load(MediaActionSound.SHUTTER_CLICK)
+            mediaActionSound.play(MediaActionSound.FOCUS_COMPLETE)
+        }
+        camera_preview.setOnTouchListener(View.OnTouchListener { view: View, motionEvent: MotionEvent ->
+            when (motionEvent.action) {
                 MotionEvent.ACTION_DOWN -> {
                     return@OnTouchListener true
                 }
                 MotionEvent.ACTION_UP -> {
                     focus_image.visibility = View.VISIBLE
-                    focus_image.x = motionEvent.x - focus_image.width/2
-                    focus_image.y = motionEvent.y - focus_image.height/2
+                    focus_image.x = motionEvent.x - focus_image.width / 2
+                    focus_image.y = motionEvent.y - focus_image.height / 2
 
                     // Get the MeteringPointFactory from PreviewView
                     val factory = camera_preview.meteringPointFactory
@@ -131,7 +148,8 @@ class CameraActivity : AppCompatActivity() {
                     // Trigger the focus and metering. The method returns a ListenableFuture since the operation
                     // is asynchronous. You can use it get notified when the focus is successful or if it fails.
                     val focusListenableFuture = cameraControl?.startFocusAndMetering(action)
-                    focusListenableFuture?.addListener( {
+                    focusListenableFuture?.addListener({
+                        if (cameraSound) mediaActionSound.play(MediaActionSound.FOCUS_COMPLETE)
                         focus_image.visibility = View.INVISIBLE
                     }, ContextCompat.getMainExecutor(this))
 
@@ -147,6 +165,7 @@ class CameraActivity : AppCompatActivity() {
                 linearZoom = progress.toFloat() / 100.toFloat()
                 cameraControl?.setLinearZoom(linearZoom)
             }
+
             override fun onStartTrackingTouch(seekBar: SeekBar?) {}
             override fun onStopTrackingTouch(seekBar: SeekBar?) {}
         })
@@ -169,7 +188,7 @@ class CameraActivity : AppCompatActivity() {
         imageCapture?.flashMode = newState
     }
 
-    private fun updateFlashButton(){
+    private fun updateFlashButton() {
         with(flash_button) {
             when (tag as Int) {
                 ImageCapture.FLASH_MODE_OFF -> background = ContextCompat.getDrawable(
@@ -220,7 +239,7 @@ class CameraActivity : AppCompatActivity() {
     private fun startCamera() {
 
         val cameraProviderFuture = ProcessCameraProvider.getInstance(this)
-        cameraProviderFuture.addListener( {
+        cameraProviderFuture.addListener({
             // Used to bind the lifecycle of cameras to the lifecycle owner
             val cameraProvider: ProcessCameraProvider = cameraProviderFuture.get()
 
@@ -281,27 +300,18 @@ class CameraActivity : AppCompatActivity() {
                     Log.e(TAG, "Photo capture failed: ${exc.message}", exc)
                     toast("Can't take picture")
                 }
+
                 override fun onImageSaved(output: ImageCapture.OutputFileResults) {
                     cameraAvailable = true
                     val savedUri = Uri.fromFile(photoFile)
-                    App.database.interventionDao()
-                        .updateExportationState(interventionId, EXPORTATION_STATE_NOT_EXPORTED)
-                    App.database.pictureDao().insertPicture(
-                        Picture(
-                            fileName = photoFile.name,
-                            absolutePath = photoFile.absolutePath,
-                            uri = savedUri.toString(),
-                            type = pictureType,
-                            relatedId = relatedId,
-                            interventionId = interventionId
-                        )
-                    )
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                        setGalleryThumbnail(savedUri)
-                    }
                     Log.d(TAG, "Photo capture succeeded: $savedUri")
+                    lastPictureFile = photoFile;
+                    val intent = Intent(this@CameraActivity, PictureValidationActivity::class.java)
+                    intent.putExtra(PictureValidationActivity.EXTRA_PICTURE_URI, savedUri)
+                    pictureValidator.launch(intent)
                 }
             })
+        if (cameraSound) mediaActionSound.play(MediaActionSound.SHUTTER_CLICK)
 
         val root = findViewById<View>(android.R.id.content).rootView
         // Display flash animation to indicate that photo was captured
@@ -312,17 +322,51 @@ class CameraActivity : AppCompatActivity() {
             )
         }, ANIMATION_SLOW_MILLIS)
 
-
     }
+
+    var lastPictureFile: File? = null;
+    var pictureValidator =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == Activity.RESULT_OK) {
+                if (lastPictureFile != null) {
+                    val savedUri = Uri.fromFile(lastPictureFile)
+                    App.database.interventionDao()
+                        .updateExportationState(interventionId, EXPORTATION_STATE_NOT_EXPORTED)
+
+                    App.database.pictureDao().insertPicture(
+                        Picture(
+                            fileName = lastPictureFile!!.name,
+                            absolutePath = lastPictureFile!!.absolutePath,
+                            uri = savedUri.toString(),
+                            type = pictureType,
+                            relatedId = relatedId,
+                            interventionId = interventionId
+                        )
+                    )
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                        setGalleryThumbnail(savedUri)
+                    }
+                }
+            } else {
+                if (lastPictureFile != null) {
+                    lastPictureFile!!.delete()
+                    App.database.pictureDao().deletePictureByFileName(lastPictureFile!!.name)
+                    MediaScannerConnection.scanFile(
+                        this, arrayOf(lastPictureFile!!.absolutePath), null, null
+                    )
+                }
+
+            }
+        }
 
     override fun onKeyDown(keyCode: Int, event: KeyEvent): Boolean {
         return when (keyCode) {
             KeyEvent.KEYCODE_VOLUME_DOWN -> {
-                camera_capture_button?.simulateClick()
+                if (volumeKeyTakePicture) camera_capture_button?.simulateClick()
                 true
             }
             KeyEvent.KEYCODE_VOLUME_UP -> {
-                camera_capture_button?.simulateClick()
+                if (volumeKeyTakePicture) camera_capture_button?.simulateClick()
                 true
             }
             else -> super.onKeyDown(keyCode, event)

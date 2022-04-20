@@ -1,5 +1,6 @@
 package com.heliopales.bladeexpertfiller.intervention
 
+import android.R.attr.data
 import android.content.Intent
 import android.graphics.Canvas
 import android.media.MediaScannerConnection
@@ -25,16 +26,19 @@ import com.heliopales.bladeexpertfiller.settings.UserSettings
 import com.heliopales.bladeexpertfiller.spotcondition.*
 import com.heliopales.bladeexpertfiller.utils.toast
 import it.xabaras.android.recyclerview.swipedecorator.RecyclerViewSwipeDecorator
+import kotlinx.android.synthetic.main.activity_gallery.*
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
-import retrofit2.Call
-import retrofit2.Response
-import java.io.File
-import java.util.concurrent.ExecutorService
-import java.util.concurrent.Executors
-
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
 import okhttp3.ResponseBody
+import retrofit2.Call
+import retrofit2.Response
+import java.io.File
+import java.io.FileOutputStream
+import java.nio.file.Files
+import java.nio.file.StandardCopyOption
+import java.util.concurrent.ExecutorService
+import java.util.concurrent.Executors
 
 
 class InterventionListActivity : AppCompatActivity(), InterventionAdapter.InterventionItemListener {
@@ -282,6 +286,74 @@ class InterventionListActivity : AppCompatActivity(), InterventionAdapter.Interv
                     downloadDamages(itv.id, bla.id, INHERIT_TYPE_DAMAGE_IN)
                 }
         }
+        interventions.forEach { itv ->
+            App.database.damageDao().getDamagesByInterventionId(itv.id).forEach {
+                downloadCurrentPictures(it)
+            }
+        }
+
+    }
+
+    private fun downloadCurrentPictures(scd: DamageSpotCondition){
+        if(scd.id == null) return;
+        App.bladeExpertService.getSpotConditionPictureIdsOfCurrentState(spotConditionId = scd.id!!)
+            .enqueue(object : retrofit2.Callback<Array<Long>>{
+                override fun onResponse(call: Call<Array<Long>>, response: Response<Array<Long>>) {
+                    if(response.isSuccessful && response.body()!!.isNotEmpty()){
+                        val directory = File(App.getDamagePath(scd.interventionId, scd.bladeId, scd.localId)+"/previous")
+                        if(!directory.exists()){
+                            directory.mkdirs()
+                        }
+                        response.body()!!.forEach { id->
+                            val newFile = File("${directory.absolutePath}/$id.jpg")
+                            if(!newFile.exists()){
+                                downloadPictureFile(id, newFile)
+                            }
+                        }
+                    }
+                }
+                override fun onFailure(call: Call<Array<Long>>, t: Throwable) {
+                }
+            })
+    }
+
+    private fun downloadPictureFile(id: Long, newFile: File) {
+        App.bladeExpertService.getSpotConditionPicture(pictureId = id)
+            .enqueue(object : retrofit2.Callback<ResponseBody>{
+                override fun onResponse(
+                    call: Call<ResponseBody>,
+                    response: Response<ResponseBody>
+                ) {
+
+                    Log.d(TAG,"Will download : ${newFile.absolutePath}")
+                    val body = response.body()
+                    if(response.isSuccessful &&  body != null){
+                        val inputStream = body.byteStream()
+                        Files.copy(inputStream, newFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+                        inputStream.close()
+
+                        MediaScannerConnection.scanFile(
+                            this@InterventionListActivity, arrayOf(newFile.absolutePath), null, null)
+
+                        /*val outputStream = FileOutputStream(newFile)
+                        while(true){
+                            val read = inputStream.read(fileReader)
+                            if(read == -1) break
+                            outputStream.write(fileReader, 0, read)
+                        }
+
+
+
+                        outputStream.flush()
+                        outputStream.close()
+                        inputStream.close()*/
+                    }
+                }
+
+                override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
+
+                }
+            })
     }
 
     private fun downloadDamages(interventionId: Int, bladeId: Int, damageInheritType: String) {
@@ -497,11 +569,35 @@ class InterventionListActivity : AppCompatActivity(), InterventionAdapter.Interv
             }
         }
 
+        var settings = App.database.userSettingsDao().getUserSettings()
+        if(settings == null){
+            settings = UserSettings();
+        }
+
         val editUserKeyButton = menu?.findItem(R.id.change_user_key)
         editUserKeyButton?.setOnMenuItemClickListener {
             showChangeUserKeyDialog()
             true
         }
+
+        val volumeKeyTakePictureItem = menu?.findItem(R.id.volume_take_picture)
+        volumeKeyTakePictureItem?.isChecked = settings!!.volumeKeyForPicture?:true
+        volumeKeyTakePictureItem?.setOnMenuItemClickListener {
+            volumeKeyTakePictureItem.isChecked = !volumeKeyTakePictureItem.isChecked
+            settings!!.volumeKeyForPicture = volumeKeyTakePictureItem.isChecked
+            App.database.userSettingsDao().upsert(settings!!)
+            true
+        }
+
+        val cameraSoundsItem = menu?.findItem(R.id.camera_sounds)
+        cameraSoundsItem?.isChecked = settings!!.cameraSounds?:true
+        cameraSoundsItem?.setOnMenuItemClickListener {
+            cameraSoundsItem.isChecked = !cameraSoundsItem.isChecked
+            settings.cameraSounds = cameraSoundsItem.isChecked
+            App.database.userSettingsDao().upsert(settings!!)
+            true
+        }
+
         return true
     }
 
@@ -524,7 +620,6 @@ class InterventionListActivity : AppCompatActivity(), InterventionAdapter.Interv
             }
         dialog.show(supportFragmentManager, "ChangeTurbineSerialDialogFragment")
     }
-
 
     private val executor: ExecutorService = Executors.newFixedThreadPool(1)
 
@@ -558,7 +653,6 @@ class InterventionListActivity : AppCompatActivity(), InterventionAdapter.Interv
         } else {
             uploadIntervention(intervention)
         }
-
     }
 
     private fun uploadIntervention(intervention: Intervention) {
@@ -606,14 +700,12 @@ class InterventionListActivity : AppCompatActivity(), InterventionAdapter.Interv
         }.start()
     }
 
-
     private fun exportTask(intervention: Intervention): Runnable {
         return Runnable {
             Log.i(TAG, "exporting Intervention ${intervention.id} ${intervention.name}")
 
             //Weather
             saveWeathers(intervention)
-
 
             //Intervention Pictures
             App.database.pictureDao().getNonExportedPicturesByTypeAndInterventionId(

@@ -33,7 +33,7 @@
                 android:layout_rowWeight="1"
                 android:layout_columnWeight="1"
                 android:text="CAT. 1\nOK"
-                android:lineHeight="50sp"
+                android:lineHeight="60sp"
                 android:textColor="@color/bulma_light"
                 android:textSize="30sp" />
 
@@ -47,8 +47,8 @@
                 android:layout_gravity="fill"
                 android:layout_rowWeight="1"
                 android:layout_columnWeight="1"
-                android:text="CAT. 2\nL. OK"
-                android:lineHeight="50sp"
+                android:text="CAT. 2\nL OK"
+                android:lineHeight="60sp"
                 android:textColor="@color/bulma_light"
                 android:textSize="30sp" />
 
@@ -62,8 +62,8 @@
                 android:layout_gravity="fill"
                 android:layout_rowWeight="1"
                 android:layout_columnWeight="1"
-                android:text="CAT. 4\nN. OK"
-                android:lineHeight="50sp"
+                android:text="CAT. 4\nN OK"
+                android:lineHeight="60sp"
                 android:textColor="@color/bulma_light"
                 android:textSize="30sp" />
 

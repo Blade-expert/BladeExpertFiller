@@ -17,13 +17,16 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.BladeExpertFiller">
         <activity
+            android:name=".camera.PictureValidationActivity"
+            android:exported="false" />
+        <activity
             android:name=".weather.WeatherViewPagerActivity"
             android:exported="false"
-            android:screenOrientation="portrait"/>
+            android:screenOrientation="portrait" />
         <activity
             android:name=".weather.WeatherActivity"
             android:exported="false"
-            android:screenOrientation="portrait"/>
+            android:screenOrientation="portrait" />
         <activity
             android:name=".intervention.InterventionActivity"
             android:exported="false"

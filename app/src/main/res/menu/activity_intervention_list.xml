@@ -13,4 +13,20 @@
         android:title="Change user key"
         app:showAsAction="never"
         />
+    <item
+        android:id="@+id/volume_take_picture"
+        android:title="Volume key takes picture"
+        android:checkable="true"
+        android:checked="true"
+        app:showAsAction="never"
+        />
+
+    <item
+        android:id="@+id/camera_sounds"
+        android:title="Camera sounds"
+        android:checkable="true"
+        android:checked="true"
+        app:showAsAction="never"
+        />
+
 </menu>

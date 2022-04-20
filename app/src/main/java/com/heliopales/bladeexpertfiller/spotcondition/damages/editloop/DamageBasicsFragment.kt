@@ -7,6 +7,7 @@ import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageButton
 import androidx.camera.core.ImageCapture
@@ -16,6 +17,7 @@ import com.heliopales.bladeexpertfiller.EXPORTATION_STATE_NOT_EXPORTED
 import com.heliopales.bladeexpertfiller.PICTURE_TYPE_DAMAGE
 import com.heliopales.bladeexpertfiller.R
 import com.heliopales.bladeexpertfiller.camera.CameraActivity
+import com.heliopales.bladeexpertfiller.camera.GalleryActivity
 import com.heliopales.bladeexpertfiller.spotcondition.DamageSpotCondition
 import com.heliopales.bladeexpertfiller.spotcondition.INHERIT_TYPE_DAMAGE_IN
 import com.heliopales.bladeexpertfiller.spotcondition.damages.DamageViewPagerActivity
@@ -30,7 +32,7 @@ class DamageBasicsFragment : Fragment() {
     private lateinit var radialLength: EditText
     private lateinit var repetition: EditText
     private lateinit var description: EditText
-    private lateinit var pictureButton: ImageButton
+    private lateinit var spotButton: Button
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -46,7 +48,10 @@ class DamageBasicsFragment : Fragment() {
         radialLength = view.findViewById(R.id.damage_radial_length)
         repetition = view.findViewById(R.id.damage_repetition)
         description = view.findViewById(R.id.damage_description)
-        pictureButton = view.findViewById(R.id.damage_picture_button)
+        spotButton = view.findViewById(R.id.damage_spot_button)
+        spotButton.text = damage.spotCode
+        if(damage.spotCode == null || damage.spotCode == "ORPHAN" || damage.spotCode == "")
+            spotButton.visibility = View.INVISIBLE
         attachListeners()
     }
 
@@ -121,18 +126,11 @@ class DamageBasicsFragment : Fragment() {
             }
         })
 
-        pictureButton.setOnClickListener {
-            val intent = Intent(requireContext(), CameraActivity::class.java)
+        spotButton.setOnClickListener {
+            val intent = Intent(requireContext(), GalleryActivity::class.java)
             val path =
-                App.getDamagePath(damage.interventionId, damage.bladeId, damage.localId)
-
-            intent.putExtra(CameraActivity.EXTRA_TEXT, damage.getSummarizedFieldCodeRadiusPosition())
-            intent.putExtra(CameraActivity.EXTRA_OUTPUT_PATH, path)
-            intent.putExtra(CameraActivity.EXTRA_INTERVENTION_ID, damage.interventionId)
-            intent.putExtra(CameraActivity.EXTRA_RELATED_ID, damage.localId)
-            intent.putExtra(CameraActivity.EXTRA_PICTURE_TYPE, PICTURE_TYPE_DAMAGE)
-            if(damage.inheritType == INHERIT_TYPE_DAMAGE_IN)
-                intent.putExtra(CameraActivity.EXTRA_FLASH_MODE, ImageCapture.FLASH_MODE_ON)
+                App.getDamagePath(damage.interventionId, damage.bladeId, damage.localId)+"/previous"
+            intent.putExtra(GalleryActivity.EXTRA_DIRECTORY_PATH, path)
             startActivity(intent)
         }
     }

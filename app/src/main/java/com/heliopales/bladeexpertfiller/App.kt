@@ -111,7 +111,7 @@ class App : Application() {
             }"
         }
 
-        fun getBladePath(intervention: Intervention, blade: Blade): String {
+        private fun getBladePath(intervention: Intervention, blade: Blade): String {
             return "${getMainInterventionPath(intervention)}/blade_${blade.id}_${
                 blade.position?.replace(
                     " ",
