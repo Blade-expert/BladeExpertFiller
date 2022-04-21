@@ -25,6 +25,14 @@ interface BladeExpertService {
             .getUserSettings()?.userApiKey
     ): Call<Array<Long>>
 
+    @GET(value = "api/mobile/pictures/condition/{spotConditionId}")
+    fun getSpotConditionPictureIds(
+        @Path("spotConditionId") spotConditionId: Int,
+        @Query("key") key: String = API_KEY,
+        @Query("userKey") userKey: String? = App.database.userSettingsDao()
+            .getUserSettings()?.userApiKey
+    ): Call<Array<Long>>
+
     @GET(value = "api/mobile/picture/{pictureId}")
     @Streaming
     fun getSpotConditionPicture(
@@ -106,7 +114,7 @@ interface BladeExpertService {
         @Query("userKey") userKey: String? = App.database.userSettingsDao()
             .getUserSettings()?.userApiKey,
         @Part filePart: MultipartBody.Part
-    ): Call<ResponseBody>
+    ): Call<Long>
 
 
     @POST(value = "api/mobile/indoorDamage")

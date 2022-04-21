@@ -208,8 +208,8 @@ class CameraActivity : AppCompatActivity() {
     }
 
     private fun openGallery() {
-        val intent = Intent(this, GalleryActivity::class.java);
-        intent.putExtra(GalleryActivity.EXTRA_DIRECTORY_PATH, outputDirectoryPath)
+        val intent = Intent(this, GalleryNiceActivity::class.java);
+        intent.putExtra(GalleryNiceActivity.EXTRA_DIRECTORY_PATH, outputDirectoryPath)
         startActivity(intent)
     }
 
@@ -340,7 +340,8 @@ class CameraActivity : AppCompatActivity() {
                             uri = savedUri.toString(),
                             type = pictureType,
                             relatedId = relatedId,
-                            interventionId = interventionId
+                            interventionId = interventionId,
+                            remoteId = null
                         )
                     )
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {

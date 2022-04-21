@@ -277,21 +277,16 @@ class InterventionListActivity : AppCompatActivity(), InterventionAdapter.Interv
 
     private fun downloadSpotConditionsFromBladeExpert() {
         interventions.forEach { itv ->
+
             downloadDrainholes(itv.id)
             downloadLightnings(itv.id)
             App.database.bladeDao().getBladesByInterventionId(itv.id)
-                .sortedBy { it.position }.forEach { bla ->
+                .forEach { bla ->
                     /* UPDATE database with damages from BladeExpert */
                     downloadDamages(itv.id, bla.id, INHERIT_TYPE_DAMAGE_OUT)
                     downloadDamages(itv.id, bla.id, INHERIT_TYPE_DAMAGE_IN)
                 }
         }
-        interventions.forEach { itv ->
-            App.database.damageDao().getDamagesByInterventionId(itv.id).forEach {
-                downloadCurrentPictures(it)
-            }
-        }
-
     }
 
     private fun downloadCurrentPictures(scd: DamageSpotCondition){
@@ -306,6 +301,7 @@ class InterventionListActivity : AppCompatActivity(), InterventionAdapter.Interv
                         }
                         response.body()!!.forEach { id->
                             val newFile = File("${directory.absolutePath}/$id.jpg")
+                            Log.d(TAG, "Import Damage Picture id $id of spot ${scd.spotCode} will be done => ${!newFile.exists()}")
                             if(!newFile.exists()){
                                 downloadPictureFile(id, newFile)
                             }
@@ -324,34 +320,16 @@ class InterventionListActivity : AppCompatActivity(), InterventionAdapter.Interv
                     call: Call<ResponseBody>,
                     response: Response<ResponseBody>
                 ) {
-
-                    Log.d(TAG,"Will download : ${newFile.absolutePath}")
                     val body = response.body()
                     if(response.isSuccessful &&  body != null){
                         val inputStream = body.byteStream()
                         Files.copy(inputStream, newFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
                         inputStream.close()
-
                         MediaScannerConnection.scanFile(
                             this@InterventionListActivity, arrayOf(newFile.absolutePath), null, null)
-
-                        /*val outputStream = FileOutputStream(newFile)
-                        while(true){
-                            val read = inputStream.read(fileReader)
-                            if(read == -1) break
-                            outputStream.write(fileReader, 0, read)
-                        }
-
-
-
-                        outputStream.flush()
-                        outputStream.close()
-                        inputStream.close()*/
                     }
                 }
-
                 override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
-
                 }
             })
     }
@@ -373,7 +351,6 @@ class InterventionListActivity : AppCompatActivity(), InterventionAdapter.Interv
                     if (response.isSuccessful) {
                         response.body().let {
                             it?.forEach { dscw ->
-                                Log.d(TAG, dscw.toString())
                                 val dsc =
                                     App.database.damageDao()
                                         .getDamageByRemoteId(remoteId = dscw.id!!)
@@ -384,7 +361,8 @@ class InterventionListActivity : AppCompatActivity(), InterventionAdapter.Interv
                                     )
 
                                 if (dsc == null) {
-                                    App.database.damageDao().insertDamage(d)
+                                    val id = App.database.damageDao().insertDamage(d)
+                                    d.localId = id.toInt()
                                 } else {
                                     d.localId = dsc.localId
                                     if (d.severityId == null) d.severityId =
@@ -407,7 +385,10 @@ class InterventionListActivity : AppCompatActivity(), InterventionAdapter.Interv
                                         dsc.profileDepth
 
                                     App.database.damageDao().updateDamage(d)
+
+
                                 }
+                                downloadCurrentPictures(d)
                             }
                         }
                     }
@@ -435,7 +416,6 @@ class InterventionListActivity : AppCompatActivity(), InterventionAdapter.Interv
                     if (response.isSuccessful) {
                         response.body().let {
                             it?.forEach { dhsw ->
-                                Log.d(TAG, dhsw.toString())
                                 val dhs =
                                     App.database.drainholeDao()
                                         .getByRemoteId(remoteId = dhsw.id!!)
@@ -477,7 +457,6 @@ class InterventionListActivity : AppCompatActivity(), InterventionAdapter.Interv
                     if (response.isSuccessful) {
                         response.body().let {
                             it?.forEach { lscw ->
-                                Log.d(TAG, lscw.toString())
 
                                 val lsc =
                                     App.database.lightningDao()
@@ -505,7 +484,6 @@ class InterventionListActivity : AppCompatActivity(), InterventionAdapter.Interv
                                             if(m.severityId == null)
                                                 m.severityId = mes.severityId
                                         }
-                                        Log.d(TAG,"Will upsert $m")
                                         App.database.receptorMeasureDao().upsert(m)
                                     }
                                 }
@@ -584,8 +562,12 @@ class InterventionListActivity : AppCompatActivity(), InterventionAdapter.Interv
         volumeKeyTakePictureItem?.isChecked = settings!!.volumeKeyForPicture?:true
         volumeKeyTakePictureItem?.setOnMenuItemClickListener {
             volumeKeyTakePictureItem.isChecked = !volumeKeyTakePictureItem.isChecked
-            settings!!.volumeKeyForPicture = volumeKeyTakePictureItem.isChecked
-            App.database.userSettingsDao().upsert(settings!!)
+            var set = App.database.userSettingsDao().getUserSettings()
+            if(set == null){
+                set = UserSettings();
+            }
+            set!!.volumeKeyForPicture = volumeKeyTakePictureItem.isChecked
+            App.database.userSettingsDao().upsert(set!!)
             true
         }
 
@@ -593,8 +575,12 @@ class InterventionListActivity : AppCompatActivity(), InterventionAdapter.Interv
         cameraSoundsItem?.isChecked = settings!!.cameraSounds?:true
         cameraSoundsItem?.setOnMenuItemClickListener {
             cameraSoundsItem.isChecked = !cameraSoundsItem.isChecked
-            settings.cameraSounds = cameraSoundsItem.isChecked
-            App.database.userSettingsDao().upsert(settings!!)
+            var set = App.database.userSettingsDao().getUserSettings()
+            if(set == null){
+                set = UserSettings();
+            }
+            set!!.cameraSounds = cameraSoundsItem.isChecked
+            App.database.userSettingsDao().upsert(set!!)
             true
         }
 
@@ -711,7 +697,7 @@ class InterventionListActivity : AppCompatActivity(), InterventionAdapter.Interv
             App.database.pictureDao().getNonExportedPicturesByTypeAndInterventionId(
                 PICTURE_TYPE_INTERVENTION, intervention.id
             ).forEach { pic ->
-                Log.d(TAG, "exporting intervention picture $pic")
+                Log.i(TAG, "exporting intervention picture $pic")
                 sendInterventionPicture(pic, intervention)
             }
 
@@ -748,7 +734,6 @@ class InterventionListActivity : AppCompatActivity(), InterventionAdapter.Interv
                     INHERIT_TYPE_DAMAGE_IN
                 ).forEach { dsc ->
                     if (dsc.radialPosition != null && dsc.position != null) {
-                        Log.d(TAG, "saveDamage ${dsc.fieldCode}")
                         saveIndoorDamage(dsc, intervention)
                     } else {
                         intervention.exportRealizedOperations.postValue(++intervention.exportCount)
@@ -765,7 +750,7 @@ class InterventionListActivity : AppCompatActivity(), InterventionAdapter.Interv
                     INHERIT_TYPE_DAMAGE_OUT
                 ).forEach { dsc ->
                     if (dsc.radialPosition != null && dsc.position != null) {
-                        Log.d(TAG, "saveDamage ${dsc.fieldCode}")
+                        Log.i(TAG, "saveDamage ${dsc.fieldCode}")
                         saveOutdoorDamage(dsc, intervention)
                     } else {
                         intervention.exportRealizedOperations.postValue(++intervention.exportCount)
@@ -853,7 +838,7 @@ class InterventionListActivity : AppCompatActivity(), InterventionAdapter.Interv
 
         val wrappers: List<WeatherWrapper> =
             weathers.map { weather ->
-                Log.d(TAG, "weather to be uploaded $weather")
+                Log.i(TAG, "weather to be uploaded $weather")
                 mapToBladeExpertWeather(weather)
             }
 
@@ -870,7 +855,7 @@ class InterventionListActivity : AppCompatActivity(), InterventionAdapter.Interv
                     response.body()?.forEach { ww ->
                         val wx = mapBladeExpertWeather(ww)
                         App.database.weatherDao().upsert(wx)
-                        Log.d(TAG, "weather upserted after import $wx")
+                        Log.i(TAG, "weather upserted after import $wx")
                     }
 
                 } else {
@@ -999,7 +984,7 @@ class InterventionListActivity : AppCompatActivity(), InterventionAdapter.Interv
     }
 
     private fun saveDrainhole(dhs: DrainholeSpotCondition, intervention: Intervention) {
-        Log.d(TAG, "will send $dhs")
+        Log.i(TAG, "will send $dhs")
         App.bladeExpertService.saveDrainholeSpotCondition(
             drainholeSpotConditionWrapper =
             mapToBladeExpertDrainholeSpotCondition(dhs)
@@ -1013,7 +998,6 @@ class InterventionListActivity : AppCompatActivity(), InterventionAdapter.Interv
                     if (response.isSuccessful) {
                         //Récupération de l'id de bladeExpert et sauvegarde
                         dhs.id = response.body()?.id
-                        Log.d(TAG, "DHS envoyé avec succés, id récupéré = ${dhs.id}")
                         App.database.drainholeDao().upsertDrainhole(dhs)
                         App.database.pictureDao()
                             .getNonExportedDrainholeSpotPicturesByDrainId(dhs.localId)
@@ -1048,7 +1032,7 @@ class InterventionListActivity : AppCompatActivity(), InterventionAdapter.Interv
     }
 
     private fun saveLightning(lps: LightningSpotCondition, intervention: Intervention) {
-        Log.d(TAG, "will send $lps")
+        Log.i(TAG, "will send $lps")
 
         val measures =
             App.database.receptorMeasureDao().getByLightningSpotConditionLocalId(lps.localId)
@@ -1109,7 +1093,7 @@ class InterventionListActivity : AppCompatActivity(), InterventionAdapter.Interv
         spotConditionId: Int
     ) {
         if (pic.exportState == EXPORTATION_STATE_NOT_EXPORTED) {
-            Log.d(TAG, "Attempt to send picture on spotCondition id = $spotConditionId  $pic")
+            Log.i(TAG, "Attempt to send picture on spotCondition id = $spotConditionId  $pic")
             val pictureFile = File(pic.absolutePath)
             val filePart = MultipartBody.Part.createFormData(
                 "file",
@@ -1119,15 +1103,17 @@ class InterventionListActivity : AppCompatActivity(), InterventionAdapter.Interv
             App.bladeExpertService.addPictureToSpotCondition(
                 spotConditionId = spotConditionId,
                 filePart = filePart
-            ).enqueue(object : retrofit2.Callback<ResponseBody> {
+            ).enqueue(object : retrofit2.Callback<Long> {
                 override fun onResponse(
-                    call: Call<ResponseBody>,
-                    response: Response<ResponseBody>
+                    call: Call<Long>,
+                    response: Response<Long>
                 ) {
                     intervention.exportRealizedOperations.postValue(++intervention.exportCount)
                     if (response.isSuccessful) {
                         App.database.pictureDao()
                             .updateExportationState(pic.fileName, EXPORTATION_STATE_EXPORTED)
+                        if(response.body() != null)
+                            App.database.pictureDao().updateRemoteId(pic.fileName, response.body()!!)
                     } else {
                         intervention.exportErrorsInLastExport = true
                         App.writeOnInterventionLogFile(
@@ -1137,7 +1123,7 @@ class InterventionListActivity : AppCompatActivity(), InterventionAdapter.Interv
                     }
                 }
 
-                override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
+                override fun onFailure(call: Call<Long>, t: Throwable) {
                     App.writeOnInterventionLogFile(intervention, "Failure while exporting $pic")
                     App.writeOnInterventionLogFile(intervention, t.stackTraceToString())
                     intervention.exportRealizedOperations.postValue(++intervention.exportCount)

@@ -19,8 +19,14 @@ interface PictureDao {
     @Query("UPDATE picture SET exportState = :state WHERE fileName = :fileName")
     fun updateExportationState(fileName: String, state: Int)
 
+    @Query("UPDATE picture SET remoteId = :remoteId WHERE fileName = :fileName")
+    fun updateRemoteId(fileName: String, remoteId: Long)
+
     @Query("SELECT * FROM picture WHERE type = $PICTURE_TYPE_DAMAGE and relatedId = :damageLocalId")
     fun getDamageSpotPicturesByDamageId(damageLocalId: Int): List<Picture>
+
+    @Query("SELECT * FROM picture WHERE remoteId = :remoteId")
+    fun getByRemoteId(remoteId: Long): Picture?
 
     @Query("SELECT * FROM picture WHERE type = $PICTURE_TYPE_DAMAGE and relatedId = :damageLocalId and exportState=$EXPORTATION_STATE_NOT_EXPORTED")
     fun getNonExportedDamageSpotPicturesByDamageId(damageLocalId: Int): List<Picture>
@@ -45,5 +51,7 @@ interface PictureDao {
 
     @Query("SELECT count(fileName) FROM picture WHERE interventionId = :interventionId and exportState=$EXPORTATION_STATE_NOT_EXPORTED")
     fun countNonExportedPicturesByInterventionId(interventionId: Int): Int
+
+
 
 }

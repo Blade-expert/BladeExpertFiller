@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 3,
-    "identityHash": "b7e298c61463a97102f306af6c5c8aac",
+    "identityHash": "a85d3dad0fa2815b7c2828c948963602",
     "entities": [
       {
         "tableName": "Intervention",
@@ -556,7 +556,7 @@
       },
       {
         "tableName": "Picture",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`fileName` TEXT NOT NULL, `absolutePath` TEXT NOT NULL, `uri` TEXT NOT NULL, `type` INTEGER NOT NULL, `relatedId` INTEGER NOT NULL, `interventionId` INTEGER NOT NULL, `exportState` INTEGER NOT NULL, PRIMARY KEY(`fileName`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`fileName` TEXT NOT NULL, `absolutePath` TEXT NOT NULL, `uri` TEXT NOT NULL, `type` INTEGER NOT NULL, `relatedId` INTEGER NOT NULL, `interventionId` INTEGER NOT NULL, `exportState` INTEGER NOT NULL, `remoteId` INTEGER, PRIMARY KEY(`fileName`))",
         "fields": [
           {
             "fieldPath": "fileName",
@@ -599,6 +599,12 @@
             "columnName": "exportState",
             "affinity": "INTEGER",
             "notNull": true
+          },
+          {
+            "fieldPath": "remoteId",
+            "columnName": "remoteId",
+            "affinity": "INTEGER",
+            "notNull": false
           }
         ],
         "primaryKey": {
@@ -714,7 +720,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'b7e298c61463a97102f306af6c5c8aac')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'a85d3dad0fa2815b7c2828c948963602')"
     ]
   }
 }

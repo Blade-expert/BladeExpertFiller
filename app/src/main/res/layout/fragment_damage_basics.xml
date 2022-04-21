@@ -182,16 +182,17 @@
 
             <ProgressBar
                 android:id="@+id/damage_download_progress"
-                style="?android:progressBarStyle"
+                style="?android:progressBarStyleHorizontal"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintLeft_toRightOf="@id/damage_download_pictures"
                 app:layout_constraintRight_toRightOf="parent"
                 android:layout_width="50dp"
                 android:layout_height="50dp"
-                android:indeterminate="true"
-                android:indeterminateTint="@color/bulma_link"
                 android:visibility="gone"
+                android:progress="80"
+                android:progressDrawable="@drawable/circle"
+                android:indeterminateTint="@color/bulma_link"
                 />
 
         </androidx.constraintlayout.widget.ConstraintLayout>

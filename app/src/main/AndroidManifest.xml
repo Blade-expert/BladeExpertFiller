@@ -17,6 +17,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.BladeExpertFiller">
         <activity
+            android:name=".camera.GalleryNiceActivity"
+            android:exported="false" />
+        <activity
             android:name=".camera.PictureValidationActivity"
             android:exported="false" />
         <activity
