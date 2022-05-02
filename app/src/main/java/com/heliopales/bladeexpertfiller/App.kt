@@ -23,11 +23,10 @@ const val API_KEY = "X93hA7U0GvUWqTBsGeJSpXEXTbLW0ecm"
 //private const val BASE_URL = "https://www.blade-expert.com/"
 
 //RECETTE
-//private const val BASE_URL = "https://bladeexpert-recette.herokuapp.com/bladeexpert/"
+private const val BASE_URL = "https://bladeexpert-recette.herokuapp.com/bladeexpert/"
 
 //LOCAL
-
-private const val BASE_URL = "http://192.168.1.181/bladeexpert/"
+//private const val BASE_URL = "http://192.168.1.181/bladeexpert/"
 
 private const val MAXIMUM_PARALLEL_REQUESTS = 1
 
