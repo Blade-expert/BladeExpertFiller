@@ -17,7 +17,7 @@ import java.util.concurrent.TimeUnit
 
 const val DATABASE_FILE_NAME = "bxpfil_db_2"
 
-const val API_KEY = "X93hA7U0GvUWqTBsGeJSpXEXTbLW0ecm"
+const val API_KEY = "deGNvGkMwzzK1sxi51cbtmHVzbkGuHYe"
 
 //PRODUCTION
 private const val BASE_URL = "https://www.blade-expert.com/"
