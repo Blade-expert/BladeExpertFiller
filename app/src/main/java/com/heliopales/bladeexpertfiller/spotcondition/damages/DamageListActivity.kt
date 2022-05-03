@@ -186,14 +186,15 @@ class DamageListActivity : AppCompatActivity(), DamageAdapter.DamageItemListener
                             } else {
                                 d.localId = dsc.localId
                                 if(d.severityId == null) d.severityId = dsc.severityId
-                                if(d.description == null) d.description = dsc.description
                                 if(d.damageTypeId == null) d.damageTypeId = dsc.damageTypeId
-                                if(d.radialPosition == null) d.radialPosition = dsc.radialPosition
-                                if(d.radialLength == null) d.radialLength = dsc.radialLength
-                                if(d.longitudinalLength == null) d.longitudinalLength = dsc.longitudinalLength
-                                if(d.repetition == null) d.repetition = dsc.repetition
-                                if(d.position == null) d.position = dsc.position
-                                if(d.profileDepth == null) d.profileDepth = dsc.profileDepth
+
+                                d.description = dsc.description
+                                d.radialPosition = dsc.radialPosition
+                                d.radialLength = dsc.radialLength
+                                d.longitudinalLength = dsc.longitudinalLength
+                                d.repetition = dsc.repetition
+                                d.position = dsc.position
+                                d.profileDepth = dsc.profileDepth
 
                                 App.database.damageDao().updateDamage(d)
                             }
