@@ -124,11 +124,11 @@ class DamageAdapter(
             if (dsc.closed== null || !dsc.closed) {
                 lock.visibility = View.GONE
                 cardView.isEnabled = true
-                cameraButton.isEnabled = true
+                //cameraButton.isEnabled = true
             } else {
                 lock.visibility = View.VISIBLE
                 cardView.isEnabled = false
-                cameraButton.isEnabled = false
+                //cameraButton.isEnabled = false
             }
 
             val count = App.database.pictureDao().getDamageSpotPicturesByDamageId(dsc.localId).size

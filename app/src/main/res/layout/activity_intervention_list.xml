@@ -23,7 +23,7 @@
         android:layout_below="@id/toolbar"
         android:layout_centerHorizontal="true"
         android:layout_marginVertical="32dp"
-        android:src="@drawable/logo_hlp" />
+        android:src="@drawable/icon_hlp" />
 
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         android:id="@+id/itv_swipe_layout"

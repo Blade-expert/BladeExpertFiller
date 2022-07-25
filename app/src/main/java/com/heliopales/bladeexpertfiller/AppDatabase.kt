@@ -26,10 +26,11 @@ import com.heliopales.bladeexpertfiller.weather.Weather
     entities = [Intervention::class, Blade::class, Turbine::class, Severity::class, DamageType::class,
         DamageSpotCondition::class, DrainholeSpotCondition::class, LightningSpotCondition::class,
         LightningReceptor::class, ReceptorMeasure::class, Picture::class, UserSettings::class, Weather::class],
-    version = 3,
+    version = 4,
     autoMigrations = [
         AutoMigration (from = 1, to = 2),
-        AutoMigration (from = 2, to = 3)
+        AutoMigration (from = 2, to = 3),
+        AutoMigration (from = 3, to = 4),
     ]
 )
 @TypeConverters(Converters::class)

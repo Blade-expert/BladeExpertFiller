@@ -1,12 +1,13 @@
 package com.heliopales.bladeexpertfiller.intervention
 
-import android.R.attr.data
 import android.content.Intent
 import android.graphics.Canvas
 import android.media.MediaScannerConnection
 import android.os.Bundle
 import android.util.Log
 import android.view.Menu
+import android.webkit.URLUtil
+import android.widget.ImageView
 import android.widget.Switch
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
@@ -17,6 +18,7 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import com.bumptech.glide.Glide
 import com.google.android.material.snackbar.Snackbar
 import com.heliopales.bladeexpertfiller.*
 import com.heliopales.bladeexpertfiller.blade.Blade
@@ -26,7 +28,6 @@ import com.heliopales.bladeexpertfiller.settings.UserSettings
 import com.heliopales.bladeexpertfiller.spotcondition.*
 import com.heliopales.bladeexpertfiller.utils.toast
 import it.xabaras.android.recyclerview.swipedecorator.RecyclerViewSwipeDecorator
-import kotlinx.android.synthetic.main.activity_gallery.*
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
@@ -34,7 +35,6 @@ import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.Response
 import java.io.File
-import java.io.FileOutputStream
 import java.nio.file.Files
 import java.nio.file.StandardCopyOption
 import java.util.concurrent.ExecutorService
@@ -58,12 +58,14 @@ class InterventionListActivity : AppCompatActivity(), InterventionAdapter.Interv
         Log.i(TAG, "onCreate()")
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_intervention_list)
+        updateMainLogoInView()
+
 
         var toolbar = findViewById<Toolbar>(R.id.toolbar)
         toolbar.title = "BladeExpertFiller V${BuildConfig.VERSION_NAME}"
         setSupportActionBar(toolbar)
 
-        recyclerView = findViewById<RecyclerView>(R.id.interventions_recycler_view)
+        recyclerView = findViewById(R.id.interventions_recycler_view)
         recyclerView.layoutManager = LinearLayoutManager(this)
 
         interventions = mutableListOf()
@@ -77,9 +79,19 @@ class InterventionListActivity : AppCompatActivity(), InterventionAdapter.Interv
         refreshLayout = findViewById(R.id.itv_swipe_layout)
         refreshLayout.setOnRefreshListener { updateInterventionList() }
 
-        updateInterventionList()
-        updateSeverities()
-        updateDamageTypes()
+        Log.w(TAG, "BaseURL : '$BASE_URL'")
+        Log.w(TAG, "BaseURL is valid ? ${URLUtil.isValidUrl(BASE_URL)}")
+
+
+        if(App.bladeExpertService != null){
+            Log.w(TAG, "bxpService is not null")
+            updateInterventionList()
+            updateSeverities()
+            updateDamageTypes()
+        }else{
+            Log.w(TAG, "bxpService is null")
+
+        }
     }
 
     private val simpleCallBack = object : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
@@ -152,7 +164,9 @@ class InterventionListActivity : AppCompatActivity(), InterventionAdapter.Interv
                         event == DISMISS_EVENT_CONSECUTIVE
                     ) {
                         snackBarActive = false
-                        effectivelyDeleteIntervention(deletedIntervention)
+                        Thread(Runnable {
+                            effectivelyDeleteIntervention(deletedIntervention)
+                        }).start()
                     }
                     super.onDismissed(transientBottomBar, event)
                 }
@@ -221,7 +235,8 @@ class InterventionListActivity : AppCompatActivity(), InterventionAdapter.Interv
         interventions.addAll(
             App.database.interventionDao().getAllInterventions().sortedBy { it.name })
 
-        App.bladeExpertService.getInterventions()
+        if(App.bladeExpertService != null)
+        App.bladeExpertService!!.getInterventions()
             .enqueue(object : retrofit2.Callback<Array<InterventionWrapper>> {
                 override fun onResponse(
                     call: Call<Array<InterventionWrapper>>,
@@ -264,8 +279,6 @@ class InterventionListActivity : AppCompatActivity(), InterventionAdapter.Interv
                     adapter.notifyDataSetChanged()
                     toast("La liste d'interventions est à jour")
                     refreshLayout.isRefreshing = false
-
-
                 }
 
                 override fun onFailure(call: Call<Array<InterventionWrapper>>, t: Throwable) {
@@ -291,7 +304,8 @@ class InterventionListActivity : AppCompatActivity(), InterventionAdapter.Interv
 
     private fun downloadCurrentPictures(scd: DamageSpotCondition){
         if(scd.id == null) return;
-        App.bladeExpertService.getSpotConditionPictureIdsOfCurrentState(spotConditionId = scd.id!!)
+        if(App.bladeExpertService != null)
+        App.bladeExpertService!!.getSpotConditionPictureIdsOfCurrentState(spotConditionId = scd.id!!)
             .enqueue(object : retrofit2.Callback<Array<Long>>{
                 override fun onResponse(call: Call<Array<Long>>, response: Response<Array<Long>>) {
                     if(response.isSuccessful && response.body()!!.isNotEmpty()){
@@ -314,7 +328,8 @@ class InterventionListActivity : AppCompatActivity(), InterventionAdapter.Interv
     }
 
     private fun downloadPictureFile(id: Long, newFile: File) {
-        App.bladeExpertService.getSpotConditionPicture(pictureId = id)
+        if(App.bladeExpertService != null)
+        App.bladeExpertService!!.getSpotConditionPicture(pictureId = id)
             .enqueue(object : retrofit2.Callback<ResponseBody>{
                 override fun onResponse(
                     call: Call<ResponseBody>,
@@ -337,7 +352,8 @@ class InterventionListActivity : AppCompatActivity(), InterventionAdapter.Interv
     private fun downloadDamages(interventionId: Int, bladeId: Int, damageInheritType: String) {
         val inout =
             if (damageInheritType == INHERIT_TYPE_DAMAGE_IN) "indoorDamage" else "outdoorDamage"
-        App.bladeExpertService.getDamages(
+        if(App.bladeExpertService != null)
+            App.bladeExpertService!!.getDamages(
             interventionId = interventionId,
             bladeId = bladeId,
             inoutdoorDamage = inout
@@ -406,7 +422,8 @@ class InterventionListActivity : AppCompatActivity(), InterventionAdapter.Interv
     }
 
     private fun downloadDrainholes(interventionId: Int) {
-        App.bladeExpertService.getDrainholes(interventionId)
+        if(App.bladeExpertService != null)
+            App.bladeExpertService!!.getDrainholes(interventionId)
             .enqueue(object :
                 retrofit2.Callback<Array<DrainholeSpotConditionWrapper>> {
                 override fun onResponse(
@@ -447,7 +464,8 @@ class InterventionListActivity : AppCompatActivity(), InterventionAdapter.Interv
     }
 
     private fun downloadLightnings(interventionId: Int) {
-        App.bladeExpertService.getLightnings(interventionId)
+        if(App.bladeExpertService != null)
+            App.bladeExpertService!!.getLightnings(interventionId)
             .enqueue(object :
                 retrofit2.Callback<Array<LightningSpotConditionWrapper>> {
                 override fun onResponse(
@@ -558,6 +576,12 @@ class InterventionListActivity : AppCompatActivity(), InterventionAdapter.Interv
             true
         }
 
+        val editServerAddressButton = menu?.findItem(R.id.change_server_address)
+        editServerAddressButton?.setOnMenuItemClickListener {
+            showChangeServerAddressDialog()
+            true
+        }
+
         val volumeKeyTakePictureItem = menu?.findItem(R.id.volume_take_picture)
         volumeKeyTakePictureItem?.isChecked = settings!!.volumeKeyForPicture?:true
         volumeKeyTakePictureItem?.setOnMenuItemClickListener {
@@ -604,7 +628,75 @@ class InterventionListActivity : AppCompatActivity(), InterventionAdapter.Interv
                 override fun onDialogNegativeClick() {
                 }
             }
-        dialog.show(supportFragmentManager, "ChangeTurbineSerialDialogFragment")
+        dialog.show(supportFragmentManager, "ChangeUserKeyDialogFragment")
+    }
+
+    private fun showChangeServerAddressDialog() {
+        var settings = App.database.userSettingsDao().getUserSettings()
+        val dialog = ChangeServerAddressDialogFragment(settings?.serverAddress)
+        dialog.listener =
+            object : ChangeServerAddressDialogFragment.ChangeServerAddressDialogListener {
+                override fun onDialogPositiveClick(address: String) {
+                    var newAddress = if(address.endsWith("/")){
+                        address
+                    }else{
+                        "$address/"
+                    }
+
+                    if (settings == null) {
+                        settings = UserSettings(serverAddress = newAddress)
+                    } else {
+                        settings!!.serverAddress = newAddress
+                    }
+                    App.database.userSettingsDao().upsert(settings!!)
+
+                    App.initBladeExpertService()
+
+                    loadMainLogo()
+
+                    updateInterventionList()
+                    updateSeverities()
+                    updateDamageTypes()
+                }
+
+                override fun onDialogNegativeClick() {
+                }
+            }
+        dialog.show(supportFragmentManager, "ChangeServerAddressDialogFragment")
+    }
+
+    private fun loadMainLogo(){
+        if(App.bladeExpertService != null)
+            App.bladeExpertService!!.getLogo()
+                .enqueue(object : retrofit2.Callback<ResponseBody>{
+                    override fun onResponse(
+                        call: Call<ResponseBody>,
+                        response: Response<ResponseBody>
+                    ) {
+                        val body = response.body()
+                        if(response.isSuccessful &&  body != null){
+                            val inputStream = body.byteStream()
+                            val file = File("${App.getOutputDirectory()}/mainlogo.png")
+                            Files.copy(inputStream, file.toPath(), StandardCopyOption.REPLACE_EXISTING);
+                            inputStream.close()
+                            MediaScannerConnection.scanFile(
+                                this@InterventionListActivity, arrayOf(file.absolutePath), null, null)
+                            updateMainLogoInView()
+                        }
+                    }
+                    override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
+                    }
+                })
+
+
+    }
+
+    private fun updateMainLogoInView(){
+        val logo = findViewById<ImageView>(R.id.hlp_logo);
+        val logoFile = File("${App.getOutputDirectory()}/mainlogo.png")
+        if(logoFile.exists()){
+            Glide.with(logo).load(logoFile).fitCenter().into(logo)
+        }
     }
 
     private val executor: ExecutorService = Executors.newFixedThreadPool(1)
@@ -773,7 +865,8 @@ class InterventionListActivity : AppCompatActivity(), InterventionAdapter.Interv
     }
 
     private fun saveTurbineSerial(intervention: Intervention) {
-        App.bladeExpertService.updateIntervention(
+        if(App.bladeExpertService != null)
+            App.bladeExpertService!!.updateIntervention(
             interventionWrapper = mapToBladeExpertIntervention(
                 intervention
             )
@@ -807,7 +900,8 @@ class InterventionListActivity : AppCompatActivity(), InterventionAdapter.Interv
     }
 
     private fun saveBladeSerial(bla: Blade, intervention: Intervention) {
-        App.bladeExpertService.updateBladeSerial(bladeWrapper = mapToBladeExpertBlade(bla))
+        if(App.bladeExpertService != null)
+            App.bladeExpertService!!.updateBladeSerial(bladeWrapper = mapToBladeExpertBlade(bla))
             .enqueue(object : retrofit2.Callback<ResponseBody> {
                 override fun onResponse(
                     call: Call<ResponseBody>,
@@ -842,7 +936,8 @@ class InterventionListActivity : AppCompatActivity(), InterventionAdapter.Interv
                 mapToBladeExpertWeather(weather)
             }
 
-        App.bladeExpertService.saveWeather(
+        if(App.bladeExpertService != null)
+            App.bladeExpertService!!.saveWeather(
             weatherWrappers = wrappers
         ).enqueue(object : retrofit2.Callback<List<WeatherWrapper>> {
             override fun onResponse(
@@ -882,7 +977,8 @@ class InterventionListActivity : AppCompatActivity(), InterventionAdapter.Interv
     }
 
     private fun saveIndoorDamage(dsc: DamageSpotCondition, intervention: Intervention) {
-        App.bladeExpertService.saveIndoorDamageSpotCondition(
+        if(App.bladeExpertService != null)
+            App.bladeExpertService!!.saveIndoorDamageSpotCondition(
             damageSpotConditionWrapper =
             mapToBladeExpertDamageSpotCondition(dsc)
         )
@@ -937,7 +1033,8 @@ class InterventionListActivity : AppCompatActivity(), InterventionAdapter.Interv
 
 
     private fun saveOutdoorDamage(dsc: DamageSpotCondition, intervention: Intervention) {
-        App.bladeExpertService.saveOutdoorDamageSpotCondition(
+        if(App.bladeExpertService != null)
+            App.bladeExpertService!!.saveOutdoorDamageSpotCondition(
             damageSpotConditionWrapper =
             mapToBladeExpertDamageSpotCondition(dsc)
         )
@@ -985,7 +1082,8 @@ class InterventionListActivity : AppCompatActivity(), InterventionAdapter.Interv
 
     private fun saveDrainhole(dhs: DrainholeSpotCondition, intervention: Intervention) {
         Log.i(TAG, "will send $dhs")
-        App.bladeExpertService.saveDrainholeSpotCondition(
+        if(App.bladeExpertService != null)
+            App.bladeExpertService!!.saveDrainholeSpotCondition(
             drainholeSpotConditionWrapper =
             mapToBladeExpertDrainholeSpotCondition(dhs)
         )
@@ -1041,7 +1139,8 @@ class InterventionListActivity : AppCompatActivity(), InterventionAdapter.Interv
             lps,
             measures.map { lrm -> mapToBladeExpertLightningMeasure(lrm) })
 
-        App.bladeExpertService.saveLightningSpotCondition(
+        if(App.bladeExpertService != null)
+            App.bladeExpertService!!.saveLightningSpotCondition(
             lightningSpotConditionWrapper = wrapper
         )
             .enqueue(object : retrofit2.Callback<LightningSpotConditionWrapper> {
@@ -1100,7 +1199,8 @@ class InterventionListActivity : AppCompatActivity(), InterventionAdapter.Interv
                 pictureFile.name,
                 pictureFile.asRequestBody("image/jpeg".toMediaTypeOrNull())
             )
-            App.bladeExpertService.addPictureToSpotCondition(
+            if(App.bladeExpertService != null)
+                App.bladeExpertService!!.addPictureToSpotCondition(
                 spotConditionId = spotConditionId,
                 filePart = filePart
             ).enqueue(object : retrofit2.Callback<Long> {
@@ -1146,7 +1246,8 @@ class InterventionListActivity : AppCompatActivity(), InterventionAdapter.Interv
                 pictureFile.name,
                 pictureFile.asRequestBody("image/jpeg".toMediaTypeOrNull())
             )
-            App.bladeExpertService.addPictureToTurbine(
+            if(App.bladeExpertService != null)
+                App.bladeExpertService!!.addPictureToTurbine(
                 turbineId = pic.relatedId,
                 interventionId = intervention.id,
                 filePart = filePart
@@ -1192,7 +1293,8 @@ class InterventionListActivity : AppCompatActivity(), InterventionAdapter.Interv
                 pictureFile.name,
                 pictureFile.asRequestBody("image/jpeg".toMediaTypeOrNull())
             )
-            App.bladeExpertService.addPictureToIntervention(
+            if(App.bladeExpertService != null)
+                App.bladeExpertService!!.addPictureToIntervention(
                 interventionId = intervention.id,
                 filePart = filePart
             )
@@ -1237,7 +1339,8 @@ class InterventionListActivity : AppCompatActivity(), InterventionAdapter.Interv
                 pictureFile.name,
                 pictureFile.asRequestBody("image/jpeg".toMediaTypeOrNull())
             )
-            App.bladeExpertService.addPictureToBlade(
+            if(App.bladeExpertService != null)
+                App.bladeExpertService!!.addPictureToBlade(
                 bladeId = pic.relatedId,
                 interventionId = intervention.id,
                 filePart = filePart
@@ -1283,7 +1386,8 @@ class InterventionListActivity : AppCompatActivity(), InterventionAdapter.Interv
                 pictureFile.name,
                 pictureFile.asRequestBody("image/jpeg".toMediaTypeOrNull())
             )
-            App.bladeExpertService.addPictureToWindfarm(
+            if(App.bladeExpertService != null)
+                App.bladeExpertService!!.addPictureToWindfarm(
                 windfarmId = pic.relatedId,
                 interventionId = intervention.id,
                 filePart = filePart
@@ -1377,7 +1481,8 @@ class InterventionListActivity : AppCompatActivity(), InterventionAdapter.Interv
     }
 
     private fun updateSeverities() {
-        App.bladeExpertService.getSeverities()
+        if(App.bladeExpertService != null)
+            App.bladeExpertService!!.getSeverities()
             .enqueue(object : retrofit2.Callback<Array<SeverityWrapper>> {
                 override fun onResponse(
                     call: Call<Array<SeverityWrapper>>,
@@ -1402,7 +1507,8 @@ class InterventionListActivity : AppCompatActivity(), InterventionAdapter.Interv
 
     private fun updateDamageTypes() {
         Log.d(TAG, "updateDamageTypes()")
-        App.bladeExpertService.getDamageTypes()
+        if(App.bladeExpertService != null)
+            App.bladeExpertService!!.getDamageTypes()
             .enqueue(object : retrofit2.Callback<Array<DamageTypeWrapper>> {
                 override fun onResponse(
                     call: Call<Array<DamageTypeWrapper>>,

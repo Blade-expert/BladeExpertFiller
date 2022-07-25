@@ -9,6 +9,11 @@
         app:showAsAction="always"
         app:actionLayout="@layout/menu_switch"/>
     <item
+        android:id="@+id/change_server_address"
+        android:title="Change server address"
+        app:showAsAction="never"
+        />
+    <item
         android:id="@+id/change_user_key"
         android:title="Change user key"
         app:showAsAction="never"

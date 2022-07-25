@@ -177,96 +177,98 @@ class DamageBasicsFragment : Fragment() {
                 }
             })
 
-            App.bladeExpertService.getSpotConditionPictureIds(spotConditionId = damage.id!!)
-                .enqueue(object : retrofit2.Callback<Array<Long>> {
-                    override fun onResponse(
-                        call: Call<Array<Long>>,
-                        response: Response<Array<Long>>
-                    ) {
-                        if (response.isSuccessful && response.body() != null && response.body()!!
-                                .isNotEmpty()
+            if (App.bladeExpertService != null)
+                App.bladeExpertService!!.getSpotConditionPictureIds(spotConditionId = damage.id!!)
+                    .enqueue(object : retrofit2.Callback<Array<Long>> {
+                        override fun onResponse(
+                            call: Call<Array<Long>>,
+                            response: Response<Array<Long>>
                         ) {
-                            val directory = File(
-                                App.getDamagePath(
-                                    damage.interventionId,
-                                    damage.bladeId,
-                                    damage.localId
+                            if (response.isSuccessful && response.body() != null && response.body()!!
+                                    .isNotEmpty()
+                            ) {
+                                val directory = File(
+                                    App.getDamagePath(
+                                        damage.interventionId,
+                                        damage.bladeId,
+                                        damage.localId
+                                    )
                                 )
-                            )
-                            if (!directory.exists()) {
-                                directory.mkdirs()
-                            }
-                            size = response.body()!!.size
-
-                            counter.value = 0
-                            c = 0
-
-                            damageDownloadProgress.isIndeterminate = false
-                            damageDownloadProgress.min =0
-                            damageDownloadProgress.max = size
-
-                            response.body()!!.forEach { id ->
-                                Log.d(TAG, "Id de photo a telecharger : $id")
-                                if (App.database.pictureDao().getByRemoteId(id) == null) {
-                                    val newFile = File("${directory.absolutePath}/$id.jpg")
-                                    downloadPictureFile(id, newFile)
+                                if (!directory.exists()) {
+                                    directory.mkdirs()
                                 }
+                                size = response.body()!!.size
+
+                                counter.value = 0
+                                c = 0
+
+                                damageDownloadProgress.isIndeterminate = false
+                                damageDownloadProgress.min = 0
+                                damageDownloadProgress.max = size
+
+                                response.body()!!.forEach { id ->
+                                    Log.d(TAG, "Id de photo a telecharger : $id")
+                                    if (App.database.pictureDao().getByRemoteId(id) == null) {
+                                        val newFile = File("${directory.absolutePath}/$id.jpg")
+                                        downloadPictureFile(id, newFile)
+                                    }
+                                }
+                            } else {
+                                it.visibility = View.VISIBLE
+                                damageDownloadProgress.visibility = View.GONE
                             }
-                        } else {
+                        }
+
+                        override fun onFailure(call: Call<Array<Long>>, t: Throwable) {
                             it.visibility = View.VISIBLE
                             damageDownloadProgress.visibility = View.GONE
                         }
-                    }
-
-                    override fun onFailure(call: Call<Array<Long>>, t: Throwable) {
-                        it.visibility = View.VISIBLE
-                        damageDownloadProgress.visibility = View.GONE
-                    }
-                })
+                    })
 
 
         }
     }
 
     private fun downloadPictureFile(id: Long, newFile: File) {
-        App.bladeExpertService.getSpotConditionPicture(pictureId = id)
-            .enqueue(object : retrofit2.Callback<ResponseBody> {
-                override fun onResponse(
-                    call: Call<ResponseBody>,
-                    response: Response<ResponseBody>
-                ) {
-                    val body = response.body()
+        if (App.bladeExpertService != null)
+            App.bladeExpertService!!.getSpotConditionPicture(pictureId = id)
+                .enqueue(object : retrofit2.Callback<ResponseBody> {
+                    override fun onResponse(
+                        call: Call<ResponseBody>,
+                        response: Response<ResponseBody>
+                    ) {
+                        val body = response.body()
 
-                    counter.postValue(++c)
+                        counter.postValue(++c)
 
-                    if (response.isSuccessful && body != null) {
-                        val inputStream = body.byteStream()
-                        Files.copy(
-                            inputStream,
-                            newFile.toPath(),
-                            StandardCopyOption.REPLACE_EXISTING
-                        );
-                        inputStream.close()
+                        if (response.isSuccessful && body != null) {
+                            val inputStream = body.byteStream()
+                            Files.copy(
+                                inputStream,
+                                newFile.toPath(),
+                                StandardCopyOption.REPLACE_EXISTING
+                            );
+                            inputStream.close()
 
-                        App.database.pictureDao().insertPicture(
-                            Picture(
-                                fileName = newFile!!.name,
-                                absolutePath = newFile!!.absolutePath,
-                                uri = Uri.fromFile(newFile).toString(),
-                                type = PICTURE_TYPE_DAMAGE,
-                                relatedId = damage.localId,
-                                interventionId = damage.interventionId,
-                                exportState = EXPORTATION_STATE_EXPORTED,
-                                remoteId = id
+                            App.database.pictureDao().insertPicture(
+                                Picture(
+                                    fileName = newFile!!.name,
+                                    absolutePath = newFile!!.absolutePath,
+                                    uri = Uri.fromFile(newFile).toString(),
+                                    type = PICTURE_TYPE_DAMAGE,
+                                    relatedId = damage.localId,
+                                    interventionId = damage.interventionId,
+                                    exportState = EXPORTATION_STATE_EXPORTED,
+                                    remoteId = id
+                                )
                             )
-                        )
+                        }
                     }
-                }
 
-                override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
-                    counter.postValue(++c)
-                }
-            })
+                    override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
+                        counter.postValue(++c)
+                    }
+                })
     }
 
     override fun onResume() {

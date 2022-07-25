@@ -10,6 +10,12 @@ import retrofit2.http.*
 
 interface BladeExpertService {
 
+    @GET(value = "api/mobile/logo")
+    @Streaming
+    fun getLogo(
+        @Query("key") key: String = API_KEY,
+    ): Call<ResponseBody>
+
     @GET(value = "api/mobile/intervention")
     fun getInterventions(
         @Query("key") key: String = API_KEY,

@@ -31,6 +31,8 @@ import com.heliopales.bladeexpertfiller.intervention.InterventionActivity
 import com.heliopales.bladeexpertfiller.spotcondition.DamageSpotCondition
 import com.heliopales.bladeexpertfiller.spotcondition.INHERIT_TYPE_DAMAGE_IN
 import com.heliopales.bladeexpertfiller.spotcondition.INHERIT_TYPE_DAMAGE_OUT
+import com.heliopales.bladeexpertfiller.spotcondition.drainhole.DrainholeActivity
+import com.heliopales.bladeexpertfiller.spotcondition.lightning.LightningActivity
 import com.heliopales.bladeexpertfiller.utils.OnSwipeListener
 import com.heliopales.bladeexpertfiller.utils.toast
 import it.xabaras.android.recyclerview.swipedecorator.RecyclerViewSwipeDecorator
@@ -135,8 +137,8 @@ class DamageListActivity : AppCompatActivity(), DamageAdapter.DamageItemListener
                 when (direction) {
                     Direction.up -> Log.d(TAG, "Swiped UP")
                     Direction.down -> startInterventionActivity()
-                    Direction.left -> Log.d(TAG, "Swiped LEFT")
-                    Direction.right -> Log.d(TAG, "Swiped RIGHT")
+                    Direction.left -> if(damageInheritType == INHERIT_TYPE_DAMAGE_OUT) startLightningActivity()
+                    Direction.right -> if(damageInheritType == INHERIT_TYPE_DAMAGE_OUT) startDrainholeActivity()
                     else -> Log.d(TAG, "No direction found for Swipe")
                 }
                 return true
@@ -167,7 +169,9 @@ class DamageListActivity : AppCompatActivity(), DamageAdapter.DamageItemListener
 
         /* UPDATE database with damages from BladeExpert */
         val inout = if(damageInheritType == INHERIT_TYPE_DAMAGE_IN) "indoorDamage" else "outdoorDamage"
-        App.bladeExpertService.getDamages(interventionId = intervention.id, bladeId=blade.id, inoutdoorDamage = inout)
+
+        if(App.bladeExpertService != null)
+            App.bladeExpertService!!.getDamages(interventionId = intervention.id, bladeId=blade.id, inoutdoorDamage = inout)
         .enqueue(object : retrofit2.Callback<Array<DamageSpotConditionWrapper>> {
             override fun onResponse(
                 call: Call<Array<DamageSpotConditionWrapper>>,
@@ -267,11 +271,25 @@ class DamageListActivity : AppCompatActivity(), DamageAdapter.DamageItemListener
         return true;
     }
 
-    fun startInterventionActivity(){
+    private fun startInterventionActivity(){
         val intent = Intent(this, InterventionActivity::class.java)
         intent.putExtra(InterventionActivity.EXTRA_INTERVENTION_ID, intervention.id)
         startActivity(intent)
         overridePendingTransition(R.anim.in_from_top, R.anim.no_anim)
+    }
+
+    private fun startLightningActivity() {
+        val intent = Intent(this, LightningActivity::class.java)
+        intent.putExtra(LightningActivity.EXTRA_INTERVENTION_ID, intervention.id)
+        intent.putExtra(LightningActivity.EXTRA_BLADE, blade)
+        startActivity(intent)
+    }
+
+    private fun startDrainholeActivity() {
+        val intent = Intent(this, DrainholeActivity::class.java)
+        intent.putExtra(DrainholeActivity.EXTRA_INTERVENTION_ID, intervention.id)
+        intent.putExtra(DrainholeActivity.EXTRA_BLADE, blade)
+        startActivity(intent)
     }
 
     override fun onResume() {

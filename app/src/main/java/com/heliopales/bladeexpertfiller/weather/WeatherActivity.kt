@@ -74,7 +74,8 @@ class WeatherActivity : AppCompatActivity(), View.OnClickListener,
             refreshLayout.isRefreshing = true
         }
         /* UPDATE database with weathers from BladeExpert */
-        App.bladeExpertService.getWeathers(interventionId = intervention.id)
+        if(App.bladeExpertService != null)
+            App.bladeExpertService!!.getWeathers(interventionId = intervention.id)
             .enqueue(object : retrofit2.Callback<Array<WeatherWrapper>> {
                 override fun onResponse(
                     call: Call<Array<WeatherWrapper>>,

@@ -2,6 +2,7 @@ package com.heliopales.bladeexpertfiller
 
 import android.app.Application
 import android.util.Log
+import android.webkit.URLUtil
 import androidx.room.Room
 import com.heliopales.bladeexpertfiller.blade.Blade
 import com.heliopales.bladeexpertfiller.bladeexpert.*
@@ -19,8 +20,10 @@ const val DATABASE_FILE_NAME = "bxpfil_db_2"
 
 const val API_KEY = "deGNvGkMwzzK1sxi51cbtmHVzbkGuHYe"
 
+var BASE_URL: String? = null
+
 //PRODUCTION
-private const val BASE_URL = "https://www.blade-expert.com/"
+//private const val BASE_URL = "https://www.blade-expert.com/"
 
 //RECETTE
 //private const val BASE_URL = "https://bladeexpert-recette.herokuapp.com/bladeexpert/"
@@ -61,6 +64,7 @@ class App : Application() {
         private fun retrofit(): Retrofit {
             httpClient.dispatcher.maxRequests = MAXIMUM_PARALLEL_REQUESTS
             httpClient.dispatcher.maxRequestsPerHost = MAXIMUM_PARALLEL_REQUESTS
+
             return Retrofit.Builder()
                 .client(httpClient)
                 .baseUrl(BASE_URL)
@@ -68,12 +72,25 @@ class App : Application() {
                 .build()
         }
 
-        val bladeExpertService: BladeExpertService =
-            retrofit().create(BladeExpertService::class.java)
+        var bladeExpertService: BladeExpertService? = null
 
-        private fun getOutputDirectory(): String {
+        fun initBladeExpertService(){
+            val newUrl = database.userSettingsDao().getUserSettings()?.serverAddress;
+            if(newUrl != null){
+                BASE_URL = newUrl
+            }
+
+            bladeExpertService = if (URLUtil.isValidUrl(BASE_URL)) {
+                retrofit().create(BladeExpertService::class.java)
+            } else null
+        }
+
+        fun getOutputDirectory(): String {
             val mediaDir = instance.externalMediaDirs.firstOrNull()?.let {
-                File(it, "${instance.resources.getString(R.string.app_name)}_$DATABASE_FILE_NAME").apply { mkdirs() }
+                File(
+                    it,
+                    "${instance.resources.getString(R.string.app_name)}_$DATABASE_FILE_NAME"
+                ).apply { mkdirs() }
             }
 
             val file = if (mediaDir != null && mediaDir.exists()) {
@@ -121,7 +138,7 @@ class App : Application() {
         }
 
         fun getBladePicturePath(intervention: Intervention, blade: Blade): String {
-            return "${getBladePath(intervention, blade) }/blade_pictures"
+            return "${getBladePath(intervention, blade)}/blade_pictures"
         }
 
         fun getDamagePath(
@@ -187,7 +204,7 @@ class App : Application() {
     override fun onCreate() {
         super.onCreate()
         instance = this
-
+        initBladeExpertService()
     }
 
 

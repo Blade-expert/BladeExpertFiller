@@ -122,7 +122,7 @@ class CameraActivity : AppCompatActivity() {
         cameraSound = settings?.cameraSounds ?: true
         if (cameraSound) {
             mediaActionSound.load(MediaActionSound.SHUTTER_CLICK)
-            mediaActionSound.play(MediaActionSound.FOCUS_COMPLETE)
+            //mediaActionSound.play(MediaActionSound.FOCUS_COMPLETE)
         }
         camera_preview.setOnTouchListener(View.OnTouchListener { view: View, motionEvent: MotionEvent ->
             when (motionEvent.action) {
@@ -149,7 +149,7 @@ class CameraActivity : AppCompatActivity() {
                     // is asynchronous. You can use it get notified when the focus is successful or if it fails.
                     val focusListenableFuture = cameraControl?.startFocusAndMetering(action)
                     focusListenableFuture?.addListener({
-                        if (cameraSound) mediaActionSound.play(MediaActionSound.FOCUS_COMPLETE)
+                        //if (cameraSound) mediaActionSound.play(MediaActionSound.FOCUS_COMPLETE)
                         focus_image.visibility = View.INVISIBLE
                     }, ContextCompat.getMainExecutor(this))
 
