@@ -19,6 +19,7 @@ interface BladeExpertService {
     @GET(value = "api/mobile/intervention")
     fun getInterventions(
         @Query("key") key: String = API_KEY,
+        @Query("deviceId") deviceId: String = App.androidId,
         @Query("userKey") userKey: String? = App.database.userSettingsDao()
             .getUserSettings()?.userApiKey
     ): Call<Array<InterventionWrapper>>
@@ -27,6 +28,7 @@ interface BladeExpertService {
     fun getSpotConditionPictureIdsOfCurrentState(
         @Path("spotConditionId") spotConditionId: Int,
         @Query("key") key: String = API_KEY,
+        @Query("deviceId") deviceId: String = App.androidId,
         @Query("userKey") userKey: String? = App.database.userSettingsDao()
             .getUserSettings()?.userApiKey
     ): Call<Array<Long>>
@@ -35,6 +37,7 @@ interface BladeExpertService {
     fun getSpotConditionPictureIds(
         @Path("spotConditionId") spotConditionId: Int,
         @Query("key") key: String = API_KEY,
+        @Query("deviceId") deviceId: String = App.androidId,
         @Query("userKey") userKey: String? = App.database.userSettingsDao()
             .getUserSettings()?.userApiKey
     ): Call<Array<Long>>
@@ -44,6 +47,7 @@ interface BladeExpertService {
     fun getSpotConditionPicture(
         @Path("pictureId") pictureId: Long,
         @Query("key") key: String = API_KEY,
+        @Query("deviceId") deviceId: String = App.androidId,
         @Query("userKey") userKey: String? = App.database.userSettingsDao()
             .getUserSettings()?.userApiKey
     ): Call<ResponseBody>
@@ -54,6 +58,7 @@ interface BladeExpertService {
         @Path("bladeId") bladeId: Int,
         @Path("inoutdoorDamage") inoutdoorDamage: String,
         @Query("key") key: String = API_KEY,
+        @Query("deviceId") deviceId: String = App.androidId,
         @Query("userKey") userKey: String? = App.database.userSettingsDao()
             .getUserSettings()?.userApiKey
     ): Call<Array<DamageSpotConditionWrapper>>
@@ -62,6 +67,7 @@ interface BladeExpertService {
     fun getDrainholes(
         @Path("interventionId") interventionId: Int,
         @Query("key") key: String = API_KEY,
+        @Query("deviceId") deviceId: String = App.androidId,
         @Query("userKey") userKey: String? = App.database.userSettingsDao()
             .getUserSettings()?.userApiKey
     ): Call<Array<DrainholeSpotConditionWrapper>>
@@ -70,6 +76,7 @@ interface BladeExpertService {
     fun getLightnings(
         @Path("interventionId") interventionId: Int,
         @Query("key") key: String = API_KEY,
+        @Query("deviceId") deviceId: String = App.androidId,
         @Query("userKey") userKey: String? = App.database.userSettingsDao()
             .getUserSettings()?.userApiKey
     ): Call<Array<LightningSpotConditionWrapper>>
@@ -78,6 +85,7 @@ interface BladeExpertService {
     fun getWeathers(
         @Path("interventionId") interventionId: Int,
         @Query("key") key: String = API_KEY,
+        @Query("deviceId") deviceId: String = App.androidId,
         @Query("userKey") userKey: String? = App.database.userSettingsDao()
             .getUserSettings()?.userApiKey
     ): Call<Array<WeatherWrapper>>
@@ -85,6 +93,7 @@ interface BladeExpertService {
     @POST(value = "api/mobile/weather")
     fun saveWeather(
         @Query("key") key: String = API_KEY,
+        @Query("deviceId") deviceId: String = App.androidId,
         @Query("userKey") userKey: String? = App.database.userSettingsDao()
             .getUserSettings()?.userApiKey,
         @Body weatherWrappers: List<WeatherWrapper>
@@ -99,6 +108,7 @@ interface BladeExpertService {
     @PUT(value = "api/mobile/intervention")
     fun updateIntervention(
         @Query("key") key: String = API_KEY,
+        @Query("deviceId") deviceId: String = App.androidId,
         @Query("userKey") userKey: String? = App.database.userSettingsDao()
             .getUserSettings()?.userApiKey,
         @Body interventionWrapper: InterventionWrapper
@@ -107,6 +117,7 @@ interface BladeExpertService {
     @PUT(value = "api/mobile/bladeSerial")
     fun updateBladeSerial(
         @Query("key") key: String = API_KEY,
+        @Query("deviceId") deviceId: String = App.androidId,
         @Query("userKey") userKey: String? = App.database.userSettingsDao()
             .getUserSettings()?.userApiKey,
         @Body bladeWrapper: BladeWrapper
@@ -117,6 +128,7 @@ interface BladeExpertService {
     fun addPictureToSpotCondition(
         @Path("id") spotConditionId: Int,
         @Query("key") key: String = API_KEY,
+        @Query("deviceId") deviceId: String = App.androidId,
         @Query("userKey") userKey: String? = App.database.userSettingsDao()
             .getUserSettings()?.userApiKey,
         @Part filePart: MultipartBody.Part
@@ -126,6 +138,7 @@ interface BladeExpertService {
     @POST(value = "api/mobile/indoorDamage")
     fun saveIndoorDamageSpotCondition(
         @Query("key") key: String = API_KEY,
+        @Query("deviceId") deviceId: String = App.androidId,
         @Query("userKey") userKey: String? = App.database.userSettingsDao()
             .getUserSettings()?.userApiKey,
         @Body damageSpotConditionWrapper: DamageSpotConditionWrapper
@@ -134,6 +147,7 @@ interface BladeExpertService {
     @POST(value = "api/mobile/outdoorDamage")
     fun saveOutdoorDamageSpotCondition(
         @Query("key") key: String = API_KEY,
+        @Query("deviceId") deviceId: String = App.androidId,
         @Query("userKey") userKey: String? = App.database.userSettingsDao()
             .getUserSettings()?.userApiKey,
         @Body damageSpotConditionWrapper: DamageSpotConditionWrapper
@@ -142,6 +156,7 @@ interface BladeExpertService {
     @POST(value = "api/mobile/drainhole")
     fun saveDrainholeSpotCondition(
         @Query("key") key: String = API_KEY,
+        @Query("deviceId") deviceId: String = App.androidId,
         @Query("userKey") userKey: String? = App.database.userSettingsDao()
             .getUserSettings()?.userApiKey,
         @Body drainholeSpotConditionWrapper: DrainholeSpotConditionWrapper
@@ -150,6 +165,7 @@ interface BladeExpertService {
     @POST(value = "api/mobile/lightning")
     fun saveLightningSpotCondition(
         @Query("key") key: String = API_KEY,
+        @Query("deviceId") deviceId: String = App.androidId,
         @Query("userKey") userKey: String? = App.database.userSettingsDao()
             .getUserSettings()?.userApiKey,
         @Body lightningSpotConditionWrapper: LightningSpotConditionWrapper
@@ -161,6 +177,7 @@ interface BladeExpertService {
         @Path("turbineId") turbineId: Int,
         @Path("interventionId") interventionId: Int,
         @Query("key") key: String = API_KEY,
+        @Query("deviceId") deviceId: String = App.androidId,
         @Query("userKey") userKey: String? = App.database.userSettingsDao()
             .getUserSettings()?.userApiKey,
         @Part filePart: MultipartBody.Part
@@ -171,6 +188,7 @@ interface BladeExpertService {
     fun addPictureToIntervention(
         @Path("interventionId") interventionId: Int,
         @Query("key") key: String = API_KEY,
+        @Query("deviceId") deviceId: String = App.androidId,
         @Query("userKey") userKey: String? = App.database.userSettingsDao()
             .getUserSettings()?.userApiKey,
         @Part filePart: MultipartBody.Part
@@ -182,6 +200,7 @@ interface BladeExpertService {
         @Path("bladeId") bladeId: Int,
         @Path("interventionId") interventionId: Int,
         @Query("key") key: String = API_KEY,
+        @Query("deviceId") deviceId: String = App.androidId,
         @Query("userKey") userKey: String? = App.database.userSettingsDao()
             .getUserSettings()?.userApiKey,
         @Part filePart: MultipartBody.Part
@@ -193,6 +212,7 @@ interface BladeExpertService {
         @Path("windfarmId") windfarmId: Int,
         @Path("interventionId") interventionId: Int,
         @Query("key") key: String = API_KEY,
+        @Query("deviceId") deviceId: String = App.androidId,
         @Query("userKey") userKey: String? = App.database.userSettingsDao()
             .getUserSettings()?.userApiKey,
         @Part filePart: MultipartBody.Part

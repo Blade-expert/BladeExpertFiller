@@ -1,6 +1,7 @@
 package com.heliopales.bladeexpertfiller
 
 import android.app.Application
+import android.provider.Settings
 import android.util.Log
 import android.webkit.URLUtil
 import androidx.room.Room
@@ -8,6 +9,7 @@ import com.heliopales.bladeexpertfiller.blade.Blade
 import com.heliopales.bladeexpertfiller.bladeexpert.*
 import com.heliopales.bladeexpertfiller.intervention.Intervention
 import com.heliopales.bladeexpertfiller.turbine.Turbine
+import com.heliopales.bladeexpertfiller.utils.toast
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -38,6 +40,8 @@ class App : Application() {
     companion object {
 
         lateinit var instance: App
+
+        lateinit var androidId: String
 
         val database: AppDatabase by lazy {
             Room.databaseBuilder(
@@ -74,9 +78,9 @@ class App : Application() {
 
         var bladeExpertService: BladeExpertService? = null
 
-        fun initBladeExpertService(){
+        fun initBladeExpertService() {
             val newUrl = database.userSettingsDao().getUserSettings()?.serverAddress;
-            if(newUrl != null){
+            if (newUrl != null) {
                 BASE_URL = newUrl
             }
 
@@ -204,6 +208,10 @@ class App : Application() {
     override fun onCreate() {
         super.onCreate()
         instance = this
+        androidId = Settings.Secure.getString(
+            contentResolver,
+            Settings.Secure.ANDROID_ID
+        )
         initBladeExpertService()
     }
 
