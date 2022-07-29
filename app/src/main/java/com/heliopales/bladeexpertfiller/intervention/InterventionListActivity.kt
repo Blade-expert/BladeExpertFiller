@@ -272,7 +272,7 @@ class InterventionListActivity : AppCompatActivity(), InterventionAdapter.Interv
                             if(response.code() == 401 || response.code() == 403)
                              Snackbar.make(
                                 recyclerView,
-                                "NOT AUTHORIZED",
+                                "UNAUTHORIZED CONNECTION\r\nMOBILE USER KEY MAY NOT BE VALID",
                                 Snackbar.LENGTH_LONG
                             ).show()
                         }
