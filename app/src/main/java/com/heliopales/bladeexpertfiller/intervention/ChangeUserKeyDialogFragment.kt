@@ -34,7 +34,7 @@ class ChangeUserKeyDialogFragment(val initText: String?) : DialogFragment() {
         }
 
         var builder = AlertDialog.Builder(context)
-        builder.setTitle("User Key (6 characters)")
+        builder.setTitle("User mobile key")
             .setView(input)
             .setPositiveButton(
                 "Save"
