@@ -274,7 +274,10 @@ class InterventionListActivity : AppCompatActivity(), InterventionAdapter.Interv
                                 recyclerView,
                                 "UNAUTHORIZED CONNECTION\r\nMOBILE USER KEY MAY NOT BE VALID",
                                 Snackbar.LENGTH_LONG
-                            ).show()
+                            ).setAction("Change key"){
+                                 showChangeUserKeyDialog()
+                             }
+                                 .show()
                         }
 
                         interventions.forEach { it.expired = !newInterventions.contains(it) }
